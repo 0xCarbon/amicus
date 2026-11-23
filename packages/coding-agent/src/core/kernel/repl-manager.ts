@@ -1,6 +1,6 @@
 // Kernel client for the REPL runtime: the kernel is a JSON-lines subprocess
 // (`python -m rlm.repl`) — requests on stdin, events on stdout, stderr kept as
-// a diagnostics tail. The protocol is documented in prime-agent-runtime/src/rlm/repl.md.
+// a diagnostics tail. The protocol is documented in amicus-runtime/src/rlm/repl.md.
 import type { ChildProcess } from "node:child_process";
 import {
 	chmodSync,
@@ -142,7 +142,7 @@ interface ActiveExecution {
 	reject: (error: Error) => void;
 }
 
-// Complete event vocabulary of protocol version 2 (see prime-agent-runtime/src/rlm/repl.md).
+// Complete event vocabulary of protocol version 2 (see amicus-runtime/src/rlm/repl.md).
 // The version handshake is exact, so an unknown kind is corruption, not a newer runtime.
 const PROTOCOL_EVENT_KINDS = new Set([
 	"ready",
@@ -384,7 +384,7 @@ export class ReplKernelManager {
 				...process.env,
 				...this.options.env,
 				...(process.platform === "win32" ? { PYTHONUTF8: "1" } : {}),
-				PRIME_AGENT_KERNEL_OWNER_PID: String(process.pid),
+				AMICUS_KERNEL_OWNER_PID: String(process.pid),
 			},
 			stdio: ["pipe", "pipe", "pipe"],
 		});
@@ -404,7 +404,7 @@ export class ReplKernelManager {
 			if (protocol !== REPL_PROTOCOL_VERSION) {
 				throw new Error(
 					`Kernel runtime speaks protocol ${protocol}, expected ${REPL_PROTOCOL_VERSION}. ` +
-						"Update prime-agent-runtime in the kernel Python (PRIME_AGENT_KERNEL_PYTHON) to match this prime-agent.",
+						"Update amicus-runtime in the kernel Python (AMICUS_KERNEL_PYTHON) to match this amicus.",
 				);
 			}
 		} catch (e) {

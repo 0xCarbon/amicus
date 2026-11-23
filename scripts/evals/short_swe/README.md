@@ -8,7 +8,7 @@ The fixed sample is repository-stratified rather than a prefix of dataset order.
 covers all 12 source repositories with a 6/7/1/1 split across the published difficulty
 buckets (`<15 min`, `15 min–1 hour`, `1–4 hours`, and `>4 hours`). Pro uses one task from
 each of eight repositories. Pro repositories and eligible tasks within each declared
-repository/difficulty bucket were ranked with the fixed seed `prime-agent-short-swe-v2`.
+repository/difficulty bucket were ranked with the fixed seed `amicus-short-swe-v2`.
 Eligibility requires the pinned verifier tests to complete without external network access;
 prompts and model outcomes were not inspected when choosing between eligible tasks.
 

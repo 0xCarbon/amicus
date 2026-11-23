@@ -1,4 +1,4 @@
-import { Container, type Focusable, fuzzyFilter, getKeybindings, TruncatedText } from "@earendil-works/pi-tui";
+import { Container, type Focusable, fuzzyFilter, getKeybindings, TruncatedText } from "@amicus/tui";
 import type { PrimeTeam } from "../../../core/prime-inference-auth.js";
 import { theme } from "../theme/theme.js";
 import {

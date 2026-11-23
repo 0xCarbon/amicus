@@ -74,7 +74,7 @@ describe("createDaemonSessionTransport", () => {
 	});
 
 	it("falls back to the supervisor when the worker socket identity does not match the ticket", async () => {
-		const directory = mkdtempSync(join(tmpdir(), "prime-agent-routed-ticket-"));
+		const directory = mkdtempSync(join(tmpdir(), "amicus-routed-ticket-"));
 		const socketPath = join(directory, "worker.sock");
 		const server = createServer();
 		await new Promise<void>((resolveListen) => server.listen(socketPath, resolveListen));
@@ -111,7 +111,7 @@ describe("createDaemonSessionTransport", () => {
 describe("DaemonWorkerClient direct decoding", () => {
 	function makeDirectClient() {
 		const destroyed = vi.fn();
-		const client = new DaemonWorkerClient("/tmp/prime-agent-direct.sock");
+		const client = new DaemonWorkerClient("/tmp/amicus-direct.sock");
 		const internals = client as unknown as {
 			socket: Socket;
 			channel: { send: ReturnType<typeof vi.fn>; close: ReturnType<typeof vi.fn> };

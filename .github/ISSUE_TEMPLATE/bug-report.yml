@@ -20,7 +20,7 @@ body:
       label: Steps to reproduce
       description: Steps to reliably reproduce the issue.
       placeholder: |
-        1. Run `prime-agent ...`
+        1. Run `amicus ...`
         2. ...
         3. See error
     validations:
@@ -42,8 +42,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Prime Agent version
-      description: Output of `prime-agent --version`, or the commit SHA when running from source.
+      label: Amicus version
+      description: Output of `amicus --version`, or the commit SHA when running from source.
       placeholder: "e.g. 0.9.1 or 81ae3cb"
     validations:
       required: true
@@ -51,7 +51,7 @@ body:
     id: install_method
     attributes:
       label: Installation method
-      description: How was this Prime Agent version installed?
+      description: How was this Amicus version installed?
       options:
         - Stable release installer
         - Beta release installer

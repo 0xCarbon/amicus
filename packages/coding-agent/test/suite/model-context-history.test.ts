@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { type FauxResponseFactory, fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { type FauxResponseFactory, fauxAssistantMessage } from "@amicus/ai";
 import { afterEach, describe, expect, it } from "vitest";
 import { estimateTokens, findCutPoint, generateSummary } from "../../src/core/compaction/compaction.js";
 import { SessionManager } from "../../src/core/session-manager.js";

@@ -22,7 +22,7 @@ export const binaryAssets = [
 	"README.md",
 	"CHANGELOG.md",
 	"LICENSE",
-	"prime-agent-runtime",
+	"amicus-runtime",
 	"skills",
 	"theme",
 	"assets",
@@ -48,7 +48,7 @@ export function copyBinaryAssets(destination) {
 		"README.md": join(packageDir, "README.md"),
 		"CHANGELOG.md": join(packageDir, "CHANGELOG.md"),
 		LICENSE: join(root, "LICENSE"),
-		"prime-agent-runtime": join(root, "prime-agent-runtime"),
+		"amicus-runtime": join(root, "amicus-runtime"),
 		skills: join(packageDir, "skills"),
 		theme: join(packageDir, "src/modes/interactive/theme"),
 		assets: join(packageDir, "src/modes/interactive/assets"),
@@ -79,8 +79,8 @@ export function validateBinaryAssets(directory) {
 	for (const name of binaryAssets) lstatSync(join(directory, name));
 	validateBundledCatalogDir(directory);
 	for (const name of [
-		"prime-agent-runtime/pyproject.toml",
-		"prime-agent-runtime/src/rlm/repl.py",
+		"amicus-runtime/pyproject.toml",
+		"amicus-runtime/src/rlm/repl.py",
 		"theme/prime.json",
 		"theme/dark.json",
 		"theme/light.json",

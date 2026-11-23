@@ -75,7 +75,7 @@ function encryptChallengeResult(publicKey: string, value: string): string {
 describe("Prime Inference auth", () => {
 	it("does not expose trace-sharing authentication", () => {
 		expect(Object.keys(primeInferenceAuth).filter((name) => /traces/i.test(name))).toEqual([]);
-		expect(BUILT_IN_PROVIDER_DISPLAY_NAMES).not.toHaveProperty("prime-agent-traces");
+		expect(BUILT_IN_PROVIDER_DISPLAY_NAMES).not.toHaveProperty("amicus-traces");
 		expect(BUILT_IN_PROVIDER_DISPLAY_NAMES["prime-inference"]).toBe("Prime Inference");
 	});
 
@@ -83,8 +83,8 @@ describe("Prime Inference auth", () => {
 	let configPath: string;
 
 	beforeEach(() => {
-		vi.stubEnv("PRIME_AGENT_INFERENCE_API_BASE_URL", "");
-		vi.stubEnv("PRIME_AGENT_INFERENCE_FRONTEND_URL", "");
+		vi.stubEnv("AMICUS_INFERENCE_API_BASE_URL", "");
+		vi.stubEnv("AMICUS_INFERENCE_FRONTEND_URL", "");
 		tempDir = join(tmpdir(), `pi-prime-auth-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(tempDir, { recursive: true });
 		configPath = join(tempDir, "config.json");
@@ -175,13 +175,13 @@ describe("Prime Inference auth", () => {
 
 	it.each([
 		[
-			"PRIME_AGENT_INFERENCE_API_BASE_URL",
+			"AMICUS_INFERENCE_API_BASE_URL",
 			"https://custom.example/api/v1/",
 			loginPrimeInference,
 			"https://custom.example",
 		],
 		[
-			"PRIME_AGENT_INFERENCE_FRONTEND_URL",
+			"AMICUS_INFERENCE_FRONTEND_URL",
 			"https://custom.example/",
 			loginPrimeInference,
 			"https://api.primeintellect.ai",
@@ -221,15 +221,15 @@ describe("Prime Inference auth", () => {
 	});
 
 	it("normalizes Agent-only auth endpoints independently of unrelated settings", () => {
-		vi.stubEnv("PRIME_AGENT_INFERENCE_API_BASE_URL", "  ");
-		vi.stubEnv("PRIME_AGENT_INFERENCE_FRONTEND_URL", "  ");
+		vi.stubEnv("AMICUS_INFERENCE_API_BASE_URL", "  ");
+		vi.stubEnv("AMICUS_INFERENCE_FRONTEND_URL", "  ");
 		vi.stubEnv("PRIME_API_BASE_URL", "https://unrelated.example");
 		expect(resolvePrimeInferenceAuthConfig()).toEqual({
 			baseUrl: "https://api.primeintellect.ai",
 			frontendUrl: "https://app.primeintellect.ai",
 		});
-		vi.stubEnv("PRIME_AGENT_INFERENCE_API_BASE_URL", " https://custom.example/api/v1/ ");
-		vi.stubEnv("PRIME_AGENT_INFERENCE_FRONTEND_URL", " https://app.example/ ");
+		vi.stubEnv("AMICUS_INFERENCE_API_BASE_URL", " https://custom.example/api/v1/ ");
+		vi.stubEnv("AMICUS_INFERENCE_FRONTEND_URL", " https://app.example/ ");
 		expect(resolvePrimeInferenceAuthConfig()).toEqual({
 			baseUrl: "https://custom.example",
 			frontendUrl: "https://app.example",

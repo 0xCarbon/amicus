@@ -50,7 +50,7 @@ def test_workflow_gates_and_revokes_durable_release_status() -> None:
     assert workflow.index("Mark the requested head pending") < workflow.index("Check out trusted evaluator")
     assert "Behavioral Eval / pre-release" in workflow
     assert "statuses: write" in workflow
-    assert "prime-agent-behavioral-skip-{0}" in workflow
+    assert "amicus-behavioral-skip-{0}" in workflow
 
 
 def test_manifest_is_the_fixed_pinned_suite() -> None:
@@ -146,7 +146,7 @@ def test_patch_collection_uses_trusted_base_and_keeps_all_git_states(
     command = verified_verifier.patch_collect_command(task.parent)
     assert command.startswith("rm -rf /logs/artifacts && ")
     subprocess.run(command.split(" && ", 1)[1], cwd=repo, check=True, shell=True)
-    patch = Path("/tmp/prime-agent.patch")
+    patch = Path("/tmp/amicus.patch")
     clone = tmp_path / "clone"
     subprocess.run(["git", "clone", "-q", str(repo), str(clone)], check=True)
     subprocess.run(["git", "checkout", "-q", base], cwd=clone, check=True)
@@ -203,7 +203,7 @@ def test_patch_collection_overrides_candidate_diff_prefix_config(
     ]
     assert all(pin in command for pin in pins)
     subprocess.run(command.split(" && ", 1)[1], cwd=repo, check=True, shell=True)
-    patch = Path("/tmp/prime-agent.patch").read_text()
+    patch = Path("/tmp/amicus.patch").read_text()
     assert "diff --git a/tests/test_x.py b/tests/test_x.py" in patch
 
     filtered = verified_verifier.filter_test_control(patch)
@@ -271,9 +271,9 @@ def labeled_event() -> dict:
             "state": "open",
             "base": {
                 "sha": "b" * 40,
-                "repo": {"full_name": "PrimeIntellect-ai/prime-agent"},
+                "repo": {"full_name": "0xCarbon/amicus"},
             },
-            "head": {"sha": "c" * 40, "repo": {"full_name": "contributor/prime-agent"}},
+            "head": {"sha": "c" * 40, "repo": {"full_name": "contributor/amicus"}},
         },
     }
 
@@ -310,7 +310,7 @@ def test_ci_resolves_only_exact_label(tmp_path: Path, monkeypatch: pytest.Monkey
     event = tmp_path / "event.json"
     event.write_text(json.dumps(labeled_event()))
     monkeypatch.setenv("GITHUB_EVENT_PATH", str(event))
-    monkeypatch.setenv("GITHUB_REPOSITORY", "PrimeIntellect-ai/prime-agent")
+    monkeypatch.setenv("GITHUB_REPOSITORY", "0xCarbon/amicus")
     monkeypatch.setenv("GITHUB_RUN_ID", "7")
     monkeypatch.setenv("GITHUB_RUN_ATTEMPT", "2")
     request = ci.resolve(tmp_path / "request", "b" * 40)
@@ -556,8 +556,8 @@ def tasks(resolved: int, multiplier: int = 1) -> list[dict]:
 def request() -> dict:
     return {
         "schema_version": 1,
-        "repository": "PrimeIntellect-ai/prime-agent",
-        "head_repository": "PrimeIntellect-ai/prime-agent",
+        "repository": "0xCarbon/amicus",
+        "head_repository": "0xCarbon/amicus",
         "pr": 2306,
         "run_id": 7,
         "attempt": 1,

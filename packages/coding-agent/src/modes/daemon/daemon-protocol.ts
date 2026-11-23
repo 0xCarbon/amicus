@@ -1,5 +1,5 @@
-import type { AgentMessage, ThinkingLevel } from "@earendil-works/pi-agent-core";
-import type { ImageContent, ServiceTier, TextContent, Transport } from "@earendil-works/pi-ai";
+import type { AgentMessage, ThinkingLevel } from "@amicus/agent-core";
+import type { ImageContent, ServiceTier, TextContent, Transport } from "@amicus/ai";
 import type { AgentSessionMessageDeliveryMode } from "../../core/agent-messages.js";
 import type { SessionActionRecoverySnapshot } from "../../core/agent-session.js";
 import type { AgentSessionRuntimeConfig } from "../../core/agent-session-config.js";
@@ -43,7 +43,7 @@ import type { SessionSummary } from "./daemon-session-list.js";
  * without leaking transport details back into InteractiveMode.
  */
 
-export const DAEMON_PROTOCOL_NAME = "prime-agent.daemon";
+export const DAEMON_PROTOCOL_NAME = "amicus.daemon";
 export const DAEMON_PROTOCOL_VERSION = 7;
 export const DAEMON_COMMAND_ENVELOPE_MIN_PROTOCOL_VERSION = 7;
 // Revision 9 publishes persisted RLM spawn depth on passive session rows.
@@ -280,7 +280,7 @@ export function collectDaemonClientEnv(source: NodeJS.ProcessEnv = process.env):
 export function collectDaemonLaunchEnv(source: NodeJS.ProcessEnv = process.env): Record<string, string> {
 	const env: Record<string, string> = {};
 	for (const [key, value] of Object.entries(source)) {
-		if (value !== undefined && !key.startsWith("PRIME_AGENT_INTERNAL_")) {
+		if (value !== undefined && !key.startsWith("AMICUS_INTERNAL_")) {
 			env[key] = value;
 		}
 	}

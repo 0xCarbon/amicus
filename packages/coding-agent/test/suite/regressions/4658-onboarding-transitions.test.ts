@@ -1,4 +1,4 @@
-import { type Component, Container, Input, setKeybindings, Text, type TUI } from "@earendil-works/pi-tui";
+import { type Component, Container, Input, setKeybindings, Text, type TUI } from "@amicus/tui";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { KeybindingsManager } from "../../../src/core/keybindings.js";
 import type { ModelRegistry } from "../../../src/core/model-registry.js";

@@ -30,15 +30,15 @@ import { formatDaemonListTable } from "./daemon-ps-format.js";
 import { promptYesNo } from "./daemon-stop-confirm.js";
 
 /**
- * `daemon ps` discovers every prime-agent daemon in *our state root*, not just
+ * `daemon ps` discovers every amicus daemon in *our state root*, not just
  * the one on a single socket. Discovery has two sources merged by socket path:
  *
- *  1. The OS list of listening unix sockets owned by a prime-agent process
+ *  1. The OS list of listening unix sockets owned by a amicus process
  *     (`ss -lxp` on Linux, `lsof` on macOS). Daemons set process.title to
  *     APP_NAME and carry nothing useful in argv, so the socket→pid mapping the
  *     kernel keeps is the only reliable way to find daemons on arbitrary
  *     `--daemon-socket` paths. This is the same data as `ss -lxp | grep
- *     prime-agent`, just parsed. The kernel list is machine-wide, so it is
+ *     amicus`, just parsed. The kernel list is machine-wide, so it is
  *     filtered to our state root (see createDaemonStateRootMatcher): a daemon
  *     started under a different HOME or agent dir is another root's business,
  *     and stopping it from here would kill unrelated live sessions.
@@ -97,7 +97,7 @@ function processNameMatches(name: string, appName: string): boolean {
 	return name === appName || appName.slice(0, MAX_COMM_LENGTH) === name;
 }
 
-/** Parse `ss -lxp` output into the prime-agent daemons listening on unix sockets. */
+/** Parse `ss -lxp` output into the amicus daemons listening on unix sockets. */
 export function parseSsListeners(stdout: string, appName: string): DiscoveredDaemonProcess[] {
 	const daemons: DiscoveredDaemonProcess[] = [];
 	for (const line of stdout.split("\n")) {
@@ -140,7 +140,7 @@ export function parseLsofListeners(stdout: string): DiscoveredDaemonProcess[] {
 	return daemons;
 }
 
-export function parsePrimeAgentProcessIds(stdout: string, appName: string): number[] {
+export function parseAmicusProcessIds(stdout: string, appName: string): number[] {
 	const pids: number[] = [];
 	for (const line of stdout.split("\n")) {
 		const match = line.trim().match(/^(\d+)\s+(\S+)(?:\s+(.*))?$/);
@@ -181,7 +181,7 @@ export function parsePsEtimes(stdout: string): Map<number, number> {
 }
 
 /**
- * Listening prime-agent daemons that belong to this state root. The OS sweep
+ * Listening amicus daemons that belong to this state root. The OS sweep
  * behind it sees every daemon the user can observe, including daemons from an
  * isolated HOME or a different agent dir, so the result is filtered before any
  * caller can list, signal or reap it.
@@ -204,7 +204,7 @@ function scanAllListeningDaemons(): DiscoveredDaemonProcess[] {
 	let byPid: DiscoveredDaemonProcess[] = [];
 	const ps = spawnSyncHidden("ps", ["-axo", "pid=,comm=,args="], { encoding: "utf8" });
 	if (!ps.error && ps.status === 0 && typeof ps.stdout === "string") {
-		const pids = parsePrimeAgentProcessIds(ps.stdout, APP_NAME);
+		const pids = parseAmicusProcessIds(ps.stdout, APP_NAME);
 		if (pids.length > 0) {
 			const lsofByPid = spawnSyncHidden("lsof", ["-nP", "-F", "pn", "-U", "-a", "-p", pids.join(",")], {
 				encoding: "utf8",
@@ -475,7 +475,7 @@ export function planReap(daemons: readonly DaemonInfo[], force: boolean): ReapAc
 		}
 		if (daemon.status === "unreachable") {
 			if (!force || daemon.pid === undefined) {
-				return { kind: "skip", daemon, reason: 'unreachable; use "prime-agent shutdown --force" to stop it' };
+				return { kind: "skip", daemon, reason: 'unreachable; use "amicus shutdown --force" to stop it' };
 			}
 			if ((pidCounts.get(daemon.pid) ?? 0) > 1) {
 				return {
@@ -541,7 +541,7 @@ export async function runShutdownAll(json: boolean, force: boolean): Promise<voi
 						stopped: [],
 						failed: daemons.map(({ socketPath }) => ({
 							socketPath,
-							reason: 'confirmation required; use "prime-agent shutdown --force --json"',
+							reason: 'confirmation required; use "amicus shutdown --force --json"',
 						})),
 					},
 					null,
@@ -550,9 +550,7 @@ export async function runShutdownAll(json: boolean, force: boolean): Promise<voi
 			);
 			return;
 		case "tty-error":
-			throw new Error(
-				'Shutdown requires confirmation in an interactive terminal. Use "prime-agent shutdown --force".',
-			);
+			throw new Error('Shutdown requires confirmation in an interactive terminal. Use "amicus shutdown --force".');
 		case "prompt": {
 			const confirmed = await promptYesNo(
 				"Stop every agent and background service? Active work will be interrupted.",
@@ -902,11 +900,11 @@ function recordShutdownFailure(
 
 // Windows worker named pipes live in the `\\.\pipe\` namespace instead of the
 // default daemon socket dir, and their names carry no `.sock` suffix
-// (`\\.\pipe\prime-agent-worker-<key>-<workerId12>`; see workerSocketPath in
+// (`\\.\pipe\amicus-worker-<key>-<workerId12>`; see workerSocketPath in
 // daemon-supervisor.ts), so the default-dir + `.sock` checks below never match
 // them. Match the exact pipe name instead: pure string matching, so the
 // predicate stays testable and correct on every platform.
-const WORKER_NAMED_PIPE_PATTERN = /^\\\\\.\\pipe\\prime-agent-worker-[0-9a-f]+-[0-9a-f]{12}$/;
+const WORKER_NAMED_PIPE_PATTERN = /^\\\\\.\\pipe\\amicus-worker-[0-9a-f]+-[0-9a-f]{12}$/;
 
 export function isWorkerSocketPath(socketPath: string): boolean {
 	if (WORKER_NAMED_PIPE_PATTERN.test(socketPath)) {

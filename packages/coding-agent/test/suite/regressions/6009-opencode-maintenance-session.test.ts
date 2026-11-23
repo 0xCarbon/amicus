@@ -3,7 +3,7 @@ import { createServer, type IncomingHttpHeaders, type Server } from "node:http";
 import type { AddressInfo } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { completeSimple, type FauxResponseFactory } from "@earendil-works/pi-ai";
+import { completeSimple, type FauxResponseFactory } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../../../src/config.js";
 import { type AutoRefineReview, type HarnessState, refineHarness } from "../../../src/core/refinement/refinement.js";
@@ -101,7 +101,7 @@ function expectIdentity(harness: Harness, count: number) {
 	expect(calls).toHaveLength(count);
 	for (const call of calls) {
 		expect(call.headers["x-opencode-session"]).toBe(harness.sessionManager.getSessionId());
-		expect(call.headers["user-agent"]).toMatch(/^prime-agent(?:\/|$)/);
+		expect(call.headers["user-agent"]).toMatch(/^amicus(?:\/|$)/);
 	}
 }
 

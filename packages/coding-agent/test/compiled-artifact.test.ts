@@ -28,8 +28,8 @@ import { DaemonClient } from "../src/modes/daemon/daemon-client.js";
 const RUN_TIMEOUT = 25000;
 const CONNECT_TIMEOUT = 5000;
 
-const archive = process.env.PRIME_AGENT_TEST_ARCHIVE;
-const uv = process.env.PRIME_AGENT_TEST_UV;
+const archive = process.env.AMICUS_TEST_ARCHIVE;
+const uv = process.env.AMICUS_TEST_UV;
 const children = new Set<ChildProcess>();
 let root = "";
 let extracted = "";
@@ -117,7 +117,7 @@ describe.skipIf(!archive)("extracted standalone archive", () => {
 		extracted = join(root, "extracted app");
 		mkdirSync(extracted);
 		execFileSync("tar", ["-xzf", resolve(archive!), "-C", extracted], { timeout: 60000 });
-		binary = join(extracted, "prime-agent");
+		binary = join(extracted, "amicus");
 		if (process.platform === "darwin") {
 			execFileSync("/usr/bin/codesign", ["--verify", "--deep", "--strict", "--verbose=4", binary], {
 				timeout: 60000,
@@ -167,14 +167,14 @@ describe.skipIf(!archive)("extracted standalone archive", () => {
 			TMPDIR: root,
 			SHELL: "/bin/sh",
 			DO_NOT_TRACK: "1",
-			PRIME_AGENT_CODING_AGENT_DIR: join(home, "agent"),
-			PRIME_AGENT_INSTALL_UV: "0",
+			AMICUS_CODING_AGENT_DIR: join(home, "agent"),
+			AMICUS_INSTALL_UV: "0",
 			UV_CACHE_DIR: join(root, "uv-cache"),
 			UV_PYTHON_INSTALL_DIR: join(root, "python"),
 		};
-		mkdirSync(environment.PRIME_AGENT_CODING_AGENT_DIR!);
+		mkdirSync(environment.AMICUS_CODING_AGENT_DIR!);
 		writeFileSync(
-			join(environment.PRIME_AGENT_CODING_AGENT_DIR!, "settings.json"),
+			join(environment.AMICUS_CODING_AGENT_DIR!, "settings.json"),
 			JSON.stringify({ retry: { enabled: false } }),
 		);
 		copyFileSync(resolve(__dirname, "fixtures/compiled-artifact-extension.ts"), join(cwd, "extension.ts"));
@@ -210,7 +210,7 @@ describe.skipIf(!archive)("extracted standalone archive", () => {
 		const listing = execFileSync("tar", ["-tzf", archive!], { encoding: "utf8" });
 		expect(listing).not.toMatch(/(^|\/)(node_modules|\.venv|__pycache__|\.pytest_cache)(\/|$)/m);
 		for (const name of [
-			"prime-agent-runtime/src/rlm/repl.py",
+			"amicus-runtime/src/rlm/repl.py",
 			"photon_rs_bg.wasm",
 			"export-html/template.css",
 			"export-html/template.js",
@@ -219,7 +219,7 @@ describe.skipIf(!archive)("extracted standalone archive", () => {
 			expect(listing).toContain(name);
 		for (const name of ["node", "npm", "bun"]) expect(existsSync(join(environment.PATH!, name))).toBe(false);
 		const metadata = JSON.parse(readFileSync(join(extracted, "package.json"), "utf8"));
-		expect(metadata.name).toBe("@earendil-works/pi-coding-agent");
+		expect(metadata.name).toBe("@amicus/coding-agent");
 		expect(await run(["--version"])).toMatchObject({ code: 0, stdout: `${metadata.version}\n` });
 		const help = await run(["--help"]);
 		expect(help.code, help.stderr).toBe(0);
@@ -228,7 +228,7 @@ describe.skipIf(!archive)("extracted standalone archive", () => {
 
 	it.skipIf(process.platform !== "darwin")("rejects a tampered copy without changing the verified executable", () => {
 		const originalHash = createHash("sha256").update(readFileSync(binary)).digest("hex");
-		const tampered = join(home, "tampered-prime-agent");
+		const tampered = join(home, "tampered-amicus");
 		copyFileSync(binary, tampered);
 		const descriptor = openSync(tampered, "r+");
 		try {
@@ -297,10 +297,10 @@ writeFileSync(join(process.cwd(), "hot-runtime.json"), JSON.stringify({ value, e
 		]);
 		writeFileSync(join(cwd, "wide.png"), png);
 		const result = await run([...sessionArgs(), "--no-tools", "-p", "@wide.png", "artifact image"], {
-			PRIME_AGENT_ARTIFACT_CASE: "image",
+			AMICUS_ARTIFACT_CASE: "image",
 		});
 		expect(result.code, result.stderr).toBe(0);
-		const sessionsRoot = join(environment.PRIME_AGENT_CODING_AGENT_DIR!, "sessions");
+		const sessionsRoot = join(environment.AMICUS_CODING_AGENT_DIR!, "sessions");
 		const sessions = readdirSync(sessionsRoot, { recursive: true })
 			.map(String)
 			.filter((path) => path.endsWith(".jsonl"));
@@ -379,17 +379,17 @@ writeFileSync(join(process.cwd(), "hot-runtime.json"), JSON.stringify({ value, e
 	});
 
 	it("bootstraps the shipped Python sources and executes persistent cells and shell commands", async () => {
-		expect(uv, "Set PRIME_AGENT_TEST_UV to an absolute uv executable for artifact validation").toBeTruthy();
+		expect(uv, "Set AMICUS_TEST_UV to an absolute uv executable for artifact validation").toBeTruthy();
 		const result = await run(
 			[...sessionArgs(), "--tools", "ipython", "-p", "artifact python"],
-			{ PRIME_AGENT_ARTIFACT_CASE: "python" },
+			{ AMICUS_ARTIFACT_CASE: "python" },
 			300000,
 		);
 		const uvLog = join(home, "uv.log");
 		expect(result.code, `${result.stderr}\n${existsSync(uvLog) ? readFileSync(uvLog, "utf8") : ""}`).toBe(0);
 		expect(result.stdout).toContain("artifact-python-result 42");
 		expect(result.stdout).toContain("artifact-shell-ok");
-		const bootstrap = JSON.parse(readFileSync(join(home, ".prime/agent/kernel-venv/.bootstrap-version"), "utf8"));
+		const bootstrap = JSON.parse(readFileSync(join(home, ".amicus/kernel-venv/.bootstrap-version"), "utf8"));
 		expect(bootstrap.runtime).toMatch(/^sha256:/);
 		expect(bootstrap.pythonSkills.length).toBeGreaterThan(0);
 		expect(

@@ -217,7 +217,7 @@ export function editSession(options: SessionEditOptions): SessionEditOutcome {
 	try {
 		let documentPath = options.editorDocumentPath;
 		if (documentPath === undefined) {
-			tempDirectory = mkdtempSync(join(tmpdir(), "prime-agent-session-edit-"));
+			tempDirectory = mkdtempSync(join(tmpdir(), "amicus-session-edit-"));
 			documentPath = join(tempDirectory, `${basename(sessionPath, ".jsonl")}.session.txt`);
 			writeFileSync(documentPath, document);
 		}

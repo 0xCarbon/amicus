@@ -1,4 +1,4 @@
-import { type ClickRegion, type Component, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
+import { type ClickRegion, type Component, truncateToWidth, visibleWidth } from "@amicus/tui";
 import { theme } from "../theme/theme.js";
 
 export const TOOL_PANEL_PADDING_X = 2;

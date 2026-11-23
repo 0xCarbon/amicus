@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { fauxAssistantMessage, fauxToolCall, getApiProvider, registerFauxProvider } from "@earendil-works/pi-ai";
-import { DefaultResourceLoader, type ExtensionAPI, getAgentDir, initTheme } from "@earendil-works/pi-coding-agent";
+import { fauxAssistantMessage, fauxToolCall, getApiProvider, registerFauxProvider } from "@amicus/ai";
+import { DefaultResourceLoader, type ExtensionAPI, getAgentDir, initTheme } from "@amicus/coding-agent";
 
 export default function artifactExtension(pi: ExtensionAPI): void {
 	const faux = registerFauxProvider({
@@ -18,7 +18,7 @@ export default function artifactExtension(pi: ExtensionAPI): void {
 		streamSimple: provider.streamSimple,
 		models: faux.models,
 	});
-	if (process.env.PRIME_AGENT_ARTIFACT_CASE === "python") {
+	if (process.env.AMICUS_ARTIFACT_CASE === "python") {
 		faux.setResponses([
 			fauxAssistantMessage(
 				fauxToolCall("ipython", {
@@ -43,7 +43,7 @@ export default function artifactExtension(pi: ExtensionAPI): void {
 	} else {
 		faux.setResponses([
 			(context) => {
-				if (process.env.PRIME_AGENT_ARTIFACT_CASE === "image") {
+				if (process.env.AMICUS_ARTIFACT_CASE === "image") {
 					if (!JSON.stringify(context.messages).includes("original 3000x1, displayed at 2000x1")) {
 						throw new Error("Photon did not resize the attached image");
 					}

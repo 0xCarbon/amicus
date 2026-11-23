@@ -9,7 +9,7 @@ import {
 	type Model,
 	type ModelCatalogV1,
 	parseModelCatalog,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { getPackageDir, isBunBinary } from "../config.js";
 import { PRIME_INFERENCE_BASE_URL } from "./prime-inference-model-catalog.js";
 import { parseProviderModelCatalog } from "./provider-model-catalog.js";

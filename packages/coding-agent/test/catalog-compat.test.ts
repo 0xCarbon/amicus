@@ -1,8 +1,8 @@
 import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { type Api, createModelCatalog, getModels, type Model, parseModelCatalog } from "@earendil-works/pi-ai";
-import { parseMcpServiceCatalogFile } from "@earendil-works/pi-ai/mcp";
+import { type Api, createModelCatalog, getModels, type Model, parseModelCatalog } from "@amicus/ai";
+import { parseMcpServiceCatalogFile } from "@amicus/ai/mcp";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.js";
 import { getBundledModels } from "../src/core/bundled-model-catalog.js";

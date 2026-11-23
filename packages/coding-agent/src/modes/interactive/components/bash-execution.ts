@@ -1,4 +1,4 @@
-import { Clickable, Container, Loader, Spacer, Text, type TUI } from "@earendil-works/pi-tui";
+import { Clickable, Container, Loader, Spacer, Text, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import {
 	DEFAULT_MAX_BYTES,

@@ -1,5 +1,5 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type { Model } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import type { Model } from "@amicus/ai";
 import { describe, expect, it, vi } from "vitest";
 import { DaemonAgentConnection } from "../../../src/modes/agent-connection/daemon-agent-connection.js";
 import type { AgentConnectionState } from "../../../src/modes/agent-connection/types.js";

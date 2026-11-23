@@ -181,7 +181,7 @@ def prepare_native_artifact(agent: Path, artifacts: Path, log: Path) -> bool:
         timeout=180,
         log=log,
     )
-    if not (artifacts / f"prime-agent-{VERSION}-linux-x64.tar.gz").is_file():
+    if not (artifacts / f"amicus-{VERSION}-linux-x64.tar.gz").is_file():
         raise RuntimeError("Compiled Linux x64 release archive is missing")
     return True
 
@@ -225,7 +225,7 @@ def prepare(request: Request, side: Side) -> None:
         "builder",
         [
             "node",
-            "scripts/pack-prime-agent-release.mjs",
+            "scripts/pack-amicus-release.mjs",
             "--base-url",
             ORIGIN,
             "--version",
@@ -287,7 +287,7 @@ def disk_bytes(home: Path) -> int:
 
 
 def verify_installation_format(home: Path, side: Side) -> None:
-    with (home / ".local/bin/prime-agent").open("rb") as executable:
+    with (home / ".local/bin/amicus").open("rb") as executable:
         compiled = executable.read(4) == b"\x7fELF"
     side.runtime["installation_format"] = "compiled" if compiled else "npm"
     if side.runtime.get("artifact_format") == "npm-tarballs+linux-x64-native" and not compiled:
@@ -310,26 +310,26 @@ def install(request: Request, side: Side, trial: int) -> None:
             timeout=240,
             log=RESULTS / f"install-{trial}.log",
             extra_env={
-                "PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS": "1",
-                "PRIME_AGENT_DOWNLOAD_BASE_URL": ORIGIN,
-                "PRIME_AGENT_INSTALLER_PLAIN": "1",
-                "PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL": "1",
-                "PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL": "1",
-                "PRIME_AGENT_INSTALL_UV": "1",
+                "AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS": "1",
+                "AMICUS_DOWNLOAD_BASE_URL": ORIGIN,
+                "AMICUS_INSTALLER_PLAIN": "1",
+                "AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL": "1",
+                "AMICUS_BOOTSTRAP_TOOLS_ON_INSTALL": "1",
+                "AMICUS_INSTALL_UV": "1",
             },
         )
         elapsed = time.perf_counter() - started
-        version = run_as(user, ["prime-agent", "--version"], home, merge_output=True).strip()
+        version = run_as(user, ["amicus", "--version"], home, merge_output=True).strip()
         if VERSION not in version:
             raise RuntimeError(f"Installed version does not match the packed release: {version[:100]}")
         verify_installation_format(home, side)
-        if not (home / ".prime/agent/kernel-venv/bin/python").exists():
+        if not (home / ".amicus/kernel-venv/bin/python").exists():
             raise RuntimeError("The installer's Python bootstrap did not complete")
         record(side, "install", trial, elapsed)
         if trial == 0:
             side.runtime["home_before_install_bytes"] = str(before)
             info = pwd.getpwnam(user)
-            settings = home / ".prime/agent/settings.json"
+            settings = home / ".amicus/settings.json"
             settings.write_text(json.dumps({"onboardingShown": True}) + "\n")
             os.chown(settings, info.pw_uid, info.pw_gid)
             workspace = home / "workspace"
@@ -390,20 +390,20 @@ def record(
 
 
 def stop_agents(home: Path) -> None:
-    listing = json.loads(run_as("benchmark1", ["prime-agent", "list", "--json"], home))
+    listing = json.loads(run_as("benchmark1", ["amicus", "list", "--json"], home))
     for session in listing["sessions"]:
         active_id = session.get("activeSessionId")
         if not active_id:
             continue
         try:
-            run_as("benchmark1", ["prime-agent", "stop", active_id, "--json"], home)
+            run_as("benchmark1", ["amicus", "stop", active_id, "--json"], home)
         except subprocess.CalledProcessError as error:
             if (
                 error.returncode != 1
                 or (error.stderr or "").strip() != f"Error: Unknown active session: {active_id}"
             ):
                 raise
-            current = json.loads(run_as("benchmark1", ["prime-agent", "list", "--json"], home))
+            current = json.loads(run_as("benchmark1", ["amicus", "list", "--json"], home))
             if any(item.get("activeSessionId") == active_id for item in current["sessions"]):
                 raise
 
@@ -422,7 +422,7 @@ def measure(request: Request, side: Side, trial: int) -> None:
             settled = False
             try:
                 terminal = Terminal(
-                    ["/usr/sbin/runuser", "-u", "benchmark1", "--", "prime-agent"],
+                    ["/usr/sbin/runuser", "-u", "benchmark1", "--", "amicus"],
                     home / "workspace",
                     environment("benchmark1"),
                     RESULTS / f"{mode}-{trial}",
@@ -478,7 +478,7 @@ def runtime(side: Side, trial: int) -> None:
         "-u",
         "benchmark1",
         "--",
-        str(home / ".prime/agent/kernel-venv/bin/python"),
+        str(home / ".amicus/kernel-venv/bin/python"),
         "-m",
         "rlm.repl",
     ]

@@ -17,7 +17,7 @@ vi.mock("../src/config.js", async (importOriginal) => ({
 }));
 
 vi.mock("../src/utils/native-installation.js", () => ({
-	getNativeInstallation: () => (updateMocks.binary ? { launcher: "/tmp/managed/bin/prime-agent" } : undefined),
+	getNativeInstallation: () => (updateMocks.binary ? { launcher: "/tmp/managed/bin/amicus" } : undefined),
 }));
 
 vi.mock("child_process", async (importOriginal) => ({
@@ -59,13 +59,13 @@ describe("buildUpdateRelaunchArgs", () => {
 
 describe("tryExecUpdateRelaunch", () => {
 	it("replaces the current process while preserving argv zero and the environment", () => {
-		const environment = { PRIME_AGENT_CODING_AGENT_DIR: "/tmp/agent", OMITTED: undefined };
+		const environment = { AMICUS_CODING_AGENT_DIR: "/tmp/agent", OMITTED: undefined };
 		const chdir = vi.fn();
 		const execve = vi.fn(() => undefined as never);
 
 		expect(
 			tryExecUpdateRelaunch(
-				{ command: "/usr/bin/node", args: ["--trace-warnings", "/opt/prime-agent/cli.js", "--resume", "session"] },
+				{ command: "/usr/bin/node", args: ["--trace-warnings", "/opt/amicus/cli.js", "--resume", "session"] },
 				{
 					platform: "darwin",
 					nodeVersion: "26.1.0",
@@ -80,8 +80,8 @@ describe("tryExecUpdateRelaunch", () => {
 		expect(chdir).toHaveBeenCalledWith("/tmp/project");
 		expect(execve).toHaveBeenCalledWith(
 			"/usr/bin/node",
-			["/usr/bin/node", "--trace-warnings", "/opt/prime-agent/cli.js", "--resume", "session"],
-			{ PRIME_AGENT_CODING_AGENT_DIR: "/tmp/agent" },
+			["/usr/bin/node", "--trace-warnings", "/opt/amicus/cli.js", "--resume", "session"],
+			{ AMICUS_CODING_AGENT_DIR: "/tmp/agent" },
 		);
 
 		// A thrown execve restores the previous cwd before the fallback runs.
@@ -236,7 +236,7 @@ describe("interactive self-update relaunch", () => {
 					? ["update", "--daemon-socket", "/tmp/update.sock"]
 					: [...process.execArgv, process.argv[1], "update", "--daemon-socket", "/tmp/update.sock"],
 			);
-			expect(execve.mock.calls[0]?.[0]).toBe(binary ? "/tmp/managed/bin/prime-agent" : process.execPath);
+			expect(execve.mock.calls[0]?.[0]).toBe(binary ? "/tmp/managed/bin/amicus" : process.execPath);
 			expect(execve.mock.calls[0]?.[1]).toEqual(expect.arrayContaining(["--resume", "/tmp/session.jsonl"]));
 		},
 	);
@@ -282,7 +282,7 @@ describe("buildDaemonUpdateRestartReport", () => {
 		expect(report.info).toEqual(["Restored 2 daemon sessions", "Resumed 1 interrupted session"]);
 		expect(report.warnings).toEqual([
 			"Updated, but could not restart the daemon (could not stop predecessor).",
-			"The daemon still runs the previous version; run `prime-agent shutdown`, then run `prime-agent` to restart and apply the update.",
+			"The daemon still runs the previous version; run `amicus shutdown`, then run `amicus` to restart and apply the update.",
 			"1 daemon session could not be restored.",
 			"Could not restore /tmp/failed.jsonl: create failed",
 		]);

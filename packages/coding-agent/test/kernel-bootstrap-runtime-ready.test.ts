@@ -9,8 +9,8 @@ import { RUNTIME_READY_CHECK } from "../src/core/kernel/bootstrap.js";
 const here = fileURLToPath(new URL(".", import.meta.url));
 // Resolve from the FILE, not process.cwd(): the vitest worker cwd is the
 // repo root, which would silently fall through to the stale fallback venv.
-const runtimePython = resolve(here, "..", "..", "..", "prime-agent-runtime", ".venv", "bin", "python");
-const fallbackPython = join(homedir(), ".prime", "agent", "kernel-venv", "bin", "python");
+const runtimePython = resolve(here, "..", "..", "..", "amicus-runtime", ".venv", "bin", "python");
+const fallbackPython = join(homedir(), ".amicus", "kernel-venv", "bin", "python");
 
 /**
  * The kernel venv is part of the standard checkout/CI environment, so the
@@ -18,7 +18,7 @@ const fallbackPython = join(homedir(), ".prime", "agent", "kernel-venv", "bin", 
  * kernel-ready python is available, never silently skip.
  */
 function resolveKernelPython(): string {
-	for (const python of [process.env.PRIME_AGENT_KERNEL_PYTHON, runtimePython, fallbackPython]) {
+	for (const python of [process.env.AMICUS_KERNEL_PYTHON, runtimePython, fallbackPython]) {
 		if (!python || !existsSync(python)) continue;
 		const check = spawnSync(python, ["-c", "import rlm.repl, mcp, rlm"], { encoding: "utf8" });
 		if (check.status === 0) return python;
@@ -52,12 +52,12 @@ describe("kernel bootstrap runtime ready check", () => {
 			const source = [
 				"import os, rlm.mcp as mcp",
 				`delattr(mcp, ${JSON.stringify(method)})`,
-				'exec(os.environ["PRIME_AGENT_TEST_READY_CHECK"])',
+				'exec(os.environ["AMICUS_TEST_READY_CHECK"])',
 			].join("; ");
 			const result = spawnSync(python as string, ["-c", source], {
 				encoding: "utf8",
 				timeout: 30_000,
-				env: { ...process.env, PRIME_AGENT_TEST_READY_CHECK: RUNTIME_READY_CHECK },
+				env: { ...process.env, AMICUS_TEST_READY_CHECK: RUNTIME_READY_CHECK },
 			});
 			expect(result.status, `a runtime without ${method} must fail the ready check`).not.toBe(0);
 			expect(result.stderr).toContain("MCP discovery");

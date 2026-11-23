@@ -1,8 +1,8 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Api, Model } from "@earendil-works/pi-ai";
-import { getModels } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
+import { getModels } from "@amicus/ai";
 import { afterEach, describe, expect, test, vi } from "vitest";
 
 const cacheRoots: string[] = [];
@@ -23,7 +23,7 @@ describe("catalog-defined default model", () => {
 		const root = mkdtempSync(join(tmpdir(), "default-model-catalog-"));
 		cacheRoots.push(root);
 		const agentDir = join(root, "agent");
-		vi.stubEnv("PRIME_AGENT_CODING_AGENT_DIR", agentDir);
+		vi.stubEnv("AMICUS_CODING_AGENT_DIR", agentDir);
 
 		vi.stubGlobal(
 			"fetch",

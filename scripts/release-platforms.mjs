@@ -4,7 +4,7 @@ import { pathToFileURL } from "node:url";
 
 // The single source of truth for the compiled release platform set.
 // Every entry is a Bun compile target (`bun-<platform>`), an archive suffix
-// (`prime-agent-<version>-<platform>.tar.gz`), and a value the installer can
+// (`amicus-<version>-<platform>.tar.gz`), and a value the installer can
 // emit from `install.sh --native-platform`.
 //
 // Linux ships four x64 and two arm64 variants so that no Linux host falls back

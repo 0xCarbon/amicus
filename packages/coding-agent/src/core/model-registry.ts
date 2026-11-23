@@ -20,9 +20,9 @@ import {
 	registerApiProvider,
 	resetApiProviders,
 	type SimpleStreamOptions,
-} from "@earendil-works/pi-ai";
-import { registerBuiltinMcpOAuthProviders } from "@earendil-works/pi-ai/mcp";
-import { getXaiSubscriptionModel, registerOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
+} from "@amicus/ai";
+import { registerBuiltinMcpOAuthProviders } from "@amicus/ai/mcp";
+import { getXaiSubscriptionModel, registerOAuthProvider, resetOAuthProviders } from "@amicus/ai/oauth";
 import { existsSync, readFileSync } from "fs";
 import { dirname, join } from "path";
 import { type Static, type TProperties, Type } from "typebox";
@@ -376,7 +376,7 @@ function readOpenAICodexAccountId(token: string): string | undefined {
 /**
  * The Codex backend gates its model catalog on the reported client version: it answers HTTP 200 with a
  * catalog that grows as the version rises, so a low version yields a silently empty or partial list rather
- * than an error. Prime Agent's own package version is far below the Codex CLI's version line, so it must
+ * than an error. Amicus's own package version is far below the Codex CLI's version line, so it must
  * report a supported Codex client version here instead.
  *
  * Model rows ship from the prime-agent-catalog repo through the live provider catalog fetch, so shipping
@@ -434,10 +434,7 @@ interface PrivatePrimeAuthorizationCache {
 
 function privatePrimeAuthorizationFingerprint(apiKey: string, teamId: string): string {
 	// Use the bearer token as a MAC key, not a password to hash. Keep the scope stable for disk cache reuse.
-	return createHmac("sha256", apiKey)
-		.update("prime-agent:private-prime-authorization:v1\0")
-		.update(teamId)
-		.digest("hex");
+	return createHmac("sha256", apiKey).update("amicus:private-prime-authorization:v1\0").update(teamId).digest("hex");
 }
 
 function isOfflineModeEnabled(): boolean {
@@ -1248,9 +1245,7 @@ export class ModelRegistry {
 		if (!auth.ok || !auth.apiKey) {
 			return availableModels.filter((model) => model.provider !== "openai-codex");
 		}
-		const authFingerprint = createHmac("sha256", auth.apiKey)
-			.update("prime-agent:openai-codex-models:v1")
-			.digest("hex");
+		const authFingerprint = createHmac("sha256", auth.apiKey).update("amicus:openai-codex-models:v1").digest("hex");
 		const cached = this.openAICodexModelsCache;
 		if (cached?.authFingerprint === authFingerprint && Date.now() - cached.refreshedAt < 300_000) {
 			return availableModels.filter((model) => model.provider !== "openai-codex" || cached.modelIds.has(model.id));

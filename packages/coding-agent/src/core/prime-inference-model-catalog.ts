@@ -9,7 +9,7 @@ import {
 	type OpenAICompletionsCompat,
 	type PrimeInferenceCatalogEntry,
 	parsePrimeInferenceModelCatalog,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 
 import { writeFileAtomicSync } from "../utils/atomic-file.js";
 

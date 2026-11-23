@@ -125,7 +125,7 @@ jobs:
             command: npm run test:kernel
             install_uv: true
           - name: runtime python
-            package: prime-agent-runtime
+            package: amicus-runtime
             command: uv run python -m unittest discover -s test
             install_uv: true
     steps:

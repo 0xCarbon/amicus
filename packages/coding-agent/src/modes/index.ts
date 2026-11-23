@@ -4,12 +4,12 @@
 
 export {
 	type AcpModeOptions,
+	AMICUS_META_NAMESPACE,
 	acpStopReason,
 	acpToolKind,
 	acpUpdatesForSessionEvent,
+	amicusMeta,
 	bashToolCallId,
-	PRIME_AGENT_META_NAMESPACE,
-	primeAgentMeta,
 	runAcpMode,
 	runAcpModeWithConnection,
 } from "./acp/index.js";

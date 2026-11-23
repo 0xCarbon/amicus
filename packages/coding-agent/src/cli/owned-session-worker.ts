@@ -18,9 +18,9 @@ import { spawnHidden } from "../utils/child-process.js";
 import { isHelpCommandRequest, PUBLIC_COMMAND_NAMES, REMOVED_COMMAND_NAMES } from "./command-registry.js";
 import { type CliSubprocessLaunchSpec, createCliSubprocessLaunchSpec } from "./subprocess-launch.js";
 
-const OWNED_WORKER_ENV = "PRIME_AGENT_INTERNAL_OWNED_WORKER";
-const OWNED_RECOVERY_DESCRIPTOR_ENV = "PRIME_AGENT_INTERNAL_OWNED_RECOVERY_DESCRIPTOR";
-const OWNED_PROFILE_ENV = "PRIME_AGENT_INTERNAL_OWNED_PROFILE";
+const OWNED_WORKER_ENV = "AMICUS_INTERNAL_OWNED_WORKER";
+const OWNED_RECOVERY_DESCRIPTOR_ENV = "AMICUS_INTERNAL_OWNED_RECOVERY_DESCRIPTOR";
+const OWNED_PROFILE_ENV = "AMICUS_INTERNAL_OWNED_PROFILE";
 
 let closeOwnerWatch: (() => void) | undefined;
 
@@ -203,7 +203,7 @@ export async function runOwnedSessionWorkerFrontend(
 	profile: OwnedSessionWorkerProfile,
 ): Promise<number> {
 	const interactive = profile === "interactive-ephemeral";
-	const recoveryDescriptorPath = join(tmpdir(), `prime-agent-owned-${process.pid}-${randomUUID().slice(0, 12)}.json`);
+	const recoveryDescriptorPath = join(tmpdir(), `amicus-owned-${process.pid}-${randomUUID().slice(0, 12)}.json`);
 	const orphanProcessJournalPath = `${recoveryDescriptorPath}.orphans.jsonl`;
 	let currentChild: ChildProcess | undefined;
 	let terminating = false;
@@ -220,7 +220,7 @@ export async function runOwnedSessionWorkerFrontend(
 	};
 	const bufferedRpcInput: PreparedRpcInput[] = [];
 	const pendingRpcCommands = new Map<string, { publicId?: string; command: string }>();
-	const anonymousRpcIdPrefix = `prime-agent-owned-${randomUUID()}`;
+	const anonymousRpcIdPrefix = `amicus-owned-${randomUUID()}`;
 	let anonymousRpcCommandId = 0;
 
 	const prepareRpcInput = (line: string): PreparedRpcInput => {
@@ -537,7 +537,7 @@ export async function runOwnedSessionWorkerFrontend(
 }
 
 export async function maybeRunOwnedSessionWorkerFrontend(args: readonly string[]): Promise<boolean> {
-	if (process.env.PRIME_AGENT_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND !== "1") {
+	if (process.env.AMICUS_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND !== "1") {
 		return false;
 	}
 	const profile = classifyOwnedSessionWorkerInvocation(args, process.stdin.isTTY);

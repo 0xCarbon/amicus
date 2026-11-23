@@ -60,11 +60,11 @@ for (const target of platform === "all" ? platforms : [platform]) {
 				`--target=bun-${target}`,
 				"./dist/bun/cli.js",
 				"--outfile",
-				join(staging, "prime-agent"),
+				join(staging, "amicus"),
 			],
 			{ cwd: packageDir, stdio: "inherit" },
 		);
-		signMacosBinary(join(staging, "prime-agent"), target);
+		signMacosBinary(join(staging, "amicus"), target);
 		copyBinaryAssets(staging);
 		validateBinaryAssets(staging);
 		const destination = join(outputRoot, target);

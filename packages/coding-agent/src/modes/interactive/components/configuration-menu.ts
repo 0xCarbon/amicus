@@ -1,5 +1,5 @@
-import type { Api, Model, ModelThinkingLevel } from "@earendil-works/pi-ai";
-import { Container, type Focusable, type TUI, truncateToWidth } from "@earendil-works/pi-tui";
+import type { Api, Model, ModelThinkingLevel } from "@amicus/ai";
+import { Container, type Focusable, type TUI, truncateToWidth } from "@amicus/tui";
 import type { AuthStorage } from "../../../core/auth-storage.js";
 import type { ModelRegistry } from "../../../core/model-registry.js";
 import { theme } from "../theme/theme.js";

@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import { describe, expect, it } from "vitest";
 import type { RlmChildAgentSnapshot } from "../src/core/agent-session.js";
 import type { AgentSessionRuntimeDiagnostic } from "../src/core/agent-session-services.js";

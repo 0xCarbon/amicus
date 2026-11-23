@@ -52,7 +52,7 @@ function workerStartLine(ts: string, socketPath: string, pid: number): string {
 		component: "coding-agent.daemon",
 		socketPath,
 		pid,
-		msg: `Prime Agent daemon listening on ${socketPath}`,
+		msg: `Amicus daemon listening on ${socketPath}`,
 	});
 }
 
@@ -82,13 +82,10 @@ describe("incident timeline for a clean run", () => {
 	it("shows supervisor and worker events with no anomaly entries", () => {
 		const text = reportFor(
 			[
-				[
-					"2026-09-10T20:00:05.000Z",
-					"Prime Agent daemon supervisor e14de15c listening on /tmp/prime-agent-501/daemon.sock",
-				],
+				["2026-09-10T20:00:05.000Z", "Amicus daemon supervisor e14de15c listening on /tmp/amicus-501/daemon.sock"],
 				[
 					"2026-09-10T20:01:00.000Z",
-					"Session worker 477fef4e85a8 stderr: Prime Agent daemon listening on /tmp/prime-agent-501/worker-a-477fef4e85a8.sock",
+					"Session worker 477fef4e85a8 stderr: Amicus daemon listening on /tmp/amicus-501/worker-a-477fef4e85a8.sock",
 				],
 				["2026-09-10T20:02:00.000Z", "Migrated 2 scheduled jobs into session artifacts"],
 				[
@@ -127,12 +124,12 @@ function incidentFixtureLines(): string[] {
 	const lines: string[] = [];
 	const supervisor = {
 		component: "coding-agent.daemon-supervisor",
-		socketPath: "/tmp/prime-agent-501/daemon.sock",
+		socketPath: "/tmp/amicus-501/daemon.sock",
 		pid: 15026,
 	};
 	const crashedWorker = {
 		component: "coding-agent.daemon",
-		socketPath: "/tmp/prime-agent-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
+		socketPath: "/tmp/amicus-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
 		pid: 53615,
 	};
 	const supervisorMsg = (ts: string, msg: string) => agentLogLine({ ...supervisor, ts, msg });
@@ -248,7 +245,7 @@ describe("incident timeline for a crash + recovery", () => {
 		);
 		expect(text).toContain("could not adopt worker 5b1d3aeb91ee: Session worker process is no longer running");
 		// Anomalies: a timeout stall, an auth failure, and provider failures attributed to the crashed worker.
-		expect(text).toContain("/tmp/prime-agent-501/daemon.sock: 5 command timeouts over 19m18s");
+		expect(text).toContain("/tmp/amicus-501/daemon.sock: 5 command timeouts over 19m18s");
 		expect(text).toContain("session 2339fb7da605: 3 command timeouts over 10m7s");
 		expect(text).toContain("provider stream failure (rate_limit 429) for worker 5b1d3aeb91ee (x24");
 		expect(text).toContain("provider stream failure (server_error 504) for worker 5b1d3aeb91ee (x6");
@@ -305,7 +302,7 @@ describe("incident window and session filtering", () => {
 			[
 				daemonLine(
 					"2026-09-10T20:05:00.000Z",
-					"/tmp/prime-agent-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
+					"/tmp/amicus-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
 					'Passivated idle child sessionId=feedface1234 name="" idleMinutes=5',
 				),
 			],
@@ -319,7 +316,7 @@ describe("incident window and session filtering", () => {
 			[
 				daemonLine(
 					"2026-09-10T20:05:00.000Z",
-					"/tmp/prime-agent-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
+					"/tmp/amicus-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
 					'daemon command "set_session_name" failed: Error: Agent name "Faerie" is unavailable',
 				),
 			],
@@ -581,11 +578,7 @@ describe("runIncident over a fixture agent dir", () => {
 describe("worker pid attribution and anomalies", () => {
 	it("attributes provider failures to the worker that owns the pid", () => {
 		const lines = [
-			workerStartLine(
-				"2026-09-10T19:42:09.064Z",
-				"/tmp/prime-agent-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock",
-				53615,
-			),
+			workerStartLine("2026-09-10T19:42:09.064Z", "/tmp/amicus-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock", 53615),
 			providerFailureLine("2026-09-10T20:02:53.374Z", 53615),
 		];
 		const entries = lines.map((line) => entry(line));
@@ -610,7 +603,7 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("keeps anomalies and aggregation per daemon socket instead of merging daemons", () => {
-		const daemonA = { component: "coding-agent.daemon-supervisor", socketPath: "/tmp/prime-agent-501/daemon.sock" };
+		const daemonA = { component: "coding-agent.daemon-supervisor", socketPath: "/tmp/amicus-501/daemon.sock" };
 		const daemonB = { component: "coding-agent.daemon-supervisor", socketPath: "/tmp/other/daemon.sock" };
 		const times = [
 			[daemonA, "20:02"],
@@ -630,7 +623,7 @@ describe("worker pid attribution and anomalies", () => {
 				),
 			),
 		);
-		expect(text).toContain("/tmp/prime-agent-501/daemon.sock: 4 command timeouts over 19m");
+		expect(text).toContain("/tmp/amicus-501/daemon.sock: 4 command timeouts over 19m");
 		expect(text).toContain("/tmp/other/daemon.sock: 3 command timeouts over 27m");
 		expect(text).toContain("command attach failed: timed out waiting for worker response (x4, until 09-10 20:21:00)");
 	});
@@ -654,7 +647,7 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("keeps a same-component worker restart within two seconds", () => {
-		const socketPath = "/tmp/prime-agent-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock";
+		const socketPath = "/tmp/amicus-501/worker-98ed5cb228d2-5b1d3aeb91ee.sock";
 		const text = reportFor([
 			workerStartLine("2026-09-10T20:00:00.000Z", socketPath, 100),
 			workerStartLine("2026-09-10T20:00:01.000Z", socketPath, 200),
@@ -663,8 +656,8 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("attributes provider failures to the worker owning the pid at that time", () => {
-		const workerA = "/tmp/prime-agent-501/worker-98ed5cb228d2-aaaaaaaaaaaa.sock";
-		const workerB = "/tmp/prime-agent-501/worker-98ed5cb228d2-bbbbbbbbbbbb.sock";
+		const workerA = "/tmp/amicus-501/worker-98ed5cb228d2-aaaaaaaaaaaa.sock";
+		const workerB = "/tmp/amicus-501/worker-98ed5cb228d2-bbbbbbbbbbbb.sock";
 		const lines = [
 			workerStartLine("2026-09-10T20:00:00.000Z", workerA, 53615),
 			providerFailureLine("2026-09-10T20:01:00.000Z", 53615),
@@ -682,7 +675,7 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("classifies worker events for Windows named-pipe socket paths", () => {
-		const socketPath = "\\\\.\\pipe\\prime-agent-worker-98ed5cb228d2-5b1d3aeb91ee";
+		const socketPath = "\\\\.\\pipe\\amicus-worker-98ed5cb228d2-5b1d3aeb91ee";
 		const entries = [
 			entry(workerStartLine("2026-09-10T20:00:00.000Z", socketPath, 53615)),
 			entry(daemonLine("2026-09-10T20:23:24.945Z", socketPath, "uncaught exception: Error: write EPIPE")),
@@ -693,7 +686,7 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("keys unknown worker diagnostics as worker events", () => {
-		const socketPath = "/tmp/prime-agent-501/worker-98ed5cb228d2-aaaaaaaaaaaa.sock";
+		const socketPath = "/tmp/amicus-501/worker-98ed5cb228d2-aaaaaaaaaaaa.sock";
 		const entries = [1, 2, 3].map((index) =>
 			entry(daemonLine(`2026-09-10T20:0${index}:00.000Z`, socketPath, `unrecognized worker diagnostic ${index}`)),
 		);
@@ -706,7 +699,7 @@ describe("worker pid attribution and anomalies", () => {
 	});
 
 	it("does not attribute a provider failure to a worker sighted later on the pid", () => {
-		const workerB = "/tmp/prime-agent-501/worker-98ed5cb228d2-bbbbbbbbbbbb.sock";
+		const workerB = "/tmp/amicus-501/worker-98ed5cb228d2-bbbbbbbbbbbb.sock";
 		const lines = [
 			providerFailureLine("2026-09-10T10:00:00.000Z", 53615),
 			// The pid's only sighting is a worker that starts ten minutes later;

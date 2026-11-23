@@ -9,7 +9,7 @@ from typing import Literal
 
 from schema import UI_METRIC_KEYS, Metric, Observation, Report
 
-MARKER = "<!-- prime-agent-benchmark:v1 -->"
+MARKER = "<!-- amicus-benchmark:v1 -->"
 PERFORMANCE_NOISE_FLOOR = 0.2
 
 
@@ -296,7 +296,7 @@ def render(report: Report) -> str:
         MARKER,
         f"<!-- run:{report.run_id}:{report.attempt} head:{report.head_sha} -->",
         f"<!-- comparison:{fingerprint(report)} status:{report.status} -->",
-        f"### Prime Agent performance — {report.status}",
+        f"### Amicus performance — {report.status}",
         "",
         f"PR `{report.head_sha[:8]}` compared with main `{report.base_sha[:8]}`.",
         "",

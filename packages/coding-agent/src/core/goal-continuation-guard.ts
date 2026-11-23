@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type { AssistantMessage } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import type { AssistantMessage } from "@amicus/ai";
 import type { SessionEntry } from "./session-manager.js";
 
 export const GOAL_CONTINUATION_GUARD_TYPE = "thread_goal_continuation_guard";

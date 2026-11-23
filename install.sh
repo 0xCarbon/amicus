@@ -1,110 +1,110 @@
 #!/bin/sh
-# prime-agent-native-recovery-v1
+# amicus-native-recovery-v1
 
 set -eu
 
 # Keep these sentinels split so release publishing only rewrites the configured
 # values below; local or unpublished copies still need unreplaced values to compare.
-prime_agent_unconfigured_base_url="__PRIME_AGENT_DOWNLOAD_BASE""_URL__"
-prime_agent_unconfigured_default_release_channel="__PRIME_AGENT_DEFAULT_RELEASE_""CHANNEL__"
-prime_agent_base_url="${PRIME_AGENT_DOWNLOAD_BASE_URL:-__PRIME_AGENT_DOWNLOAD_BASE_URL__}"
-prime_agent_base_url="${prime_agent_base_url%/}"
-prime_agent_default_release_channel="__PRIME_AGENT_DEFAULT_RELEASE_CHANNEL__"
-if [ "$prime_agent_default_release_channel" = "$prime_agent_unconfigured_default_release_channel" ]; then
-	prime_agent_default_release_channel=stable
+amicus_unconfigured_base_url="__AMICUS_DOWNLOAD_BASE""_URL__"
+amicus_unconfigured_default_release_channel="__AMICUS_DEFAULT_RELEASE_""CHANNEL__"
+amicus_base_url="${AMICUS_DOWNLOAD_BASE_URL:-__AMICUS_DOWNLOAD_BASE_URL__}"
+amicus_base_url="${amicus_base_url%/}"
+amicus_default_release_channel="__AMICUS_DEFAULT_RELEASE_CHANNEL__"
+if [ "$amicus_default_release_channel" = "$amicus_unconfigured_default_release_channel" ]; then
+	amicus_default_release_channel=stable
 fi
-prime_agent_release_channel="${PRIME_AGENT_RELEASE_CHANNEL:-$prime_agent_default_release_channel}"
-prime_agent_package="${PRIME_AGENT_PACKAGE:-prime-agent}"
-prime_agent_cmd="${PRIME_AGENT_CMD:-prime-agent}"
-prime_agent_esc=$(printf '\033')
-prime_agent_original_path="${PATH:-}"
-prime_agent_reset="${prime_agent_esc}[0m"
-prime_agent_bold="${prime_agent_esc}[1m"
-prime_agent_italic="${prime_agent_esc}[3m"
-prime_agent_hide_cursor="${prime_agent_esc}[?25l"
-prime_agent_show_cursor="${prime_agent_esc}[?25h"
-prime_agent_home_cursor="${prime_agent_esc}[H"
-prime_agent_clear_screen="${prime_agent_esc}[2J${prime_agent_esc}[H"
-prime_agent_clear_line="${prime_agent_esc}[K"
-prime_agent_sync_start="${prime_agent_esc}[?2026h"
-prime_agent_sync_end="${prime_agent_esc}[?2026l"
-prime_agent_color_text="${prime_agent_esc}[38;2;244;244;245m"
-prime_agent_color_muted="${prime_agent_esc}[38;2;161;161;170m"
-prime_agent_color_dim="${prime_agent_esc}[38;2;113;113;122m"
-prime_agent_color_primary="${prime_agent_esc}[38;2;127;91;213m"
-prime_agent_color_scan="${prime_agent_esc}[38;2;14;165;233m"
-prime_agent_color_warning="${prime_agent_esc}[38;2;245;158;11m"
-readonly prime_agent_unconfigured_base_url prime_agent_unconfigured_default_release_channel prime_agent_base_url prime_agent_default_release_channel prime_agent_release_channel prime_agent_package prime_agent_cmd prime_agent_esc prime_agent_original_path
-readonly prime_agent_reset prime_agent_bold prime_agent_italic prime_agent_hide_cursor prime_agent_show_cursor prime_agent_home_cursor prime_agent_clear_screen prime_agent_clear_line
-readonly prime_agent_sync_start prime_agent_sync_end
-readonly prime_agent_color_text prime_agent_color_muted prime_agent_color_dim prime_agent_color_primary prime_agent_color_scan prime_agent_color_warning
+amicus_release_channel="${AMICUS_RELEASE_CHANNEL:-$amicus_default_release_channel}"
+amicus_package="${AMICUS_PACKAGE:-amicus}"
+amicus_cmd="${AMICUS_CMD:-amicus}"
+amicus_esc=$(printf '\033')
+amicus_original_path="${PATH:-}"
+amicus_reset="${amicus_esc}[0m"
+amicus_bold="${amicus_esc}[1m"
+amicus_italic="${amicus_esc}[3m"
+amicus_hide_cursor="${amicus_esc}[?25l"
+amicus_show_cursor="${amicus_esc}[?25h"
+amicus_home_cursor="${amicus_esc}[H"
+amicus_clear_screen="${amicus_esc}[2J${amicus_esc}[H"
+amicus_clear_line="${amicus_esc}[K"
+amicus_sync_start="${amicus_esc}[?2026h"
+amicus_sync_end="${amicus_esc}[?2026l"
+amicus_color_text="${amicus_esc}[38;2;244;244;245m"
+amicus_color_muted="${amicus_esc}[38;2;161;161;170m"
+amicus_color_dim="${amicus_esc}[38;2;113;113;122m"
+amicus_color_primary="${amicus_esc}[38;2;127;91;213m"
+amicus_color_scan="${amicus_esc}[38;2;14;165;233m"
+amicus_color_warning="${amicus_esc}[38;2;245;158;11m"
+readonly amicus_unconfigured_base_url amicus_unconfigured_default_release_channel amicus_base_url amicus_default_release_channel amicus_release_channel amicus_package amicus_cmd amicus_esc amicus_original_path
+readonly amicus_reset amicus_bold amicus_italic amicus_hide_cursor amicus_show_cursor amicus_home_cursor amicus_clear_screen amicus_clear_line
+readonly amicus_sync_start amicus_sync_end
+readonly amicus_color_text amicus_color_muted amicus_color_dim amicus_color_primary amicus_color_scan amicus_color_warning
 
-prime_agent_screen_enabled=0
-prime_agent_screen_frame=0
-prime_agent_screen_cols=80
-prime_agent_screen_rows=24
-prime_agent_screen_drawn=0
-prime_agent_screen_last_cols=0
-prime_agent_screen_last_rows=0
-prime_agent_screen_layout_ready=0
-prime_agent_screen_layout_show_logo=0
-prime_agent_screen_layout_lab_width=0
-prime_agent_screen_render_lab_width=0
-prime_agent_screen_compact=0
-prime_agent_download_dir=
-prime_agent_bootstrap_kernel_on_install=0
-prime_agent_screen_title=
-prime_agent_screen_status=
-prime_agent_screen_detail=
-prime_agent_screen_question=
-prime_agent_animation_frame=0
-prime_agent_native_stage=
-prime_agent_native_lock=
-prime_agent_allow_insecure_http=0
+amicus_screen_enabled=0
+amicus_screen_frame=0
+amicus_screen_cols=80
+amicus_screen_rows=24
+amicus_screen_drawn=0
+amicus_screen_last_cols=0
+amicus_screen_last_rows=0
+amicus_screen_layout_ready=0
+amicus_screen_layout_show_logo=0
+amicus_screen_layout_lab_width=0
+amicus_screen_render_lab_width=0
+amicus_screen_compact=0
+amicus_download_dir=
+amicus_bootstrap_kernel_on_install=0
+amicus_screen_title=
+amicus_screen_status=
+amicus_screen_detail=
+amicus_screen_question=
+amicus_animation_frame=0
+amicus_native_stage=
+amicus_native_lock=
+amicus_allow_insecure_http=0
 # Tests point platform detection at a fake /proc and /lib without needing a container.
-prime_agent_native_sysroot="${PRIME_AGENT_NATIVE_SYSROOT_FOR_TESTS:-}"
+amicus_native_sysroot="${AMICUS_NATIVE_SYSROOT_FOR_TESTS:-}"
 
 main() {
 	if [ "${1:-}" = --rollback ]; then
-		prime_agent_native_rollback
+		amicus_native_rollback
 		return
 	fi
 	if [ "${1:-}" = --native-platform ]; then
-		prime_agent_native_platform
+		amicus_native_platform
 		return
 	fi
-	case "${PRIME_AGENT_INSTALL_METHOD:-auto}" in
+	case "${AMICUS_INSTALL_METHOD:-auto}" in
 		auto|binary|node) ;;
-		*) printf 'error: PRIME_AGENT_INSTALL_METHOD must be auto, binary or node.\n' >&2; exit 1 ;;
+		*) printf 'error: AMICUS_INSTALL_METHOD must be auto, binary or node.\n' >&2; exit 1 ;;
 	esac
-	if [ "${PRIME_AGENT_INSTALL_METHOD:-auto}" != node ]; then
-		if native_platform=$(prime_agent_native_platform); then
-			prime_agent_install_native "$native_platform" "$@"
+	if [ "${AMICUS_INSTALL_METHOD:-auto}" != node ]; then
+		if native_platform=$(amicus_native_platform); then
+			amicus_install_native "$native_platform" "$@"
 			return
 		fi
-		if [ "${PRIME_AGENT_INSTALL_METHOD:-auto}" = binary ]; then
+		if [ "${AMICUS_INSTALL_METHOD:-auto}" = binary ]; then
 			printf 'error: no compatible compiled archive is available for this platform.\n' >&2
 			exit 1
 		fi
 		printf 'Using the Node installation for this platform.\n' >&2
 	fi
-	prime_agent_install_node "$@"
+	amicus_install_node "$@"
 }
 
-prime_agent_install_node() {
-	if [ "$prime_agent_base_url" = "$prime_agent_unconfigured_base_url" ]; then
+amicus_install_node() {
+	if [ "$amicus_base_url" = "$amicus_unconfigured_base_url" ]; then
 		printf 'error: installer download URL is not configured.\n' >&2
-		printf 'Set PRIME_AGENT_DOWNLOAD_BASE_URL or use the installer published by the release workflow.\n' >&2
+		printf 'Set AMICUS_DOWNLOAD_BASE_URL or use the installer published by the release workflow.\n' >&2
 		exit 1
 	fi
-	prime_agent_validate_download_base_url
+	amicus_validate_download_base_url
 
-	prime_agent_install_traps
-	prime_agent_init_screen
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "Installing Prime Agent" "" "" ""
+	amicus_install_traps
+	amicus_init_screen
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "Installing Amicus" "" "" ""
 	else
-		printf '\n\033[1m  Installing Prime Agent\033[0m\n\033[2m  npm global install\033[0m\n\n'
+		printf '\n\033[1m  Installing Amicus\033[0m\n\033[2m  npm global install\033[0m\n\n'
 	fi
 
 	start_preflight_checks
@@ -132,41 +132,41 @@ prime_agent_install_node() {
 		fi
 	fi
 
-	version="$(resolve_prime_agent_version "$@")"
-	tarball_name="$prime_agent_package-$version.tgz"
-	tarball_url="$prime_agent_base_url/releases/v$version/$tarball_name"
+	version="$(resolve_amicus_version "$@")"
+	tarball_name="$amicus_package-$version.tgz"
+	tarball_url="$amicus_base_url/releases/v$version/$tarball_name"
 
 	confirm_install "$version" "$tarball_url"
 	confirm_kernel_runtime_setup
 
 	download_dir=$(create_temp_dir)
-	prime_agent_download_dir="$download_dir"
+	amicus_download_dir="$download_dir"
 	tarball_path="$download_dir/$tarball_name"
 
-	download_prime_agent_package "$version" "$tarball_url" "$tarball_path"
-	install_prime_agent_package "$tarball_path"
+	download_amicus_package "$version" "$tarball_url" "$tarball_path"
+	install_amicus_package "$tarball_path"
 	rm -rf "$download_dir"
-	prime_agent_download_dir=
+	amicus_download_dir=
 
-	if [ "${PRIME_AGENT_NODE_INSTALLED_STANDALONE:-0}" = 1 ]; then
-		prime_agent_screen "Prime Agent installed" "" "Checking your shell PATH." ""
+	if [ "${AMICUS_NODE_INSTALLED_STANDALONE:-0}" = 1 ]; then
+		amicus_screen "Amicus installed" "" "Checking your shell PATH." ""
 		configure_standalone_node_path
-	elif command -v "$prime_agent_cmd" >/dev/null 2>&1; then
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_screen "Prime Agent installed" "" "Run it with: $prime_agent_cmd" ""
+	elif command -v "$amicus_cmd" >/dev/null 2>&1; then
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_screen "Amicus installed" "" "Run it with: $amicus_cmd" ""
 		else
-			printf '\nPrime Agent was installed successfully.\n'
-			printf '\nRun it with: %s\n' "$prime_agent_cmd"
+			printf '\nAmicus was installed successfully.\n'
+			printf '\nRun it with: %s\n' "$amicus_cmd"
 		fi
 	else
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_screen "Prime Agent installed" "" "PATH update needed for $prime_agent_cmd." ""
-			prime_agent_restore_terminal
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_screen "Amicus installed" "" "PATH update needed for $amicus_cmd." ""
+			amicus_restore_terminal
 		else
-			printf '\nPrime Agent was installed successfully.\n'
+			printf '\nAmicus was installed successfully.\n'
 		fi
 		cat <<EOF
-The $prime_agent_cmd command was installed, but it is not on your PATH yet.
+The $amicus_cmd command was installed, but it is not on your PATH yet.
 Check npm's global bin directory with:
 
   npm bin -g
@@ -178,7 +178,7 @@ EOF
 
 create_temp_dir() {
 	if command -v mktemp >/dev/null 2>&1; then
-		if tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/prime-agent-install.XXXXXX" 2>/dev/null); then
+		if tmp_dir=$(mktemp -d "${TMPDIR:-/tmp}/amicus-install.XXXXXX" 2>/dev/null); then
 			printf '%s' "$tmp_dir"
 			return
 		fi
@@ -188,7 +188,7 @@ create_temp_dir() {
 	exit 1
 }
 
-prime_agent_is_loopback_test_base_url() {
+amicus_is_loopback_test_base_url() {
 	case "$1" in
 		http://127.0.0.1:*) ;;
 		*) return 1 ;;
@@ -197,70 +197,70 @@ prime_agent_is_loopback_test_base_url() {
 	case "$test_port" in ''|*[!0-9]*) return 1 ;; esac
 }
 
-prime_agent_validate_download_base_url() {
-	case "$prime_agent_base_url" in
+amicus_validate_download_base_url() {
+	case "$amicus_base_url" in
 		https://*)
-			prime_agent_allow_insecure_http=0
+			amicus_allow_insecure_http=0
 			;;
 		http://*)
-			if [ "${PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS:-0}" = 1 ] &&
-				prime_agent_is_loopback_test_base_url "$prime_agent_base_url"; then
-				prime_agent_allow_insecure_http=1
+			if [ "${AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS:-0}" = 1 ] &&
+				amicus_is_loopback_test_base_url "$amicus_base_url"; then
+				amicus_allow_insecure_http=1
 				return
 			fi
-			printf 'error: Prime Agent downloads require an HTTPS base URL.\n' >&2
-			printf 'Local loopback test feeds require PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS=1.\n' >&2
+			printf 'error: Amicus downloads require an HTTPS base URL.\n' >&2
+			printf 'Local loopback test feeds require AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS=1.\n' >&2
 			exit 1
 			;;
 		*)
-			printf 'error: Prime Agent download base URL must use HTTPS.\n' >&2
+			printf 'error: Amicus download base URL must use HTTPS.\n' >&2
 			exit 1
 			;;
 	esac
 }
 
-prime_agent_curl_download() {
-	if [ "$prime_agent_allow_insecure_http" = 1 ]; then
+amicus_curl_download() {
+	if [ "$amicus_allow_insecure_http" = 1 ]; then
 		curl --proto '=http,https' --proto-redir '=https' "$@"
 	else
 		curl --proto '=https' --proto-redir '=https' "$@"
 	fi
 }
 
-prime_agent_install_traps() {
-	trap 'prime_agent_cleanup' EXIT
-	trap 'prime_agent_signal_cleanup 130' INT
-	trap 'prime_agent_signal_cleanup 143' TERM
-	trap 'prime_agent_signal_cleanup 129' HUP
+amicus_install_traps() {
+	trap 'amicus_cleanup' EXIT
+	trap 'amicus_signal_cleanup 130' INT
+	trap 'amicus_signal_cleanup 143' TERM
+	trap 'amicus_signal_cleanup 129' HUP
 }
 
-prime_agent_cleanup() {
+amicus_cleanup() {
 	status=$?
-	if [ -n "${prime_agent_download_dir:-}" ] && [ -d "$prime_agent_download_dir" ]; then
-		rm -rf "$prime_agent_download_dir"
+	if [ -n "${amicus_download_dir:-}" ] && [ -d "$amicus_download_dir" ]; then
+		rm -rf "$amicus_download_dir"
 	fi
-	prime_agent_native_cleanup
-	prime_agent_restore_terminal
+	amicus_native_cleanup
+	amicus_restore_terminal
 	return "$status"
 }
 
-prime_agent_signal_cleanup() {
-	prime_agent_restore_terminal
+amicus_signal_cleanup() {
+	amicus_restore_terminal
 	exit "$1"
 }
 
-prime_agent_restore_terminal() {
-	if [ "${prime_agent_screen_enabled:-0}" = 1 ]; then
+amicus_restore_terminal() {
+	if [ "${amicus_screen_enabled:-0}" = 1 ]; then
 		if ( : <>/dev/tty ) 2>/dev/null; then
-			printf '%s%s' "$prime_agent_reset" "$prime_agent_show_cursor" >/dev/tty
+			printf '%s%s' "$amicus_reset" "$amicus_show_cursor" >/dev/tty
 		else
-			printf '%s%s' "$prime_agent_reset" "$prime_agent_show_cursor" >&2
+			printf '%s%s' "$amicus_reset" "$amicus_show_cursor" >&2
 		fi
 	fi
 }
 
-prime_agent_init_screen() {
-	if [ "${PRIME_AGENT_INSTALLER_PLAIN:-0}" = 1 ]; then
+amicus_init_screen() {
+	if [ "${AMICUS_INSTALLER_PLAIN:-0}" = 1 ]; then
 		return
 	fi
 	if [ ! -t 1 ]; then
@@ -269,108 +269,108 @@ prime_agent_init_screen() {
 	if [ "${TERM:-}" = dumb ]; then
 		return
 	fi
-	prime_agent_screen_enabled=1
+	amicus_screen_enabled=1
 }
 
-prime_agent_read_terminal_size() {
-	prime_agent_screen_cols=80
-	prime_agent_screen_rows=24
+amicus_read_terminal_size() {
+	amicus_screen_cols=80
+	amicus_screen_rows=24
 
 	if size=$(stty size 2>/dev/null </dev/tty); then
 		set -- $size
 		if [ "${1:-}" ] && [ "${2:-}" ]; then
-			case "$1" in *[!0-9]*|"") ;; *) prime_agent_screen_rows="$1" ;; esac
-			case "$2" in *[!0-9]*|"") ;; *) prime_agent_screen_cols="$2" ;; esac
+			case "$1" in *[!0-9]*|"") ;; *) amicus_screen_rows="$1" ;; esac
+			case "$2" in *[!0-9]*|"") ;; *) amicus_screen_cols="$2" ;; esac
 		fi
 	fi
 
-	if [ "$prime_agent_screen_cols" -lt 1 ]; then
-		prime_agent_screen_cols=80
+	if [ "$amicus_screen_cols" -lt 1 ]; then
+		amicus_screen_cols=80
 	fi
-	if [ "$prime_agent_screen_rows" -lt 1 ]; then
-		prime_agent_screen_rows=24
+	if [ "$amicus_screen_rows" -lt 1 ]; then
+		amicus_screen_rows=24
 	fi
 }
 
-prime_agent_screen() {
-	if [ "$prime_agent_screen_enabled" != 1 ]; then
+amicus_screen() {
+	if [ "$amicus_screen_enabled" != 1 ]; then
 		return
 	fi
 
-	prime_agent_screen_title="${2:-$1}"
-	if [ -z "$prime_agent_screen_title" ]; then
-		prime_agent_screen_title="$1"
+	amicus_screen_title="${2:-$1}"
+	if [ -z "$amicus_screen_title" ]; then
+		amicus_screen_title="$1"
 	fi
-	prime_agent_screen_status=
-	prime_agent_screen_detail="${3:-}"
-	prime_agent_screen_question="${4:-}"
-	prime_agent_screen_frame=$((prime_agent_screen_frame + 1))
-	prime_agent_read_terminal_size
-	prime_agent_init_screen_layout
-	prime_agent_refresh_screen_layout_mode
+	amicus_screen_status=
+	amicus_screen_detail="${3:-}"
+	amicus_screen_question="${4:-}"
+	amicus_screen_frame=$((amicus_screen_frame + 1))
+	amicus_read_terminal_size
+	amicus_init_screen_layout
+	amicus_refresh_screen_layout_mode
 
-	if [ "$prime_agent_screen_drawn" = 0 ] ||
-		[ "$prime_agent_screen_cols" -ne "$prime_agent_screen_last_cols" ] ||
-		[ "$prime_agent_screen_rows" -ne "$prime_agent_screen_last_rows" ]; then
-		prime_agent_screen_prefix="${prime_agent_reset}${prime_agent_clear_screen}${prime_agent_hide_cursor}"
-		prime_agent_screen_drawn=1
-		prime_agent_screen_last_cols="$prime_agent_screen_cols"
-		prime_agent_screen_last_rows="$prime_agent_screen_rows"
+	if [ "$amicus_screen_drawn" = 0 ] ||
+		[ "$amicus_screen_cols" -ne "$amicus_screen_last_cols" ] ||
+		[ "$amicus_screen_rows" -ne "$amicus_screen_last_rows" ]; then
+		amicus_screen_prefix="${amicus_reset}${amicus_clear_screen}${amicus_hide_cursor}"
+		amicus_screen_drawn=1
+		amicus_screen_last_cols="$amicus_screen_cols"
+		amicus_screen_last_rows="$amicus_screen_rows"
 	else
-		prime_agent_screen_prefix="${prime_agent_reset}${prime_agent_home_cursor}${prime_agent_hide_cursor}"
+		amicus_screen_prefix="${amicus_reset}${amicus_home_cursor}${amicus_hide_cursor}"
 	fi
-	prime_agent_screen_frame_text=$(prime_agent_render_screen)
+	amicus_screen_frame_text=$(amicus_render_screen)
 
 	if ( : <>/dev/tty ) 2>/dev/null; then
-		printf '%s%s%s%s' "$prime_agent_sync_start" "$prime_agent_screen_prefix" "$prime_agent_screen_frame_text" "$prime_agent_sync_end" >/dev/tty
+		printf '%s%s%s%s' "$amicus_sync_start" "$amicus_screen_prefix" "$amicus_screen_frame_text" "$amicus_sync_end" >/dev/tty
 	else
-		printf '%s%s%s%s' "$prime_agent_sync_start" "$prime_agent_screen_prefix" "$prime_agent_screen_frame_text" "$prime_agent_sync_end" >&2
+		printf '%s%s%s%s' "$amicus_sync_start" "$amicus_screen_prefix" "$amicus_screen_frame_text" "$amicus_sync_end" >&2
 	fi
 }
 
-prime_agent_init_screen_layout() {
-	if [ "$prime_agent_screen_layout_ready" = 1 ]; then
+amicus_init_screen_layout() {
+	if [ "$amicus_screen_layout_ready" = 1 ]; then
 		return
 	fi
 
-	prime_agent_screen_layout_ready=1
-	prime_agent_screen_layout_show_logo=0
-	prime_agent_screen_layout_lab_width=0
-	prime_agent_screen_render_lab_width=0
-	if prime_agent_terminal_size_supports_logo; then
-		prime_agent_screen_layout_show_logo=1
-		prime_agent_screen_layout_lab_width=$(prime_agent_lab_width_for_cols "$prime_agent_screen_cols")
+	amicus_screen_layout_ready=1
+	amicus_screen_layout_show_logo=0
+	amicus_screen_layout_lab_width=0
+	amicus_screen_render_lab_width=0
+	if amicus_terminal_size_supports_logo; then
+		amicus_screen_layout_show_logo=1
+		amicus_screen_layout_lab_width=$(amicus_lab_width_for_cols "$amicus_screen_cols")
 	fi
 }
 
-prime_agent_refresh_screen_layout_mode() {
-	prime_agent_screen_compact=0
-	prime_agent_screen_render_lab_width=0
-	if [ "$prime_agent_screen_layout_show_logo" != 1 ]; then
+amicus_refresh_screen_layout_mode() {
+	amicus_screen_compact=0
+	amicus_screen_render_lab_width=0
+	if [ "$amicus_screen_layout_show_logo" != 1 ]; then
 		return
 	fi
-	if [ "$prime_agent_screen_rows" -lt 17 ]; then
-		prime_agent_screen_compact=1
+	if [ "$amicus_screen_rows" -lt 17 ]; then
+		amicus_screen_compact=1
 		return
 	fi
 
-	max_safe_width=$((prime_agent_screen_cols - 1))
+	max_safe_width=$((amicus_screen_cols - 1))
 	if [ "$max_safe_width" -lt 32 ]; then
-		prime_agent_screen_compact=1
+		amicus_screen_compact=1
 		return
 	fi
 
-	prime_agent_screen_render_lab_width="$prime_agent_screen_layout_lab_width"
-	if [ "$prime_agent_screen_render_lab_width" -gt "$max_safe_width" ]; then
-		prime_agent_screen_render_lab_width="$max_safe_width"
+	amicus_screen_render_lab_width="$amicus_screen_layout_lab_width"
+	if [ "$amicus_screen_render_lab_width" -gt "$max_safe_width" ]; then
+		amicus_screen_render_lab_width="$max_safe_width"
 	fi
 }
 
-prime_agent_terminal_size_supports_logo() {
-	[ "$prime_agent_screen_rows" -ge 22 ] && [ "$prime_agent_screen_cols" -ge 42 ]
+amicus_terminal_size_supports_logo() {
+	[ "$amicus_screen_rows" -ge 22 ] && [ "$amicus_screen_cols" -ge 42 ]
 }
 
-prime_agent_lab_width_for_cols() {
+amicus_lab_width_for_cols() {
 	cols="$1"
 	width=$((cols - 6))
 	if [ "$width" -gt 78 ]; then
@@ -392,51 +392,51 @@ prime_agent_lab_width_for_cols() {
 	printf '%s' "$width"
 }
 
-prime_agent_render_screen() {
-	content_height=$(prime_agent_content_height)
-	top=$(((prime_agent_screen_rows - content_height) / 2))
+amicus_render_screen() {
+	content_height=$(amicus_content_height)
+	top=$(((amicus_screen_rows - content_height) / 2))
 	if [ "$top" -lt 0 ]; then
 		top=0
 	fi
 
 	y=0
-	while [ "$y" -lt "$prime_agent_screen_rows" ]; do
+	while [ "$y" -lt "$amicus_screen_rows" ]; do
 		content_index=$((y - top))
-		prime_agent_content_line "$content_index"
-		if [ "${prime_agent_content_is_set:-0}" = 1 ]; then
-			prime_agent_print_centered_line "$prime_agent_content_text" "$prime_agent_content_width" "$prime_agent_content_style"
+		amicus_content_line "$content_index"
+		if [ "${amicus_content_is_set:-0}" = 1 ]; then
+			amicus_print_centered_line "$amicus_content_text" "$amicus_content_width" "$amicus_content_style"
 		else
-			prime_agent_print_centered_line "" 0 ""
+			amicus_print_centered_line "" 0 ""
 		fi
 		y=$((y + 1))
 	done
 }
 
-prime_agent_content_height() {
+amicus_content_height() {
 	height=2
-	if prime_agent_show_logo; then
+	if amicus_show_logo; then
 		height=$((height + 15))
 	fi
 	printf '%s' "$height"
 }
 
-prime_agent_show_logo() {
-	[ "$prime_agent_screen_layout_show_logo" = 1 ] && [ "$prime_agent_screen_compact" != 1 ] && [ "$prime_agent_screen_render_lab_width" -ge 32 ]
+amicus_show_logo() {
+	[ "$amicus_screen_layout_show_logo" = 1 ] && [ "$amicus_screen_compact" != 1 ] && [ "$amicus_screen_render_lab_width" -ge 32 ]
 }
 
-prime_agent_content_line() {
+amicus_content_line() {
 	index="$1"
-	prime_agent_content_is_set=0
-	prime_agent_content_text=
-	prime_agent_content_width=0
-	prime_agent_content_style=
+	amicus_content_is_set=0
+	amicus_content_text=
+	amicus_content_width=0
+	amicus_content_style=
 
-	if prime_agent_show_logo; then
+	if amicus_show_logo; then
 		case "$index" in
-			0|1|2|3|4|5|6|7|8|9|10|11|12|13) prime_agent_set_lab_line "$index" ;;
-			14) prime_agent_set_blank_line ;;
+			0|1|2|3|4|5|6|7|8|9|10|11|12|13) amicus_set_lab_line "$index" ;;
+			14) amicus_set_blank_line ;;
 		esac
-		if [ "$prime_agent_content_is_set" = 1 ]; then
+		if [ "$amicus_content_is_set" = 1 ]; then
 			return
 		fi
 		index=$((index - 15))
@@ -447,60 +447,60 @@ prime_agent_content_line() {
 	fi
 
 	if [ "$index" -eq 0 ]; then
-		if [ -n "$prime_agent_screen_question" ]; then
-			prime_agent_set_text_line "$(prime_agent_screen_primary_text)" "$prime_agent_bold$prime_agent_color_text"
+		if [ -n "$amicus_screen_question" ]; then
+			amicus_set_text_line "$(amicus_screen_primary_text)" "$amicus_bold$amicus_color_text"
 		else
-			prime_agent_set_title_line "$prime_agent_screen_title"
+			amicus_set_title_line "$amicus_screen_title"
 		fi
 		return
 	fi
 
 	if [ "$index" -eq 1 ]; then
-		if [ -n "$prime_agent_screen_question" ]; then
-			prime_agent_set_text_line "Press Enter to continue; type n to cancel." "$prime_agent_color_muted"
-		elif [ -n "$prime_agent_screen_detail" ]; then
-			prime_agent_set_text_line "$prime_agent_screen_detail" "$prime_agent_color_muted"
+		if [ -n "$amicus_screen_question" ]; then
+			amicus_set_text_line "Press Enter to continue; type n to cancel." "$amicus_color_muted"
+		elif [ -n "$amicus_screen_detail" ]; then
+			amicus_set_text_line "$amicus_screen_detail" "$amicus_color_muted"
 		else
-			prime_agent_set_blank_line
+			amicus_set_blank_line
 		fi
 		return
 	fi
 }
 
-prime_agent_screen_primary_text() {
-	if [ -z "$prime_agent_screen_question" ]; then
-		printf '%s' "$prime_agent_screen_title"
+amicus_screen_primary_text() {
+	if [ -z "$amicus_screen_question" ]; then
+		printf '%s' "$amicus_screen_title"
 		return
 	fi
 
-	case "$prime_agent_screen_question" in
-		*'[Y/n]'*) printf '%s [Y/n] >' "$prime_agent_screen_title" ;;
-		*) printf '%s %s' "$prime_agent_screen_title" "$prime_agent_screen_question" ;;
+	case "$amicus_screen_question" in
+		*'[Y/n]'*) printf '%s [Y/n] >' "$amicus_screen_title" ;;
+		*) printf '%s %s' "$amicus_screen_title" "$amicus_screen_question" ;;
 	esac
 }
 
-prime_agent_set_lab_line() {
+amicus_set_lab_line() {
 	lab_row="$1"
-	prime_agent_lab_width="$prime_agent_screen_render_lab_width"
+	amicus_lab_width="$amicus_screen_render_lab_width"
 
-	logo_line=$(prime_agent_logo_line "$lab_row")
+	logo_line=$(amicus_logo_line "$lab_row")
 	if [ -n "$logo_line" ]; then
-		logo_start=$(((prime_agent_lab_width - 32) / 2))
+		logo_start=$(((amicus_lab_width - 32) / 2))
 		logo_end=$((logo_start + 32))
-		left=$(prime_agent_lab_background_range "$lab_row" 0 "$logo_start")
-		right=$(prime_agent_lab_background_range "$lab_row" "$logo_end" "$prime_agent_lab_width")
-		trace="${left}${prime_agent_color_text}${logo_line}${prime_agent_reset}${right}"
+		left=$(amicus_lab_background_range "$lab_row" 0 "$logo_start")
+		right=$(amicus_lab_background_range "$lab_row" "$logo_end" "$amicus_lab_width")
+		trace="${left}${amicus_color_text}${logo_line}${amicus_reset}${right}"
 	else
-		trace=$(prime_agent_lab_background_range "$lab_row" 0 "$prime_agent_lab_width")
+		trace=$(amicus_lab_background_range "$lab_row" 0 "$amicus_lab_width")
 	fi
 
-	prime_agent_content_is_set=1
-	prime_agent_content_text="$trace"
-	prime_agent_content_width="$prime_agent_lab_width"
-	prime_agent_content_style=
+	amicus_content_is_set=1
+	amicus_content_text="$trace"
+	amicus_content_width="$amicus_lab_width"
+	amicus_content_style=
 }
 
-prime_agent_logo_line() {
+amicus_logo_line() {
 	case "$1" in
 		2) printf '                          ▄▄███▀' ;;
 		3) printf '    ▄▄▄▄▄              ▄█████▀' ;;
@@ -515,7 +515,7 @@ prime_agent_logo_line() {
 	esac
 }
 
-prime_agent_lab_background_range() {
+amicus_lab_background_range() {
 	lab_row="$1"
 	range_start="$2"
 	range_end="$3"
@@ -523,38 +523,38 @@ prime_agent_lab_background_range() {
 	line=
 	x="$range_start"
 	while [ "$x" -lt "$range_end" ]; do
-		prime_agent_lab_cell "$x" "$lab_row"
-		if [ "$prime_agent_lab_cell_style" != "$active_style" ]; then
+		amicus_lab_cell "$x" "$lab_row"
+		if [ "$amicus_lab_cell_style" != "$active_style" ]; then
 			if [ -n "$active_style" ]; then
-				line="${line}${prime_agent_reset}"
+				line="${line}${amicus_reset}"
 			fi
-			if [ -n "$prime_agent_lab_cell_style" ]; then
-				line="${line}${prime_agent_lab_cell_style}"
+			if [ -n "$amicus_lab_cell_style" ]; then
+				line="${line}${amicus_lab_cell_style}"
 			fi
-			active_style="$prime_agent_lab_cell_style"
+			active_style="$amicus_lab_cell_style"
 		fi
-		line="${line}${prime_agent_lab_cell_char}"
+		line="${line}${amicus_lab_cell_char}"
 		x=$((x + 1))
 	done
 	if [ -n "$active_style" ]; then
-		line="${line}${prime_agent_reset}"
+		line="${line}${amicus_reset}"
 	fi
 	printf '%s' "$line"
 }
 
-prime_agent_lab_cell() {
+amicus_lab_cell() {
 	x="$1"
 	y="$2"
-	width="$prime_agent_lab_width"
+	width="$amicus_lab_width"
 	height=14
-	frame="$prime_agent_screen_frame"
-	prime_agent_lab_cell_char=" "
-	prime_agent_lab_cell_style=
+	frame="$amicus_screen_frame"
+	amicus_lab_cell_char=" "
+	amicus_lab_cell_style=
 
 	hash=$(((x * 37 + y * 53 + frame * 11 + x * y * 3) % 101))
 	if [ "$hash" -lt 3 ]; then
-		prime_agent_lab_cell_char="·"
-		prime_agent_lab_cell_style="$prime_agent_color_dim"
+		amicus_lab_cell_char="·"
+		amicus_lab_cell_style="$amicus_color_dim"
 	fi
 
 	center_x=$((width * 36 / 100))
@@ -570,20 +570,20 @@ prime_agent_lab_cell() {
 	contour=$((dx + dy * 4 + x / 6 - frame))
 	if [ "$x" -lt $((width * 82 / 100)) ] && [ $(((contour % 24 + 24) % 24)) -eq 12 ]; then
 		if [ $(((x + y) % 5)) -eq 0 ]; then
-			prime_agent_lab_cell_char="╌"
+			amicus_lab_cell_char="╌"
 		else
-			prime_agent_lab_cell_char="·"
+			amicus_lab_cell_char="·"
 		fi
-		prime_agent_lab_cell_style="$prime_agent_color_dim"
+		amicus_lab_cell_style="$amicus_color_dim"
 	fi
 
 	horizon_y=$((height * 58 / 100))
 	if [ "$y" -eq "$horizon_y" ] && [ $((x % 2)) -eq 0 ] && [ $(((x + frame) % 13)) -lt 2 ]; then
-		prime_agent_lab_cell_char="─"
+		amicus_lab_cell_char="─"
 		if [ "$x" -gt $((width * 60 / 100)) ]; then
-			prime_agent_lab_cell_style="$prime_agent_color_primary"
+			amicus_lab_cell_style="$amicus_color_primary"
 		else
-			prime_agent_lab_cell_style="$prime_agent_color_dim"
+			amicus_lab_cell_style="$amicus_color_dim"
 		fi
 	fi
 
@@ -596,11 +596,11 @@ prime_agent_lab_cell() {
 			scan_bottom=$((height - 2 - (scan_index * 2 + frame / 4) % 3))
 			if [ "$y" -ge "$scan_top" ] && [ "$y" -le "$scan_bottom" ] && [ $(((y + scan_index + frame) % 6)) -ne 0 ]; then
 				if [ $(((scan_index + y) % 4)) -eq 0 ]; then
-					prime_agent_lab_cell_char="┃"
+					amicus_lab_cell_char="┃"
 				else
-					prime_agent_lab_cell_char="╎"
+					amicus_lab_cell_char="╎"
 				fi
-				prime_agent_lab_cell_style="$prime_agent_color_scan"
+				amicus_lab_cell_style="$amicus_color_scan"
 			fi
 		fi
 	fi
@@ -619,71 +619,71 @@ prime_agent_lab_cell() {
 		trace_y=$((base + (wave - 3) / 2))
 		if [ "$y" -eq "$trace_y" ]; then
 			if [ $(((x + frame + trace_index * 13) % 41)) -eq 0 ]; then
-				prime_agent_lab_cell_char="◆"
-				prime_agent_lab_cell_style="$prime_agent_color_warning"
+				amicus_lab_cell_char="◆"
+				amicus_lab_cell_style="$amicus_color_warning"
 			elif [ $(((x + frame) % 12)) -eq 0 ]; then
-				prime_agent_lab_cell_char="•"
-				prime_agent_lab_cell_style="$prime_agent_color_primary"
+				amicus_lab_cell_char="•"
+				amicus_lab_cell_style="$amicus_color_primary"
 			else
-				prime_agent_lab_cell_char="·"
-				prime_agent_lab_cell_style="$prime_agent_color_primary"
+				amicus_lab_cell_char="·"
+				amicus_lab_cell_style="$amicus_color_primary"
 			fi
 		fi
 		trace_index=$((trace_index + 1))
 	done
 }
 
-prime_agent_set_blank_line() {
-	prime_agent_content_is_set=1
-	prime_agent_content_text=
-	prime_agent_content_width=0
-	prime_agent_content_style=
+amicus_set_blank_line() {
+	amicus_content_is_set=1
+	amicus_content_text=
+	amicus_content_width=0
+	amicus_content_style=
 }
 
-prime_agent_set_text_line() {
-	max_width=$((prime_agent_screen_cols - 4))
+amicus_set_text_line() {
+	max_width=$((amicus_screen_cols - 4))
 	if [ "$max_width" -lt 1 ]; then
 		max_width=1
 	fi
-	prime_agent_content_text=$(prime_agent_fit_ascii "$1" "$max_width")
-	prime_agent_content_width=${#prime_agent_content_text}
-	prime_agent_content_style="$2"
-	prime_agent_content_is_set=1
+	amicus_content_text=$(amicus_fit_ascii "$1" "$max_width")
+	amicus_content_width=${#amicus_content_text}
+	amicus_content_style="$2"
+	amicus_content_is_set=1
 }
 
-prime_agent_set_title_line() {
-	max_width=$((prime_agent_screen_cols - 4))
+amicus_set_title_line() {
+	max_width=$((amicus_screen_cols - 4))
 	if [ "$max_width" -lt 1 ]; then
 		max_width=1
 	fi
-	prime_agent_content_text=$(prime_agent_fit_ascii "$1" "$max_width")
-	prime_agent_content_width=${#prime_agent_content_text}
-	case "$prime_agent_content_text" in
-		*"Prime Agent"*)
-			prime_agent_content_text=$(prime_agent_style_prime_agent_title "$prime_agent_content_text")
-			prime_agent_content_style=
+	amicus_content_text=$(amicus_fit_ascii "$1" "$max_width")
+	amicus_content_width=${#amicus_content_text}
+	case "$amicus_content_text" in
+		*"Amicus"*)
+			amicus_content_text=$(amicus_style_amicus_title "$amicus_content_text")
+			amicus_content_style=
 			;;
 		*)
-			prime_agent_content_style="$prime_agent_bold$prime_agent_color_primary"
+			amicus_content_style="$amicus_bold$amicus_color_primary"
 			;;
 	esac
-	prime_agent_content_is_set=1
+	amicus_content_is_set=1
 }
 
-prime_agent_style_prime_agent_title() {
+amicus_style_amicus_title() {
 	text="$1"
 	styled=
 	while :; do
 		case "$text" in
-			*"Prime Agent"*)
-				before=${text%%Prime Agent*}
-				rest=${text#*Prime Agent}
-				styled="${styled}${prime_agent_bold}${prime_agent_color_primary}${before}"
-				styled="${styled}${prime_agent_bold}${prime_agent_color_primary}PRIME Agent${prime_agent_reset}"
+			*"Amicus"*)
+				before=${text%%Amicus*}
+				rest=${text#*Amicus}
+				styled="${styled}${amicus_bold}${amicus_color_primary}${before}"
+				styled="${styled}${amicus_bold}${amicus_color_primary}Amicus${amicus_reset}"
 				text="$rest"
 				;;
 			*)
-				styled="${styled}${prime_agent_bold}${prime_agent_color_primary}${text}${prime_agent_reset}"
+				styled="${styled}${amicus_bold}${amicus_color_primary}${text}${amicus_reset}"
 				printf '%s' "$styled"
 				return
 				;;
@@ -691,7 +691,7 @@ prime_agent_style_prime_agent_title() {
 	done
 }
 
-prime_agent_fit_ascii() {
+amicus_fit_ascii() {
 	text="$1"
 	max_width="$2"
 	if [ "${#text}" -le "$max_width" ]; then
@@ -706,54 +706,54 @@ prime_agent_fit_ascii() {
 	printf '%s...' "$(printf '%s' "$text" | cut -c 1-"$cut_width")"
 }
 
-prime_agent_print_centered_line() {
+amicus_print_centered_line() {
 	text="$1"
 	width="$2"
 	style="$3"
-	left=$(((prime_agent_screen_cols - width) / 2))
+	left=$(((amicus_screen_cols - width) / 2))
 	if [ "$left" -lt 0 ]; then
 		left=0
 	fi
 	if [ -n "$style" ]; then
-		printf '%*s%s%s%s%s\n' "$left" "" "$style" "$text" "$prime_agent_reset" "$prime_agent_clear_line"
+		printf '%*s%s%s%s%s\n' "$left" "" "$style" "$text" "$amicus_reset" "$amicus_clear_line"
 	else
-		printf '%*s%s%s\n' "$left" "" "$text" "$prime_agent_clear_line"
+		printf '%*s%s%s\n' "$left" "" "$text" "$amicus_clear_line"
 	fi
 }
 
-prime_agent_place_prompt_cursor() {
-	max_width=$((prime_agent_screen_cols - 4))
+amicus_place_prompt_cursor() {
+	max_width=$((amicus_screen_cols - 4))
 	if [ "$max_width" -lt 1 ]; then
 		max_width=1
 	fi
-	prompt_text=$(prime_agent_fit_ascii "$(prime_agent_screen_primary_text)" "$max_width")
+	prompt_text=$(amicus_fit_ascii "$(amicus_screen_primary_text)" "$max_width")
 	prompt_width=${#prompt_text}
-	content_height=$(prime_agent_content_height)
-	top=$(((prime_agent_screen_rows - content_height) / 2))
+	content_height=$(amicus_content_height)
+	top=$(((amicus_screen_rows - content_height) / 2))
 	if [ "$top" -lt 0 ]; then
 		top=0
 	fi
 	prompt_index=0
-	if prime_agent_show_logo; then
+	if amicus_show_logo; then
 		prompt_index=$((prompt_index + 15))
 	fi
 	row=$((top + prompt_index + 1))
-	col=$(((prime_agent_screen_cols - prompt_width) / 2 + prompt_width + 2))
+	col=$(((amicus_screen_cols - prompt_width) / 2 + prompt_width + 2))
 	if [ "$col" -lt 1 ]; then
 		col=1
 	fi
-	if [ "$col" -gt "$prime_agent_screen_cols" ]; then
-		col="$prime_agent_screen_cols"
+	if [ "$col" -gt "$amicus_screen_cols" ]; then
+		col="$amicus_screen_cols"
 	fi
 	if ( : <>/dev/tty ) 2>/dev/null; then
-		printf '%s%s%s[%s;%sH' "$prime_agent_reset" "$prime_agent_show_cursor" "$prime_agent_esc" "$row" "$col" >/dev/tty
+		printf '%s%s%s[%s;%sH' "$amicus_reset" "$amicus_show_cursor" "$amicus_esc" "$row" "$col" >/dev/tty
 	else
-		printf '%s%s%s[%s;%sH' "$prime_agent_reset" "$prime_agent_show_cursor" "$prime_agent_esc" "$row" "$col" >&2
+		printf '%s%s%s[%s;%sH' "$amicus_reset" "$amicus_show_cursor" "$amicus_esc" "$row" "$col" >&2
 	fi
 }
 
-prime_agent_pulse() {
-	case $((prime_agent_screen_frame % 4)) in
+amicus_pulse() {
+	case $((amicus_screen_frame % 4)) in
 		0) printf '.' ;;
 		1) printf '..' ;;
 		2) printf '...' ;;
@@ -761,7 +761,7 @@ prime_agent_pulse() {
 	esac
 }
 
-prime_agent_animation_detail_count() {
+amicus_animation_detail_count() {
 	details="$1"
 	case "$details" in
 		*'
@@ -770,8 +770,8 @@ prime_agent_animation_detail_count() {
 	esac
 }
 
-prime_agent_animation_current_frame() {
-	frame="${prime_agent_animation_frame:-1}"
+amicus_animation_current_frame() {
+	frame="${amicus_animation_frame:-1}"
 	case "$frame" in
 		""|*[!0-9]*) frame=1 ;;
 	esac
@@ -781,10 +781,10 @@ prime_agent_animation_current_frame() {
 	printf '%s' "$frame"
 }
 
-prime_agent_animation_step_index() {
+amicus_animation_step_index() {
 	details="$1"
-	detail_count=$(prime_agent_animation_detail_count "$details")
-	frame=$(prime_agent_animation_current_frame)
+	detail_count=$(amicus_animation_detail_count "$details")
+	frame=$(amicus_animation_current_frame)
 	detail_index=$(((frame - 1) / 24 + 1))
 	if [ "$detail_index" -gt "$detail_count" ]; then
 		detail_index="$detail_count"
@@ -792,61 +792,61 @@ prime_agent_animation_step_index() {
 	printf '%s' "$detail_index"
 }
 
-prime_agent_static_progress_title() {
+amicus_static_progress_title() {
 	case "$1" in
 		*...) printf '%s' "$1" ;;
 		*) printf '%s...' "$1" ;;
 	esac
 }
 
-prime_agent_animation_status() {
+amicus_animation_status() {
 	status="$1"
 	details="$2"
 	status_mode="$3"
 	case "$status_mode" in
-		static) prime_agent_static_progress_title "$status" ;;
-		*) printf '%s%s' "$status" "$(prime_agent_pulse)" ;;
+		static) amicus_static_progress_title "$status" ;;
+		*) printf '%s%s' "$status" "$(amicus_pulse)" ;;
 	esac
 }
 
-prime_agent_animation_detail() {
+amicus_animation_detail() {
 	details="$1"
 	case "$details" in
 		*'
 '*)
-			detail_index=$(prime_agent_animation_step_index "$details")
+			detail_index=$(amicus_animation_step_index "$details")
 			printf '%s\n' "$details" | sed -n "${detail_index}p"
 			;;
 		*) printf '%s' "$details" ;;
 	esac
 }
 
-prime_agent_run_quiet_with_animation() {
+amicus_run_quiet_with_animation() {
 	title="$1"
 	status="$2"
 	detail="$3"
 	shift 3
 
-	prime_agent_run_quiet_with_animation_command "$title" "$status" "$detail" pulse "$@"
+	amicus_run_quiet_with_animation_command "$title" "$status" "$detail" pulse "$@"
 }
 
-prime_agent_run_quiet_with_animation_steps() {
+amicus_run_quiet_with_animation_steps() {
 	title="$1"
 	status="$2"
 	details="$3"
 	shift 3
 
-	prime_agent_run_quiet_with_animation_command "$title" "$status" "$details" static "$@"
+	amicus_run_quiet_with_animation_command "$title" "$status" "$details" static "$@"
 }
 
-prime_agent_run_quiet_with_animation_command() {
+amicus_run_quiet_with_animation_command() {
 	title="$1"
 	status="$2"
 	details="$3"
 	status_mode="$4"
 	shift 4
 
-	if [ "$prime_agent_screen_enabled" != 1 ]; then
+	if [ "$amicus_screen_enabled" != 1 ]; then
 		printf '%s\n' "$status" >&2
 		"$@"
 		return
@@ -856,12 +856,12 @@ prime_agent_run_quiet_with_animation_command() {
 	output_file="$output_dir/output"
 	"$@" >"$output_file" 2>&1 &
 	command_pid=$!
-	prime_agent_animation_frame=0
+	amicus_animation_frame=0
 
 	while kill -0 "$command_pid" 2>/dev/null; do
-		prime_agent_animation_frame=$((prime_agent_animation_frame + 1))
-		status_display=$(prime_agent_animation_status "$status" "$details" "$status_mode")
-		prime_agent_screen "$title" "$status_display" "$(prime_agent_animation_detail "$details")" ""
+		amicus_animation_frame=$((amicus_animation_frame + 1))
+		status_display=$(amicus_animation_status "$status" "$details" "$status_mode")
+		amicus_screen "$title" "$status_display" "$(amicus_animation_detail "$details")" ""
 		sleep 0.18
 	done
 
@@ -872,7 +872,7 @@ prime_agent_run_quiet_with_animation_command() {
 	fi
 
 	if [ "$command_status" -ne 0 ] && [ -s "$output_file" ]; then
-		prime_agent_restore_terminal
+		amicus_restore_terminal
 		printf '\n' >&2
 		cat "$output_file" >&2
 	fi
@@ -880,7 +880,7 @@ prime_agent_run_quiet_with_animation_command() {
 	return "$command_status"
 }
 
-prime_agent_prompt_yes_no() {
+amicus_prompt_yes_no() {
 	question="$1"
 	detail="$2"
 	input_prompt="$3"
@@ -894,9 +894,9 @@ prime_agent_prompt_yes_no() {
 		return 2
 	fi
 
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "$question" "" "$detail" "$input_prompt"
-		prime_agent_place_prompt_cursor "$input_prompt"
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "$question" "" "$detail" "$input_prompt"
+		amicus_place_prompt_cursor "$input_prompt"
 	else
 		printf '%s\n' "$detail"
 		if [ "$prompt_input" = tty ]; then
@@ -933,9 +933,9 @@ start_preflight_checks() {
 }
 
 finish_preflight_checks() {
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
+	if [ "$amicus_screen_enabled" = 1 ]; then
 		while kill -0 "$preflight_pid" 2>/dev/null; do
-			prime_agent_screen "Checking Node.js and npm$(prime_agent_pulse)" "" "" ""
+			amicus_screen "Checking Node.js and npm$(amicus_pulse)" "" "" ""
 			sleep 0.18
 		done
 	fi
@@ -946,14 +946,14 @@ finish_preflight_checks() {
 		preflight_status=$?
 	fi
 
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
+	if [ "$amicus_screen_enabled" = 1 ]; then
 		if [ "$preflight_status" -ne 0 ]; then
 			preflight_summary=$(sed -n '1p' "$preflight_file")
-			prime_agent_screen "Node.js 20.6.0 or newer is required" "" "$preflight_summary" ""
+			amicus_screen "Node.js 20.6.0 or newer is required" "" "$preflight_summary" ""
 			sleep 0.4
 		elif [ -s "$preflight_file" ]; then
-			preflight_summary="Existing $prime_agent_cmd command found on PATH."
-			prime_agent_screen "Environment ready" "" "$preflight_summary" ""
+			preflight_summary="Existing $amicus_cmd command found on PATH."
+			amicus_screen "Environment ready" "" "$preflight_summary" ""
 			sleep 0.4
 		fi
 	else
@@ -965,22 +965,22 @@ finish_preflight_checks() {
 
 run_preflight_checks() {
 	status=0
-	yellow="${prime_agent_esc}[33m"
-	reset="${prime_agent_esc}[0m"
+	yellow="${amicus_esc}[33m"
+	reset="${amicus_esc}[0m"
 
 	if command -v node >/dev/null 2>&1; then
 		node_version=$(node --version)
 		if ! node -e 'const [major, minor, patch] = process.versions.node.split(".").map(Number); process.exit(major > 20 || (major === 20 && (minor > 6 || (minor === 6 && patch >= 0))) ? 0 : 1)' >/dev/null; then
-			printf 'error: Prime Agent requires Node.js 20.6.0 or newer. Found %s.\n' "$node_version"
+			printf 'error: Amicus requires Node.js 20.6.0 or newer. Found %s.\n' "$node_version"
 			status=1
 		fi
 	else
-		printf 'error: Node.js 20.6.0 or newer is required to install Prime Agent.\n'
+		printf 'error: Node.js 20.6.0 or newer is required to install Amicus.\n'
 		status=1
 	fi
 
 	if ! command -v npm >/dev/null 2>&1; then
-		printf 'error: npm is required to install Prime Agent.\n'
+		printf 'error: npm is required to install Amicus.\n'
 		status=1
 	fi
 
@@ -988,15 +988,15 @@ run_preflight_checks() {
 		printf '\n'
 	fi
 
-	if prime_agent_path=$(command -v "$prime_agent_cmd" 2>/dev/null); then
-		printf '%sExisting %s found at: %s%s\n' "$yellow" "$prime_agent_cmd" "$prime_agent_path" "$reset"
+	if amicus_path=$(command -v "$amicus_cmd" 2>/dev/null); then
+		printf '%sExisting %s found at: %s%s\n' "$yellow" "$amicus_cmd" "$amicus_path" "$reset"
 		printf '\n'
 	fi
 
 	return "$status"
 }
 
-resolve_prime_agent_version() {
+resolve_amicus_version() {
 	if [ "${1:-}" ]; then
 		case "$1" in
 			stable|beta) release_channel="$1" ;;
@@ -1006,42 +1006,42 @@ resolve_prime_agent_version() {
 				;;
 		esac
 	else
-		release_channel="$prime_agent_release_channel"
+		release_channel="$amicus_release_channel"
 	fi
 
-	if [ "${PRIME_AGENT_VERSION:-}" ]; then
-		normalize_version "$PRIME_AGENT_VERSION"
+	if [ "${AMICUS_VERSION:-}" ]; then
+		normalize_version "$AMICUS_VERSION"
 		return
 	fi
 
 	if ! command -v curl >/dev/null 2>&1; then
-		printf 'error: curl is required to resolve the latest Prime Agent version.\n' >&2
+		printf 'error: curl is required to resolve the latest Amicus version.\n' >&2
 		exit 1
 	fi
 
 	case "$release_channel" in
 		stable|beta) ;;
 		*)
-			printf 'error: invalid Prime Agent release channel: %s\n' "$release_channel" >&2
+			printf 'error: invalid Amicus release channel: %s\n' "$release_channel" >&2
 			exit 1
 			;;
 	esac
 
 	channel_dir=$(create_temp_dir)
 	channel_path="$channel_dir/$release_channel"
-	if ! prime_agent_run_quiet_with_animation \
+	if ! amicus_run_quiet_with_animation \
 		"Resolving latest release" \
 		"Resolving latest release" \
 		"Checking the $release_channel release channel." \
-		prime_agent_curl_download -fsSL "$prime_agent_base_url/$release_channel" -o "$channel_path"; then
+		amicus_curl_download -fsSL "$amicus_base_url/$release_channel" -o "$channel_path"; then
 		rm -rf "$channel_dir"
-		printf 'error: could not resolve latest Prime Agent version from %s/%s\n' "$prime_agent_base_url" "$release_channel" >&2
+		printf 'error: could not resolve latest Amicus version from %s/%s\n' "$amicus_base_url" "$release_channel" >&2
 		exit 1
 	fi
 	channel_version="$(tr -d '[:space:]' <"$channel_path")"
 	rm -rf "$channel_dir"
 	if [ -z "$channel_version" ]; then
-		printf 'error: could not resolve latest Prime Agent version from %s/%s\n' "$prime_agent_base_url" "$release_channel" >&2
+		printf 'error: could not resolve latest Amicus version from %s/%s\n' "$amicus_base_url" "$release_channel" >&2
 		exit 1
 	fi
 	normalize_version "$channel_version"
@@ -1051,11 +1051,11 @@ normalize_version() {
 	version="${1#v}"
 	case "$version" in
 		"")
-			printf 'error: empty Prime Agent version.\n' >&2
+			printf 'error: empty Amicus version.\n' >&2
 			exit 1
 			;;
 		*[!0-9A-Za-z.-]*)
-			printf 'error: invalid Prime Agent version: %s\n' "$1" >&2
+			printf 'error: invalid Amicus version: %s\n' "$1" >&2
 			exit 1
 			;;
 	esac
@@ -1075,9 +1075,9 @@ install_node_npm_interactive() {
 			;;
 	esac
 
-	if prime_agent_prompt_yes_no \
+	if amicus_prompt_yes_no \
 		"Install Node.js and npm with $label?" \
-		"Required before Prime Agent can be installed." \
+		"Required before Amicus can be installed." \
 		"Install? [Y/n]"; then
 		install_node_npm "$method" "$label"
 		return
@@ -1154,7 +1154,7 @@ install_node_npm() {
 	method="$1"
 	label="$2"
 
-	if [ "$prime_agent_screen_enabled" != 1 ]; then
+	if [ "$amicus_screen_enabled" != 1 ]; then
 		printf '\nInstalling Node.js and npm with %s...\n\n' "$label"
 		run_node_install_method "$method"
 	else
@@ -1163,8 +1163,8 @@ install_node_npm() {
 Resolving Node.js packages.
 Downloading Node.js runtime.
 Installing npm.
-Preparing Prime Agent setup."
-		prime_agent_run_quiet_with_animation_steps \
+Preparing Amicus setup."
+		amicus_run_quiet_with_animation_steps \
 			"Installing Node.js and npm" \
 			"Installing Node.js and npm" \
 			"$node_install_details" \
@@ -1173,11 +1173,11 @@ Preparing Prime Agent setup."
 
 	if [ "$method" = standalone ]; then
 		load_standalone_node
-		PRIME_AGENT_NODE_INSTALLED_STANDALONE=1
+		AMICUS_NODE_INSTALLED_STANDALONE=1
 	fi
 	hash -r
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "Node.js and npm installed" "" "Continuing Prime Agent setup." ""
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "Node.js and npm installed" "" "Continuing Amicus setup." ""
 	else
 		printf '\nNode.js and npm are installed.\n\n'
 	fi
@@ -1209,8 +1209,8 @@ prepare_sudo_for_node_install() {
 		return 0
 	fi
 
-	prime_agent_screen "Preparing Node.js install" "" "This may ask for your sudo password." ""
-	prime_agent_restore_terminal
+	amicus_screen "Preparing Node.js install" "" "This may ask for your sudo password." ""
+	amicus_restore_terminal
 	printf '\n'
 	sudo -v
 }
@@ -1263,7 +1263,7 @@ install_node_standalone() {
 	mkdir -p "$node_tmp_dir" "$node_base_dir"
 
 	printf 'Resolving Node.js binary for %s-%s\n' "$node_platform" "$node_arch"
-	prime_agent_curl_download -fsSL "$node_dist_base/SHASUMS256.txt" -o "$node_tmp_dir/SHASUMS256.txt"
+	amicus_curl_download -fsSL "$node_dist_base/SHASUMS256.txt" -o "$node_tmp_dir/SHASUMS256.txt"
 	node_file=$(awk -v suffix="-$node_platform-$node_arch.tar.xz" '
 		index($2, "node-v") == 1 && length($2) >= length(suffix) && substr($2, length($2) - length(suffix) + 1) == suffix { print $2; exit }
 	' "$node_tmp_dir/SHASUMS256.txt")
@@ -1287,7 +1287,7 @@ install_node_standalone() {
 	esac
 
 	printf 'Downloading Node.js %s\n' "${node_file%.tar.xz}"
-	prime_agent_curl_download -fsSL "$node_dist_base/$node_file" -o "$node_tmp_dir/$node_file"
+	amicus_curl_download -fsSL "$node_dist_base/$node_file" -o "$node_tmp_dir/$node_file"
 	verify_node_standalone_download "$node_tmp_dir" "$node_file"
 	ensure_node_standalone_extract_tools "$node_platform"
 
@@ -1337,16 +1337,16 @@ ensure_node_standalone_extract_tools() {
 }
 
 load_standalone_node() {
-	PRIME_AGENT_STANDALONE_NODE_BIN="$(node_standalone_base_dir)/current/bin"
-	PATH="$PRIME_AGENT_STANDALONE_NODE_BIN:$PATH"
-	export PRIME_AGENT_STANDALONE_NODE_BIN PATH
+	AMICUS_STANDALONE_NODE_BIN="$(node_standalone_base_dir)/current/bin"
+	PATH="$AMICUS_STANDALONE_NODE_BIN:$PATH"
+	export AMICUS_STANDALONE_NODE_BIN PATH
 }
 
 node_standalone_base_dir() {
 	if [ -n "${XDG_DATA_HOME:-}" ]; then
-		printf '%s/prime-agent-node' "$XDG_DATA_HOME"
+		printf '%s/amicus-node' "$XDG_DATA_HOME"
 	else
-		printf '%s/.local/share/prime-agent-node' "$HOME"
+		printf '%s/.local/share/amicus-node' "$HOME"
 	fi
 }
 
@@ -1384,34 +1384,34 @@ run_with_sudo() {
 }
 
 configure_standalone_node_path() {
-	if original_prime_agent_path=$(resolve_prime_agent_with_original_path); then
-		case "$original_prime_agent_path" in
-			"$PRIME_AGENT_STANDALONE_NODE_BIN/"*)
-				if [ "$prime_agent_screen_enabled" = 1 ]; then
-					prime_agent_screen "Prime Agent installed" "" "Run it with: $prime_agent_cmd" ""
+	if original_amicus_path=$(resolve_amicus_with_original_path); then
+		case "$original_amicus_path" in
+			"$AMICUS_STANDALONE_NODE_BIN/"*)
+				if [ "$amicus_screen_enabled" = 1 ]; then
+					amicus_screen "Amicus installed" "" "Run it with: $amicus_cmd" ""
 				else
-					printf '\nRun it with: %s\n' "$prime_agent_cmd"
+					printf '\nRun it with: %s\n' "$amicus_cmd"
 				fi
 				return 0
 				;;
 		esac
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_screen "Prime Agent installed" "" "PATH update needed for $prime_agent_cmd." ""
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_screen "Amicus installed" "" "PATH update needed for $amicus_cmd." ""
 		else
-			printf '%s was installed, but your shell is not using that install yet.\n' "$prime_agent_cmd"
-			printf 'Your shell currently resolves %s to: %s\n' "$prime_agent_cmd" "$original_prime_agent_path"
+			printf '%s was installed, but your shell is not using that install yet.\n' "$amicus_cmd"
+			printf 'Your shell currently resolves %s to: %s\n' "$amicus_cmd" "$original_amicus_path"
 		fi
 	else
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_screen "Prime Agent installed" "" "PATH update needed for $prime_agent_cmd." ""
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_screen "Amicus installed" "" "PATH update needed for $amicus_cmd." ""
 		else
-			printf '%s was installed, but your shell is not using that install yet.\n' "$prime_agent_cmd"
+			printf '%s was installed, but your shell is not using that install yet.\n' "$amicus_cmd"
 		fi
 	fi
 
 	profile=$(detect_shell_profile) || {
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_restore_terminal
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_restore_terminal
 			printf '\n'
 		fi
 		print_standalone_path_manual_instructions
@@ -1419,11 +1419,11 @@ configure_standalone_node_path() {
 	}
 
 	if shell_profile_has_standalone_node_path "$profile"; then
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_screen "Prime Agent installed" "" "Run: $(prime_agent_source_profile_command "$profile")" ""
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_screen "Amicus installed" "" "Run: $(amicus_source_profile_command "$profile")" ""
 		else
-			printf '%s already contains %s.\n' "$profile" "$PRIME_AGENT_STANDALONE_NODE_BIN"
-			printf 'Restart your shell or run: %s\n' "$(prime_agent_source_profile_command "$profile")"
+			printf '%s already contains %s.\n' "$profile" "$AMICUS_STANDALONE_NODE_BIN"
+			printf 'Restart your shell or run: %s\n' "$(amicus_source_profile_command "$profile")"
 		fi
 		return 0
 	fi
@@ -1431,10 +1431,10 @@ configure_standalone_node_path() {
 	prompt_add_standalone_node_path "$profile"
 }
 
-resolve_prime_agent_with_original_path() {
+resolve_amicus_with_original_path() {
 	saved_path=$PATH
-	PATH=$prime_agent_original_path
-	if command -v "$prime_agent_cmd" 2>/dev/null; then
+	PATH=$amicus_original_path
+	if command -v "$amicus_cmd" 2>/dev/null; then
 		status=0
 	else
 		status=$?
@@ -1444,8 +1444,8 @@ resolve_prime_agent_with_original_path() {
 }
 
 detect_shell_profile() {
-	if [ -n "${PRIME_AGENT_SHELL_PROFILE:-}" ]; then
-		printf '%s' "$PRIME_AGENT_SHELL_PROFILE"
+	if [ -n "${AMICUS_SHELL_PROFILE:-}" ]; then
+		printf '%s' "$AMICUS_SHELL_PROFILE"
 		return 0
 	fi
 	if [ -z "${HOME:-}" ]; then
@@ -1475,19 +1475,19 @@ detect_shell_profile() {
 
 shell_profile_has_standalone_node_path() {
 	profile="$1"
-	[ -f "$profile" ] && grep -F "$PRIME_AGENT_STANDALONE_NODE_BIN" "$profile" >/dev/null 2>&1
+	[ -f "$profile" ] && grep -F "$AMICUS_STANDALONE_NODE_BIN" "$profile" >/dev/null 2>&1
 }
 
 prompt_add_standalone_node_path() {
 	profile="$1"
 	path_line=$(standalone_node_path_line)
 
-	if ! prime_agent_prompt_yes_no \
+	if ! amicus_prompt_yes_no \
 		"Add standalone Node.js to your PATH?" \
-		"Updates $profile so future shells can run $prime_agent_cmd." \
+		"Updates $profile so future shells can run $amicus_cmd." \
 		"Update PATH? [Y/n]"; then
-		if [ "$prime_agent_screen_enabled" = 1 ]; then
-			prime_agent_restore_terminal
+		if [ "$amicus_screen_enabled" = 1 ]; then
+			amicus_restore_terminal
 			printf '\n'
 		fi
 		print_standalone_path_manual_instructions
@@ -1496,66 +1496,66 @@ prompt_add_standalone_node_path() {
 
 	mkdir -p "$(dirname "$profile")"
 	{
-		printf '\n# Prime Agent standalone Node.js\n'
+		printf '\n# Amicus standalone Node.js\n'
 		printf '%s\n' "$path_line"
 	} >>"$profile"
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "Prime Agent installed" "" "Run: $(prime_agent_source_profile_command "$profile")" ""
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "Amicus installed" "" "Run: $(amicus_source_profile_command "$profile")" ""
 	else
-		printf 'Added %s to %s.\n' "$PRIME_AGENT_STANDALONE_NODE_BIN" "$profile"
-		printf 'Restart your shell or run: %s\n' "$(prime_agent_source_profile_command "$profile")"
+		printf 'Added %s to %s.\n' "$AMICUS_STANDALONE_NODE_BIN" "$profile"
+		printf 'Restart your shell or run: %s\n' "$(amicus_source_profile_command "$profile")"
 	fi
 }
 
 print_standalone_path_manual_instructions() {
-	printf 'Add this to your shell profile to use %s from new shells:\n\n' "$prime_agent_cmd"
+	printf 'Add this to your shell profile to use %s from new shells:\n\n' "$amicus_cmd"
 	printf '  %s\n' "$(standalone_node_path_line)"
-	printf '\nThen restart your shell and run: %s\n' "$prime_agent_cmd"
+	printf '\nThen restart your shell and run: %s\n' "$amicus_cmd"
 }
 
 standalone_node_path_line() {
-	printf 'export PATH="%s:$PATH"' "$PRIME_AGENT_STANDALONE_NODE_BIN"
+	printf 'export PATH="%s:$PATH"' "$AMICUS_STANDALONE_NODE_BIN"
 }
 
-prime_agent_shell_quote() {
+amicus_shell_quote() {
 	quoted=$(printf '%s' "$1" | sed "s/'/'\\\\''/g")
 	printf "'%s'" "$quoted"
 }
 
-prime_agent_source_profile_command() {
-	printf '. %s && %s' "$(prime_agent_shell_quote "$1")" "$prime_agent_cmd"
+amicus_source_profile_command() {
+	printf '. %s && %s' "$(amicus_shell_quote "$1")" "$amicus_cmd"
 }
 
-download_prime_agent_package() {
+download_amicus_package() {
 	version="$1"
 	tarball_url="$2"
 	tarball_path="$3"
 	download_dir=$(dirname "$tarball_path")
 	tarball_name=$(basename "$tarball_path")
-	checksums_url="$prime_agent_base_url/releases/v$version/SHA256SUMS"
+	checksums_url="$amicus_base_url/releases/v$version/SHA256SUMS"
 	checksums_path="$download_dir/SHA256SUMS"
 
 	if ! command -v curl >/dev/null 2>&1; then
-		printf 'error: curl is required to download Prime Agent.\n' >&2
+		printf 'error: curl is required to download Amicus.\n' >&2
 		exit 1
 	fi
 
-	prime_agent_run_quiet_with_animation \
+	amicus_run_quiet_with_animation \
 		"Downloading checksums" \
 		"Downloading release checksums" \
-		"Prime Agent v$version" \
-		prime_agent_curl_download -fsSL "$checksums_url" -o "$checksums_path"
+		"Amicus v$version" \
+		amicus_curl_download -fsSL "$checksums_url" -o "$checksums_path"
 
-	prime_agent_run_quiet_with_animation \
-		"Downloading Prime Agent" \
-		"Downloading Prime Agent v$version" \
+	amicus_run_quiet_with_animation \
+		"Downloading Amicus" \
+		"Downloading Amicus v$version" \
 		"Fetching the checksummed package." \
-		prime_agent_curl_download -fsSL "$tarball_url" -o "$tarball_path"
+		amicus_curl_download -fsSL "$tarball_url" -o "$tarball_path"
 
-	verify_prime_agent_package_checksum "$checksums_path" "$tarball_path"
+	verify_amicus_package_checksum "$checksums_path" "$tarball_path"
 }
 
-verify_prime_agent_package_checksum() {
+verify_amicus_package_checksum() {
 	checksums_path="$1"
 	tarball_path="$2"
 	checksum_dir=$(dirname "$tarball_path")
@@ -1569,24 +1569,24 @@ verify_prime_agent_package_checksum() {
 	fi
 
 	if command -v sha256sum >/dev/null 2>&1; then
-		prime_agent_run_quiet_with_animation \
+		amicus_run_quiet_with_animation \
 			"Verifying download" \
-			"Verifying Prime Agent download" \
+			"Verifying Amicus download" \
 			"Checking SHA-256." \
-			prime_agent_run_checksum_check "$checksum_dir" "$(basename "$selected_checksums_path")" sha256sum
+			amicus_run_checksum_check "$checksum_dir" "$(basename "$selected_checksums_path")" sha256sum
 	elif command -v shasum >/dev/null 2>&1; then
-		prime_agent_run_quiet_with_animation \
+		amicus_run_quiet_with_animation \
 			"Verifying download" \
-			"Verifying Prime Agent download" \
+			"Verifying Amicus download" \
 			"Checking SHA-256." \
-			prime_agent_run_checksum_check "$checksum_dir" "$(basename "$selected_checksums_path")" shasum
+			amicus_run_checksum_check "$checksum_dir" "$(basename "$selected_checksums_path")" shasum
 	else
-		printf 'error: sha256sum or shasum is required to verify the Prime Agent download.\n' >&2
+		printf 'error: sha256sum or shasum is required to verify the Amicus download.\n' >&2
 		exit 1
 	fi
 }
 
-prime_agent_run_checksum_check() {
+amicus_run_checksum_check() {
 	checksum_dir="$1"
 	selected_checksums_name="$2"
 	checker="$3"
@@ -1604,8 +1604,8 @@ confirm_install() {
 	version="$1"
 	tarball_url="$2"
 
-	if prime_agent_prompt_yes_no \
-		"Install Prime Agent v$version globally with npm?" \
+	if amicus_prompt_yes_no \
+		"Install Amicus v$version globally with npm?" \
 		"Downloads the checksummed release and runs npm install -g." \
 		"Install? [Y/n]"; then
 		return 0
@@ -1619,8 +1619,8 @@ confirm_install() {
 		return 0
 	fi
 
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "Installation cancelled" "" "No changes were made." ""
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "Installation cancelled" "" "No changes were made." ""
 		exit 0
 	fi
 	printf '\nInstallation cancelled.\n'
@@ -1628,22 +1628,22 @@ confirm_install() {
 }
 
 confirm_kernel_runtime_setup() {
-	case "${PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL:-}" in
+	case "${AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL:-}" in
 		1)
-			prime_agent_bootstrap_kernel_on_install=1
+			amicus_bootstrap_kernel_on_install=1
 			return
 			;;
 		0)
-			prime_agent_bootstrap_kernel_on_install=0
+			amicus_bootstrap_kernel_on_install=0
 			return
 			;;
 	esac
 
-	if prime_agent_prompt_yes_no \
+	if amicus_prompt_yes_no \
 		"Prepare Python runtime now?" \
-		"Installs uv, Python 3.11, and the Prime Agent runtime." \
+		"Installs uv, Python 3.11, and the Amicus runtime." \
 		"Prepare? [Y/n]"; then
-		prime_agent_bootstrap_kernel_on_install=1
+		amicus_bootstrap_kernel_on_install=1
 		return
 	else
 		prompt_status=$?
@@ -1651,20 +1651,20 @@ confirm_kernel_runtime_setup() {
 
 	if [ "$prompt_status" -eq 2 ]; then
 		printf 'No terminal detected; preparing the Python runtime during install.\n'
-		prime_agent_bootstrap_kernel_on_install=1
+		amicus_bootstrap_kernel_on_install=1
 		return
 	fi
 
-	prime_agent_bootstrap_kernel_on_install=0
-	if [ "$prime_agent_screen_enabled" = 1 ]; then
-		prime_agent_screen "Python setup skipped" "" "The runtime can be prepared on first ipython use." ""
+	amicus_bootstrap_kernel_on_install=0
+	if [ "$amicus_screen_enabled" = 1 ]; then
+		amicus_screen "Python setup skipped" "" "The runtime can be prepared on first ipython use." ""
 		sleep 0.4
 	else
 		printf '\nSkipping Python runtime setup.\n'
 	fi
 }
 
-prime_agent_npm_requires_remote_policy() {
+amicus_npm_requires_remote_policy() {
 	npm_version=$(npm --version 2>/dev/null) || return 1
 	npm_major=${npm_version%%.*}
 	case "$npm_major" in
@@ -1673,10 +1673,10 @@ prime_agent_npm_requires_remote_policy() {
 	[ "$npm_major" -ge 12 ]
 }
 
-prime_agent_npm_install() {
+amicus_npm_install() {
 	tarball_path="$1"
 	shift
-	if prime_agent_npm_requires_remote_policy; then
+	if amicus_npm_requires_remote_policy; then
 		# Limit npm 12's required policy overrides to the verified root package.
 		env "$@" npm install -g --no-fund --no-audit --loglevel=error --progress=false \
 			--allow-remote=all --allow-scripts="$tarball_path" "$tarball_path"
@@ -1685,36 +1685,36 @@ prime_agent_npm_install() {
 	fi
 }
 
-install_prime_agent_package() {
+install_amicus_package() {
 	tarball_path="$1"
-	if [ "$prime_agent_bootstrap_kernel_on_install" = 1 ]; then
+	if [ "$amicus_bootstrap_kernel_on_install" = 1 ]; then
 		npm_install_details="Preparing global install.
 Linking command binaries.
 Installing runtime packages.
 Preloading search tools.
 Preparing Python kernel.
 Finalizing npm install."
-		prime_agent_run_quiet_with_animation_steps \
-			"Installing Prime Agent" \
-			"Installing Prime Agent" \
+		amicus_run_quiet_with_animation_steps \
+			"Installing Amicus" \
+			"Installing Amicus" \
 			"$npm_install_details" \
-			prime_agent_npm_install "$tarball_path" PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1 PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL=1 PRIME_AGENT_INSTALL_UV=1
+			amicus_npm_install "$tarball_path" AMICUS_BOOTSTRAP_TOOLS_ON_INSTALL=1 AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL=1 AMICUS_INSTALL_UV=1
 	else
 		npm_install_details="Preparing global install.
 Linking command binaries.
 Installing runtime packages.
 Preloading search tools.
 Finalizing npm install."
-		prime_agent_run_quiet_with_animation_steps \
-			"Installing Prime Agent" \
-			"Installing Prime Agent" \
+		amicus_run_quiet_with_animation_steps \
+			"Installing Amicus" \
+			"Installing Amicus" \
 			"$npm_install_details" \
-			prime_agent_npm_install "$tarball_path" PRIME_AGENT_BOOTSTRAP_TOOLS_ON_INSTALL=1
+			amicus_npm_install "$tarball_path" AMICUS_BOOTSTRAP_TOOLS_ON_INSTALL=1
 	fi
 }
 
 # Supported glibc releases carry no libc suffix; musl builds are published separately.
-prime_agent_native_glibc() {
+amicus_native_glibc() {
 	native_glibc_version=$(getconf GNU_LIBC_VERSION 2>/dev/null) || return 1
 	printf '%s\n' "$native_glibc_version" |
 		awk '$1 == "glibc" { split($2, v, "."); if (v[1] > 2 || (v[1] == 2 && v[2] >= 17)) ok=1 } END { exit !ok }'
@@ -1722,8 +1722,8 @@ prime_agent_native_glibc() {
 
 # Alpine and other musl distributions ship the loader under a fixed name; `ldd`
 # without arguments prints its musl banner and is the fallback for stripped images.
-prime_agent_native_musl() {
-	for native_musl_loader in "$prime_agent_native_sysroot"/lib/ld-musl-*.so.1; do
+amicus_native_musl() {
+	for native_musl_loader in "$amicus_native_sysroot"/lib/ld-musl-*.so.1; do
 		[ -e "$native_musl_loader" ] && return 0
 	done
 	ldd 2>&1 | grep -q musl
@@ -1731,12 +1731,12 @@ prime_agent_native_musl() {
 
 # Bun's default x64 build needs AVX2; hosts without it need the baseline build.
 # An unreadable CPU inventory selects baseline, which runs on every x86-64 CPU.
-prime_agent_native_avx2() {
+amicus_native_avx2() {
 	awk '/^flags[[:space:]]*:/ { for (i = 3; i <= NF; i++) if ($i == "avx2") found = 1 } END { exit !found }' \
-		"$prime_agent_native_sysroot/proc/cpuinfo" 2>/dev/null
+		"$amicus_native_sysroot/proc/cpuinfo" 2>/dev/null
 }
 
-prime_agent_native_platform() {
+amicus_native_platform() {
 	native_libc_suffix=
 	case "$(uname -s)" in
 		Darwin)
@@ -1747,9 +1747,9 @@ prime_agent_native_platform() {
 			;;
 		Linux)
 			native_os=linux
-			if prime_agent_native_glibc; then
+			if amicus_native_glibc; then
 				native_libc_suffix=
-			elif prime_agent_native_musl; then
+			elif amicus_native_musl; then
 				native_libc_suffix=-musl
 			else
 				return 1
@@ -1760,7 +1760,7 @@ prime_agent_native_platform() {
 	case "$(uname -m)" in
 		arm64|aarch64) printf '%s-arm64%s' "$native_os" "$native_libc_suffix" ;;
 		x86_64|amd64)
-			if [ "$native_os" = linux ] && ! prime_agent_native_avx2; then
+			if [ "$native_os" = linux ] && ! amicus_native_avx2; then
 				printf '%s-x64%s-baseline' "$native_os" "$native_libc_suffix"
 			else
 				printf '%s-x64%s' "$native_os" "$native_libc_suffix"
@@ -1770,43 +1770,43 @@ prime_agent_native_platform() {
 	esac
 }
 
-prime_agent_native_cleanup() {
-	if [ -n "${prime_agent_native_lock:-}" ] && [ "$(cat "$prime_agent_native_lock/pid" 2>/dev/null || :)" = "$$" ] &&
+amicus_native_cleanup() {
+	if [ -n "${amicus_native_lock:-}" ] && [ "$(cat "$amicus_native_lock/pid" 2>/dev/null || :)" = "$$" ] &&
 		[ -n "${native_root:-}" ] && { [ -e "$native_root/.activation-state" ] || [ -L "$native_root/.activation-state" ]; }; then
-		if prime_agent_native_recover_activation; then
-			prime_agent_native_prune_releases
+		if amicus_native_recover_activation; then
+			amicus_native_prune_releases
 		else
 			printf 'Could not recover the interrupted activation; inspect %s/.activation-state before retrying.\n' "$native_root" >&2
 		fi
 	fi
-	if [ -n "${prime_agent_native_activation_target:-}" ] && [ -n "${prime_agent_native_activation_previous:-}" ] &&
-		[ "$(readlink "$native_root/bin/prime-agent" 2>/dev/null || :)" = "$prime_agent_native_activation_target" ] &&
-		[ "$(readlink "$native_root/bin/previous" 2>/dev/null || :)" != "$prime_agent_native_activation_previous" ]; then
-		prime_agent_native_atomic_link "$prime_agent_native_activation_previous" "$native_root/bin/previous" ||
+	if [ -n "${amicus_native_activation_target:-}" ] && [ -n "${amicus_native_activation_previous:-}" ] &&
+		[ "$(readlink "$native_root/bin/amicus" 2>/dev/null || :)" = "$amicus_native_activation_target" ] &&
+		[ "$(readlink "$native_root/bin/previous" 2>/dev/null || :)" != "$amicus_native_activation_previous" ]; then
+		amicus_native_atomic_link "$amicus_native_activation_previous" "$native_root/bin/previous" ||
 			printf 'Could not finish retaining the previous release; recover it from %s/releases.\n' "$native_root" >&2
 	fi
-	prime_agent_native_activation_target=
-	prime_agent_native_activation_previous=
-	if [ -n "${prime_agent_native_stage:-}" ]; then
-		rm -rf "$prime_agent_native_stage"
-		prime_agent_native_stage=
+	amicus_native_activation_target=
+	amicus_native_activation_previous=
+	if [ -n "${amicus_native_stage:-}" ]; then
+		rm -rf "$amicus_native_stage"
+		amicus_native_stage=
 	fi
-	if [ -n "${prime_agent_native_lock:-}" ] && [ "$(cat "$prime_agent_native_lock/pid" 2>/dev/null || :)" = "$$" ]; then
-		rm -f "$prime_agent_native_lock/pid"
-		rmdir "$prime_agent_native_lock"
+	if [ -n "${amicus_native_lock:-}" ] && [ "$(cat "$amicus_native_lock/pid" 2>/dev/null || :)" = "$$" ]; then
+		rm -f "$amicus_native_lock/pid"
+		rmdir "$amicus_native_lock"
 	fi
-	prime_agent_native_lock=
-	prime_agent_native_discard_adopted_root
+	amicus_native_lock=
+	amicus_native_discard_adopted_root
 }
 
 # A first install that never activated a release must not keep the ownership
 # marker: the next run would find a managed tree holding no executable. Only a
 # root this run created, still empty apart from what this run created, is given up.
-prime_agent_native_discard_adopted_root() {
-	[ "${prime_agent_native_root_adopted:-0}" = 1 ] || return 0
-	prime_agent_native_root_adopted=0
+amicus_native_discard_adopted_root() {
+	[ "${amicus_native_root_adopted:-0}" = 1 ] || return 0
+	amicus_native_root_adopted=0
 	[ -n "${native_root:-}" ] || return 0
-	if [ -e "$native_root/bin/prime-agent" ] || [ -L "$native_root/bin/prime-agent" ]; then return 0; fi
+	if [ -e "$native_root/bin/amicus" ] || [ -L "$native_root/bin/amicus" ]; then return 0; fi
 	[ -z "$(ls -A "$native_root" 2>/dev/null | grep -vxE '\.managed|bin|releases' || :)" ] || return 0
 	rmdir "$native_root/bin" "$native_root/releases" 2>/dev/null || :
 	if [ -e "$native_root/bin" ] || [ -e "$native_root/releases" ]; then return 0; fi
@@ -1814,17 +1814,17 @@ prime_agent_native_discard_adopted_root() {
 	rmdir "$native_root" 2>/dev/null || :
 }
 
-prime_agent_native_prepare_root() {
-	native_root="${PRIME_AGENT_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/prime-agent}"
+amicus_native_prepare_root() {
+	native_root="${AMICUS_INSTALL_DIR:-${XDG_DATA_HOME:-$HOME/.local/share}/amicus}"
 	case "$native_root" in /*) ;; *) printf 'error: install directory must be absolute.\n' >&2; exit 1 ;; esac
 	mkdir -p "$native_root"
 	native_root=$(CDPATH= cd "$native_root" && pwd -P)
 	if [ -L "$native_root/.managed" ] || [ -L "$native_root/releases" ] || [ -L "$native_root/bin" ]; then
 		printf 'error: managed installation directories must not be symlinks.\n' >&2; exit 1
 	fi
-	prime_agent_native_root_adopted=0
+	amicus_native_root_adopted=0
 	if [ -e "$native_root/.managed" ]; then
-		[ "$(cat "$native_root/.managed")" = prime-agent-native-v1 ] || {
+		[ "$(cat "$native_root/.managed")" = amicus-native-v1 ] || {
 			printf 'error: unrecognized installation owner in %s.\n' "$native_root" >&2; exit 1;
 		}
 	elif [ -n "$(ls -A "$native_root")" ]; then
@@ -1832,7 +1832,7 @@ prime_agent_native_prepare_root() {
 		exit 1
 	else
 		# Ownership taken now is given back if this run never activates a release.
-		prime_agent_native_root_adopted=1
+		amicus_native_root_adopted=1
 	fi
 	# Never steal a lock: even stale-lock recovery can race with another installer.
 	if ! mkdir "$native_root/.install-lock" 2>/dev/null; then
@@ -1840,61 +1840,61 @@ prime_agent_native_prepare_root() {
 		printf 'error: installation is locked (pid %s). After confirming no installer is running, remove %s/.install-lock.\n' "$native_lock_pid" "$native_root" >&2
 		exit 1
 	fi
-	prime_agent_native_lock="$native_root/.install-lock"
-	printf '%s\n' "$$" >"$prime_agent_native_lock/pid"
-	printf 'prime-agent-native-v1\n' >"$native_root/.managed"
+	amicus_native_lock="$native_root/.install-lock"
+	printf '%s\n' "$$" >"$amicus_native_lock/pid"
+	printf 'amicus-native-v1\n' >"$native_root/.managed"
 	mkdir -p "$native_root/releases" "$native_root/bin"
-	for native_link in prime-agent previous; do
+	for native_link in amicus previous; do
 		if [ -e "$native_root/bin/$native_link" ] || [ -L "$native_root/bin/$native_link" ]; then
-			[ -L "$native_root/bin/$native_link" ] && prime_agent_native_valid_target "$(readlink "$native_root/bin/$native_link")" || {
+			[ -L "$native_root/bin/$native_link" ] && amicus_native_valid_target "$(readlink "$native_root/bin/$native_link")" || {
 				printf 'error: unrecognized managed command target.\n' >&2; exit 1;
 			}
 		fi
 	done
-	prime_agent_native_sweep_orphan_stages
-	prime_agent_native_stage=$(mktemp -d "$native_root/.install.XXXXXX")
-	prime_agent_native_recovered=0
-	prime_agent_native_recover_activation || exit 1
-	if [ "$prime_agent_native_recovered" = 1 ]; then
-		prime_agent_native_prune_releases
+	amicus_native_sweep_orphan_stages
+	amicus_native_stage=$(mktemp -d "$native_root/.install.XXXXXX")
+	amicus_native_recovered=0
+	amicus_native_recover_activation || exit 1
+	if [ "$amicus_native_recovered" = 1 ]; then
+		amicus_native_prune_releases
 	fi
-	if [ "${PRIME_AGENT_EXPECTED_CURRENT+x}" = x ] && [ "$(readlink "$native_root/bin/prime-agent" 2>/dev/null || :)" != "$PRIME_AGENT_EXPECTED_CURRENT" ]; then
+	if [ "${AMICUS_EXPECTED_CURRENT+x}" = x ] && [ "$(readlink "$native_root/bin/amicus" 2>/dev/null || :)" != "$AMICUS_EXPECTED_CURRENT" ]; then
 		printf 'error: the active release changed; retry the update.\n' >&2; exit 1
 	fi
 }
 
-prime_agent_native_rollback() {
-	prime_agent_install_traps
-	prime_agent_native_prepare_root
+amicus_native_rollback() {
+	amicus_install_traps
+	amicus_native_prepare_root
 	[ -L "$native_root/bin/previous" ] || { printf 'error: no previous compiled release is available.\n' >&2; exit 1; }
 	native_previous=$(readlink "$native_root/bin/previous")
-	native_current=$(readlink "$native_root/bin/prime-agent")
-	if [ -n "${PRIME_AGENT_EXPECTED_PREVIOUS:-}" ] && [ "$native_previous" != "$PRIME_AGENT_EXPECTED_PREVIOUS" ]; then
+	native_current=$(readlink "$native_root/bin/amicus")
+	if [ -n "${AMICUS_EXPECTED_PREVIOUS:-}" ] && [ "$native_previous" != "$AMICUS_EXPECTED_PREVIOUS" ]; then
 		printf 'error: the previous release changed while planning rollback; retry.\n' >&2; exit 1
 	fi
 	[ "$native_previous" != "$native_current" ] || { printf 'error: no different previous release is available.\n' >&2; exit 1; }
-	prime_agent_native_verify_release_target "$native_previous" previous || exit 1
-	if prime_agent_native_verify_release_target "$native_current" current >/dev/null 2>&1; then
-		prime_agent_native_activate "$native_previous" "$native_current"
+	amicus_native_verify_release_target "$native_previous" previous || exit 1
+	if amicus_native_verify_release_target "$native_current" current >/dev/null 2>&1; then
+		amicus_native_activate "$native_previous" "$native_current"
 	else
 		# Repair only the active link; keep the healthy rollback target instead of retaining damage.
-		prime_agent_native_atomic_link "$native_previous" "$native_root/bin/prime-agent" || exit 1
+		amicus_native_atomic_link "$native_previous" "$native_root/bin/amicus" || exit 1
 	fi
-	prime_agent_native_prune_releases
+	amicus_native_prune_releases
 	printf 'Restored the previous compiled release.\n'
-	prime_agent_native_cleanup
+	amicus_native_cleanup
 }
 
-prime_agent_native_valid_target() {
-	prime_agent_native_parse_target "$1"
+amicus_native_valid_target() {
+	amicus_native_parse_target "$1"
 	return $?
 }
 
-prime_agent_native_parse_target() {
+amicus_native_parse_target() {
 	native_parsed_target="$1"
-	case "$native_parsed_target" in ../releases/*/prime-agent) ;; *) return 1 ;; esac
+	case "$native_parsed_target" in ../releases/*/amicus) ;; *) return 1 ;; esac
 	native_parsed_name=${native_parsed_target#../releases/}
-	native_parsed_name=${native_parsed_name%/prime-agent}
+	native_parsed_name=${native_parsed_name%/amicus}
 	case "$native_parsed_name" in ''|.|..|*/*|*[!0-9A-Za-z.-]*) return 1 ;; esac
 	native_parsed_digest_suffix=${native_parsed_name##*-}
 	native_parsed_digest=${native_parsed_digest_suffix%%.*}
@@ -1924,7 +1924,7 @@ prime_agent_native_parse_target() {
 	native_parsed_dir="$native_root/releases/$native_parsed_name"
 }
 
-prime_agent_native_validate_asset() {
+amicus_native_validate_asset() {
 	native_asset_release_dir="$1"
 	native_asset_relative="$2"
 	native_asset_path="$native_asset_release_dir/$native_asset_relative"
@@ -1942,16 +1942,16 @@ prime_agent_native_validate_asset() {
 	[ "$native_asset_actual_parent" = "$native_asset_expected_parent" ]
 }
 
-prime_agent_native_validate_release_metadata() {
+amicus_native_validate_release_metadata() {
 	native_metadata_target="$1"
-	prime_agent_native_parse_target "$native_metadata_target" || return 1
+	amicus_native_parse_target "$native_metadata_target" || return 1
 	native_metadata_dir="$native_parsed_dir"
 	native_metadata_version="$native_parsed_version"
 	native_metadata_digest="$native_parsed_digest"
 	[ -d "$native_metadata_dir" ] && [ ! -L "$native_metadata_dir" ] || return 1
 	[ "$(CDPATH= cd "$native_metadata_dir" 2>/dev/null && pwd -P)" = "$native_metadata_dir" ] || return 1
-	for native_metadata_asset in prime-agent package.json install.sh prime-agent-runtime/pyproject.toml prime-agent-runtime/src/rlm/repl.py theme/prime.json export-html/template.html photon_rs_bg.wasm .archive-sha256 .install-source; do
-		prime_agent_native_validate_asset "$native_metadata_dir" "$native_metadata_asset" || return 1
+	for native_metadata_asset in amicus package.json install.sh amicus-runtime/pyproject.toml amicus-runtime/src/rlm/repl.py theme/prime.json export-html/template.html photon_rs_bg.wasm .archive-sha256 .install-source; do
+		amicus_native_validate_asset "$native_metadata_dir" "$native_metadata_asset" || return 1
 	done
 	[ "$(cat "$native_metadata_dir/.archive-sha256")" = "$native_metadata_digest" ] || return 1
 	native_metadata_package_version=$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "$native_metadata_dir/package.json")
@@ -1960,12 +1960,12 @@ prime_agent_native_validate_release_metadata() {
 	case "$native_metadata_source" in http://*|https://*) ;; *) return 1 ;; esac
 }
 
-prime_agent_native_probe_timeout() {
+amicus_native_probe_timeout() {
 	# The first run of a freshly extracted executable can be slow: Rosetta 2 translates
 	# the whole binary before it prints anything, and a cold page cache adds more. A
 	# 51 MB x64 executable measured 11.3s cold and 0.2s warm on Apple Silicon.
 	native_probe_timeout=60
-	case "${PRIME_AGENT_PROBE_TIMEOUT_SECONDS:-}" in
+	case "${AMICUS_PROBE_TIMEOUT_SECONDS:-}" in
 		''|*[!0-9]*) ;;
 		*)
 			# $((...)) reads leading-zero constants as octal: "010" would become an
@@ -1973,14 +1973,14 @@ prime_agent_native_probe_timeout() {
 			# octal and abort the arithmetic under set -eu. Strip the leading zeroes
 			# so the accepted value stays decimal; an all-zero value strips to the
 			# empty string and falls back to the default like any invalid value.
-			native_probe_timeout="${PRIME_AGENT_PROBE_TIMEOUT_SECONDS#"${PRIME_AGENT_PROBE_TIMEOUT_SECONDS%%[!0]*}"}"
+			native_probe_timeout="${AMICUS_PROBE_TIMEOUT_SECONDS#"${AMICUS_PROBE_TIMEOUT_SECONDS%%[!0]*}"}"
 			[ -n "$native_probe_timeout" ] && [ "$native_probe_timeout" -le 600 ] || native_probe_timeout=60
 			;;
 	esac
 	printf '%s\n' "$native_probe_timeout"
 }
 
-prime_agent_native_probe() (
+amicus_native_probe() (
 	# macOS does not ship timeout; keep the deadline independent of Node and Python.
 	native_probe_pid=
 	trap '
@@ -1994,7 +1994,7 @@ prime_agent_native_probe() (
 	trap 'exit 129' HUP
 	"$@" &
 	native_probe_pid=$!
-	native_probe_timeout=$(prime_agent_native_probe_timeout)
+	native_probe_timeout=$(amicus_native_probe_timeout)
 	# date +%s truncates to whole seconds, so add one to avoid killing a probe early.
 	native_probe_deadline=$(($(date +%s) + native_probe_timeout + 1))
 	while kill -0 "$native_probe_pid" 2>/dev/null; do
@@ -2014,7 +2014,7 @@ prime_agent_native_probe() (
 
 # Bun's musl executables link against libstdc++, which Alpine does not preinstall.
 # The loader either names the library or reports a wall of C++ relocation failures.
-prime_agent_native_probe_missing_libstdcxx() {
+amicus_native_probe_missing_libstdcxx() {
 	native_probe_log="$1"
 	[ -f "$native_probe_log" ] || return 1
 	grep -q 'libstdc++\.so\.6' "$native_probe_log" && return 0
@@ -2024,38 +2024,38 @@ prime_agent_native_probe_missing_libstdcxx() {
 }
 
 # One actionable line beats sixty relocation errors the user cannot act on.
-prime_agent_native_report_missing_libstdcxx() {
+amicus_native_report_missing_libstdcxx() {
 	printf 'error: the compiled executable needs the libstdc++ runtime library, which is missing here.\n' >&2
 	printf 'Install it and run this installer again (Alpine: apk add --no-cache libstdc++).\n' >&2
-	printf 'To install the Node.js build instead, set PRIME_AGENT_INSTALL_METHOD=node.\n' >&2
+	printf 'To install the Node.js build instead, set AMICUS_INSTALL_METHOD=node.\n' >&2
 }
 
-prime_agent_native_verify_release_target() {
+amicus_native_verify_release_target() {
 	native_verify_target="$1"
 	native_verify_label="$2"
-	if ! prime_agent_native_validate_release_metadata "$native_verify_target"; then
+	if ! amicus_native_validate_release_metadata "$native_verify_target"; then
 		printf 'error: invalid %s release metadata or assets. The active release was kept.\n' "$native_verify_label" >&2
 		return 1
 	fi
 	native_verify_dir="$native_metadata_dir"
 	native_verify_version="$native_metadata_version"
-	if ! prime_agent_native_probe "$native_verify_dir/prime-agent" --version >"$prime_agent_native_stage/$native_verify_label.version" 2>"$prime_agent_native_stage/$native_verify_label.probe.log"; then
-		cat "$prime_agent_native_stage/$native_verify_label.probe.log" >&2
+	if ! amicus_native_probe "$native_verify_dir/amicus" --version >"$amicus_native_stage/$native_verify_label.version" 2>"$amicus_native_stage/$native_verify_label.probe.log"; then
+		cat "$amicus_native_stage/$native_verify_label.probe.log" >&2
 		printf 'error: the %s release executable could not be validated. The active release was kept.\n' "$native_verify_label" >&2
 		return 1
 	fi
-	if [ "$(cat "$prime_agent_native_stage/$native_verify_label.version")" != "$native_verify_version" ]; then
+	if [ "$(cat "$amicus_native_stage/$native_verify_label.version")" != "$native_verify_version" ]; then
 		printf 'error: the %s release executable reports a different version. The active release was kept.\n' "$native_verify_label" >&2
 		return 1
 	fi
-	if ! prime_agent_native_probe "$native_verify_dir/prime-agent" --help >"$prime_agent_native_stage/$native_verify_label.help" 2>"$prime_agent_native_stage/$native_verify_label.help.log"; then
-		cat "$prime_agent_native_stage/$native_verify_label.help.log" >&2
+	if ! amicus_native_probe "$native_verify_dir/amicus" --help >"$amicus_native_stage/$native_verify_label.help" 2>"$amicus_native_stage/$native_verify_label.help.log"; then
+		cat "$amicus_native_stage/$native_verify_label.help.log" >&2
 		printf 'error: the %s release executable failed its help probe. The active release was kept.\n' "$native_verify_label" >&2
 		return 1
 	fi
 }
 
-prime_agent_native_sweep_orphan_stages() {
+amicus_native_sweep_orphan_stages() {
 	for native_orphan_stage in "$native_root"/.install.*; do
 		[ -e "$native_orphan_stage" ] || [ -L "$native_orphan_stage" ] || continue
 		native_orphan_name=${native_orphan_stage##*/}
@@ -2067,7 +2067,7 @@ prime_agent_native_sweep_orphan_stages() {
 	done
 }
 
-prime_agent_native_release_in_use() {
+amicus_native_release_in_use() {
 	native_usage_executable="$1"
 	if native_lsof=$(command -v lsof 2>/dev/null); then
 		:
@@ -2078,26 +2078,26 @@ prime_agent_native_release_in_use() {
 	else
 		return 2
 	fi
-	if "$native_lsof" -n -F p "$native_usage_executable" >"$prime_agent_native_stage/lsof.out" 2>"$prime_agent_native_stage/lsof.err"; then
+	if "$native_lsof" -n -F p "$native_usage_executable" >"$amicus_native_stage/lsof.out" 2>"$amicus_native_stage/lsof.err"; then
 		return 0
 	else
 		native_lsof_status=$?
 	fi
-	[ "$native_lsof_status" -eq 1 ] && [ ! -s "$prime_agent_native_stage/lsof.err" ] && return 1
+	[ "$native_lsof_status" -eq 1 ] && [ ! -s "$amicus_native_stage/lsof.err" ] && return 1
 	return 2
 }
 
-prime_agent_native_prune_releases() {
-	native_prune_current=$(readlink "$native_root/bin/prime-agent" 2>/dev/null || :)
+amicus_native_prune_releases() {
+	native_prune_current=$(readlink "$native_root/bin/amicus" 2>/dev/null || :)
 	native_prune_previous=$(readlink "$native_root/bin/previous" 2>/dev/null || :)
 	for native_prune_dir in "$native_root"/releases/*; do
 		[ -e "$native_prune_dir" ] || [ -L "$native_prune_dir" ] || continue
 		[ -d "$native_prune_dir" ] && [ ! -L "$native_prune_dir" ] || continue
-		native_prune_target="../releases/${native_prune_dir##*/}/prime-agent"
+		native_prune_target="../releases/${native_prune_dir##*/}/amicus"
 		[ "$native_prune_target" != "$native_prune_current" ] || continue
 		[ "$native_prune_target" != "$native_prune_previous" ] || continue
-		prime_agent_native_validate_release_metadata "$native_prune_target" || continue
-		if prime_agent_native_release_in_use "$native_prune_dir/prime-agent"; then
+		amicus_native_validate_release_metadata "$native_prune_target" || continue
+		if amicus_native_release_in_use "$native_prune_dir/amicus"; then
 			continue
 		else
 			native_prune_usage_status=$?
@@ -2107,90 +2107,90 @@ prime_agent_native_prune_releases() {
 	done
 }
 
-prime_agent_native_recover_activation() {
+amicus_native_recover_activation() {
 	native_activation_state="$native_root/.activation-state"
 	if [ ! -e "$native_activation_state" ] && [ ! -L "$native_activation_state" ]; then
 		return 0
 	fi
 	if [ ! -f "$native_activation_state" ] || [ -L "$native_activation_state" ] ||
 		[ "$(wc -l <"$native_activation_state" | tr -d ' ')" != 2 ]; then
-		printf 'error: invalid activation recovery state at %s. Restore bin/prime-agent and bin/previous, then remove it.\n' "$native_activation_state" >&2
+		printf 'error: invalid activation recovery state at %s. Restore bin/amicus and bin/previous, then remove it.\n' "$native_activation_state" >&2
 		return 1
 	fi
 	native_recovery_target=$(sed -n '1p' "$native_activation_state")
 	native_recovery_previous=$(sed -n '2p' "$native_activation_state")
-	prime_agent_native_verify_release_target "$native_recovery_target" recovery-target || return 1
+	amicus_native_verify_release_target "$native_recovery_target" recovery-target || return 1
 	if [ -n "$native_recovery_previous" ]; then
-		prime_agent_native_verify_release_target "$native_recovery_previous" recovery-previous || return 1
+		amicus_native_verify_release_target "$native_recovery_previous" recovery-previous || return 1
 	fi
-	native_recovery_current=$(readlink "$native_root/bin/prime-agent" 2>/dev/null || :)
+	native_recovery_current=$(readlink "$native_root/bin/amicus" 2>/dev/null || :)
 	if [ "$native_recovery_current" = "$native_recovery_target" ]; then
 		if [ -n "$native_recovery_previous" ] && [ "$native_recovery_previous" != "$native_recovery_target" ] &&
 			[ "$(readlink "$native_root/bin/previous" 2>/dev/null || :)" != "$native_recovery_previous" ]; then
-			prime_agent_native_atomic_link "$native_recovery_previous" "$native_root/bin/previous" || return 1
+			amicus_native_atomic_link "$native_recovery_previous" "$native_root/bin/previous" || return 1
 		fi
 	elif [ "$native_recovery_current" != "$native_recovery_previous" ]; then
-		printf 'error: activation recovery is ambiguous: bin/prime-agent matches neither recorded release. Restore the links using %s before retrying.\n' "$native_activation_state" >&2
+		printf 'error: activation recovery is ambiguous: bin/amicus matches neither recorded release. Restore the links using %s before retrying.\n' "$native_activation_state" >&2
 		return 1
 	fi
 	rm -f "$native_activation_state" || return 1
-	prime_agent_native_recovered=1
+	amicus_native_recovered=1
 }
 
-prime_agent_native_check_public_link() {
-	native_public_bin="${PRIME_AGENT_BIN_DIR:-$HOME/.local/bin}"
+amicus_native_check_public_link() {
+	native_public_bin="${AMICUS_BIN_DIR:-$HOME/.local/bin}"
 	case "$native_public_bin" in /*) ;; *) printf 'error: bin directory must be absolute.\n' >&2; exit 1 ;; esac
-	if [ "${PRIME_AGENT_INSTALL_LINK:-1}" = 0 ]; then return; fi
-	case "$prime_agent_cmd" in
+	if [ "${AMICUS_INSTALL_LINK:-1}" = 0 ]; then return; fi
+	case "$amicus_cmd" in
 		''|.|..|*/*) printf 'error: command name must be a basename.\n' >&2; exit 1 ;;
 	esac
-	if [ -e "$native_public_bin/$prime_agent_cmd" ] || [ -L "$native_public_bin/$prime_agent_cmd" ]; then
-		if [ ! -L "$native_public_bin/$prime_agent_cmd" ] || [ "$(readlink "$native_public_bin/$prime_agent_cmd")" != "$native_root/bin/prime-agent" ]; then
-			printf 'error: refusing to replace existing command %s/%s.\n' "$native_public_bin" "$prime_agent_cmd" >&2
-			printf 'Choose PRIME_AGENT_BIN_DIR or set PRIME_AGENT_INSTALL_LINK=0.\n' >&2
+	if [ -e "$native_public_bin/$amicus_cmd" ] || [ -L "$native_public_bin/$amicus_cmd" ]; then
+		if [ ! -L "$native_public_bin/$amicus_cmd" ] || [ "$(readlink "$native_public_bin/$amicus_cmd")" != "$native_root/bin/amicus" ]; then
+			printf 'error: refusing to replace existing command %s/%s.\n' "$native_public_bin" "$amicus_cmd" >&2
+			printf 'Choose AMICUS_BIN_DIR or set AMICUS_INSTALL_LINK=0.\n' >&2
 			exit 1
 		fi
 	fi
 	mkdir -p "$native_public_bin"
 }
 
-prime_agent_native_validate_archive() {
-	LC_ALL=C tar -tzf "$native_archive" >"$prime_agent_native_stage/entries"
+amicus_native_validate_archive() {
+	LC_ALL=C tar -tzf "$native_archive" >"$amicus_native_stage/entries"
 	awk '
 		/^\// || /(^|\/)\.\.(\/|$)/ || /\\/ { bad=1 }
 		END { exit bad }
-	' "$prime_agent_native_stage/entries" || { printf 'error: unsafe archive path.\n' >&2; exit 1; }
-	LC_ALL=C tar -tvzf "$native_archive" >"$prime_agent_native_stage/types"
+	' "$amicus_native_stage/entries" || { printf 'error: unsafe archive path.\n' >&2; exit 1; }
+	LC_ALL=C tar -tvzf "$native_archive" >"$amicus_native_stage/types"
 	awk 'substr($0, 1, 1) != "-" && substr($0, 1, 1) != "d" { bad=1 } END { exit bad }' \
-		"$prime_agent_native_stage/types" || { printf 'error: archive contains links or special files.\n' >&2; exit 1; }
+		"$amicus_native_stage/types" || { printf 'error: archive contains links or special files.\n' >&2; exit 1; }
 }
 
-prime_agent_native_atomic_link() {
-	native_link_stage=$(mktemp -d "$prime_agent_native_stage/link.XXXXXX") || return 1
+amicus_native_atomic_link() {
+	native_link_stage=$(mktemp -d "$amicus_native_stage/link.XXXXXX") || return 1
 	ln -s "$1" "$native_link_stage/link" || return 1
 	# The destination is an executable link, never a directory link.
 	mv -f "$native_link_stage/link" "$2" || return 1
 	rmdir "$native_link_stage" || return 1
 }
 
-prime_agent_native_activate() {
-	prime_agent_native_activation_target="$1"
-	prime_agent_native_activation_previous="$2"
+amicus_native_activate() {
+	amicus_native_activation_target="$1"
+	amicus_native_activation_previous="$2"
 	{
 		printf '%s\n' "$1"
 		printf '%s\n' "$2"
-	} >"$prime_agent_native_stage/activation-state"
-	mv -f "$prime_agent_native_stage/activation-state" "$native_root/.activation-state"
-	prime_agent_native_atomic_link "$1" "$native_root/bin/prime-agent"
+	} >"$amicus_native_stage/activation-state"
+	mv -f "$amicus_native_stage/activation-state" "$native_root/.activation-state"
+	amicus_native_atomic_link "$1" "$native_root/bin/amicus"
 	if [ -n "$2" ] && [ "$1" != "$2" ]; then
-		prime_agent_native_atomic_link "$2" "$native_root/bin/previous"
+		amicus_native_atomic_link "$2" "$native_root/bin/previous"
 	fi
 	rm -f "$native_root/.activation-state"
-	prime_agent_native_activation_target=
-	prime_agent_native_activation_previous=
+	amicus_native_activation_target=
+	amicus_native_activation_previous=
 }
 
-prime_agent_release_is_node_only() {
+amicus_release_is_node_only() {
 	awk -v file="$2" '
 		$2 ~ /\.tar\.gz$/ { compiled=1 }
 		$2 == file { count++; if (NF != 2 || length($1) != 64 || $1 ~ /[^0-9a-fA-F]/) invalid=1 }
@@ -2198,100 +2198,100 @@ prime_agent_release_is_node_only() {
 	' "$1"
 }
 
-prime_agent_install_native() {
+amicus_install_native() {
 	native_platform="$1"
 	shift
-	if [ "$prime_agent_base_url" = "$prime_agent_unconfigured_base_url" ]; then
-		printf 'error: set PRIME_AGENT_DOWNLOAD_BASE_URL or use the published installer.\n' >&2; exit 1
+	if [ "$amicus_base_url" = "$amicus_unconfigured_base_url" ]; then
+		printf 'error: set AMICUS_DOWNLOAD_BASE_URL or use the published installer.\n' >&2; exit 1
 	fi
-	prime_agent_validate_download_base_url
-	prime_agent_install_traps
-	prime_agent_init_screen
-	native_version=$(resolve_prime_agent_version "$@")
+	amicus_validate_download_base_url
+	amicus_install_traps
+	amicus_init_screen
+	native_version=$(resolve_amicus_version "$@")
 	printf '%s\n' "$native_version" | grep -Eq '^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$' || {
 		printf 'error: invalid native release version.\n' >&2; exit 1;
 	}
 	# Select the release format before touching native-owned installation paths.
-	prime_agent_download_dir=$(create_temp_dir)
-	native_file="prime-agent-$native_version-$native_platform.tar.gz"
-	native_checksums="$prime_agent_download_dir/SHA256SUMS"
-	prime_agent_run_quiet_with_animation "Downloading Prime Agent" "Downloading release checksums" "Prime Agent v$native_version" \
-		prime_agent_curl_download -fsSL --connect-timeout 10 --max-time 120 "$prime_agent_base_url/releases/v$native_version/SHA256SUMS" -o "$native_checksums"
+	amicus_download_dir=$(create_temp_dir)
+	native_file="amicus-$native_version-$native_platform.tar.gz"
+	native_checksums="$amicus_download_dir/SHA256SUMS"
+	amicus_run_quiet_with_animation "Downloading Amicus" "Downloading release checksums" "Amicus v$native_version" \
+		amicus_curl_download -fsSL --connect-timeout 10 --max-time 120 "$amicus_base_url/releases/v$native_version/SHA256SUMS" -o "$native_checksums"
 	awk -v file="$native_file" '$2 == file { count++; hash=$1; fields=NF } END { if (count != 1 || fields != 2 || length(hash) != 64 || hash ~ /[^0-9a-fA-F]/) exit 1; print tolower(hash) "  " file }' \
-		"$native_checksums" >"$prime_agent_download_dir/selected.sha256" || {
-		if [ "${PRIME_AGENT_INSTALL_METHOD:-auto}" = auto ] &&
-			prime_agent_release_is_node_only "$native_checksums" "$prime_agent_package-$native_version.tgz"; then
-			rm -rf "$prime_agent_download_dir"
-			prime_agent_download_dir=
+		"$native_checksums" >"$amicus_download_dir/selected.sha256" || {
+		if [ "${AMICUS_INSTALL_METHOD:-auto}" = auto ] &&
+			amicus_release_is_node_only "$native_checksums" "$amicus_package-$native_version.tgz"; then
+			rm -rf "$amicus_download_dir"
+			amicus_download_dir=
 			printf 'This release only provides npm packages; using the Node installation.\n' >&2
-			prime_agent_install_node "$native_version"
+			amicus_install_node "$native_version"
 			return
 		fi
 		printf 'error: expected one valid checksum for %s.\n' "$native_file" >&2; exit 1;
 	}
-	if [ "${PRIME_AGENT_INSTALLER_NONINTERACTIVE:-0}" != 1 ]; then
-		if prime_agent_prompt_yes_no "Install Prime Agent v$native_version?" "Downloads and verifies the compiled application." "Install? [Y/n]"; then
+	if [ "${AMICUS_INSTALLER_NONINTERACTIVE:-0}" != 1 ]; then
+		if amicus_prompt_yes_no "Install Amicus v$native_version?" "Downloads and verifies the compiled application." "Install? [Y/n]"; then
 			:
 		else
 			native_prompt_status=$?
 			[ "$native_prompt_status" = 2 ] || return 0
 		fi
 	fi
-	prime_agent_native_prepare_root
-	mv "$prime_agent_download_dir/selected.sha256" "$prime_agent_native_stage/selected.sha256"
-	rm -rf "$prime_agent_download_dir"
-	prime_agent_download_dir=
-	native_archive="$prime_agent_native_stage/$native_file"
-	if [ -n "${PRIME_AGENT_EXPECTED_SHA256:-}" ] && [ "$(awk '{print $1}' "$prime_agent_native_stage/selected.sha256")" != "$PRIME_AGENT_EXPECTED_SHA256" ]; then
+	amicus_native_prepare_root
+	mv "$amicus_download_dir/selected.sha256" "$amicus_native_stage/selected.sha256"
+	rm -rf "$amicus_download_dir"
+	amicus_download_dir=
+	native_archive="$amicus_native_stage/$native_file"
+	if [ -n "${AMICUS_EXPECTED_SHA256:-}" ] && [ "$(awk '{print $1}' "$amicus_native_stage/selected.sha256")" != "$AMICUS_EXPECTED_SHA256" ]; then
 		printf 'error: release manifest and checksum inventory disagree.\n' >&2; exit 1
 	fi
-	prime_agent_run_quiet_with_animation "Downloading Prime Agent" "Downloading compiled Prime Agent" "$native_platform" \
-		prime_agent_curl_download -fsSL --connect-timeout 10 --max-time 300 "$prime_agent_base_url/releases/v$native_version/$native_file" -o "$native_archive"
+	amicus_run_quiet_with_animation "Downloading Amicus" "Downloading compiled Amicus" "$native_platform" \
+		amicus_curl_download -fsSL --connect-timeout 10 --max-time 300 "$amicus_base_url/releases/v$native_version/$native_file" -o "$native_archive"
 	if command -v sha256sum >/dev/null 2>&1; then native_checker=sha256sum; else native_checker=shasum; fi
-	prime_agent_run_quiet_with_animation "Verifying Prime Agent" "Verifying SHA-256" "Checking the downloaded archive." \
-		prime_agent_run_checksum_check "$prime_agent_native_stage" selected.sha256 "$native_checker"
-	prime_agent_native_validate_archive
-	mkdir "$prime_agent_native_stage/application"
-	tar -xzf "$native_archive" -C "$prime_agent_native_stage/application"
-	native_extracted="$prime_agent_native_stage/application"
-	for native_asset in prime-agent package.json install.sh prime-agent-runtime/pyproject.toml prime-agent-runtime/src/rlm/repl.py theme/prime.json export-html/template.html photon_rs_bg.wasm; do
+	amicus_run_quiet_with_animation "Verifying Amicus" "Verifying SHA-256" "Checking the downloaded archive." \
+		amicus_run_checksum_check "$amicus_native_stage" selected.sha256 "$native_checker"
+	amicus_native_validate_archive
+	mkdir "$amicus_native_stage/application"
+	tar -xzf "$native_archive" -C "$amicus_native_stage/application"
+	native_extracted="$amicus_native_stage/application"
+	for native_asset in amicus package.json install.sh amicus-runtime/pyproject.toml amicus-runtime/src/rlm/repl.py theme/prime.json export-html/template.html photon_rs_bg.wasm; do
 		[ -f "$native_extracted/$native_asset" ] || { printf 'error: missing archive asset: %s\n' "$native_asset" >&2; exit 1; }
 	done
 	native_probe_status=0
-	prime_agent_native_probe "$native_extracted/prime-agent" --version >"$prime_agent_native_stage/version" 2>"$prime_agent_native_stage/probe.log" ||
+	amicus_native_probe "$native_extracted/amicus" --version >"$amicus_native_stage/version" 2>"$amicus_native_stage/probe.log" ||
 		native_probe_status=$?
 	if [ "$native_probe_status" -ne 0 ]; then
 		# A missing libstdc++ is one package away, so name it instead of downloading Node.
-		if prime_agent_native_probe_missing_libstdcxx "$prime_agent_native_stage/probe.log"; then
-			prime_agent_native_cleanup
-			prime_agent_native_report_missing_libstdcxx
+		if amicus_native_probe_missing_libstdcxx "$amicus_native_stage/probe.log"; then
+			amicus_native_cleanup
+			amicus_native_report_missing_libstdcxx
 			exit 1
 		fi
-		cat "$prime_agent_native_stage/probe.log" >&2
-		prime_agent_native_cleanup
+		cat "$amicus_native_stage/probe.log" >&2
+		amicus_native_cleanup
 		# A timeout means the executable never answered, not that it cannot run here.
 		if [ "$native_probe_status" -eq 124 ]; then
-			native_probe_hint="Set PRIME_AGENT_PROBE_TIMEOUT_SECONDS to a larger value and run the installer again."
-			if [ "${PRIME_AGENT_INSTALL_METHOD:-auto}" = auto ]; then
+			native_probe_hint="Set AMICUS_PROBE_TIMEOUT_SECONDS to a larger value and run the installer again."
+			if [ "${AMICUS_INSTALL_METHOD:-auto}" = auto ]; then
 				printf 'The compiled executable did not answer in time; using the Node installation. %s\n' "$native_probe_hint" >&2
-				prime_agent_install_node "$native_version"
+				amicus_install_node "$native_version"
 				return
 			fi
 			printf 'error: the compiled executable did not answer within %s seconds. %s\n' \
-				"$(prime_agent_native_probe_timeout)" "$native_probe_hint" >&2
+				"$(amicus_native_probe_timeout)" "$native_probe_hint" >&2
 			exit 1
 		fi
-		if [ "${PRIME_AGENT_INSTALL_METHOD:-auto}" = auto ]; then
+		if [ "${AMICUS_INSTALL_METHOD:-auto}" = auto ]; then
 			printf 'The compiled executable cannot run here; using the Node installation.\n' >&2
-			prime_agent_install_node "$native_version"
+			amicus_install_node "$native_version"
 			return
 		fi
 		printf 'error: the compiled executable cannot run on this machine.\n' >&2; exit 1
 	fi
-	[ "$(cat "$prime_agent_native_stage/version")" = "$native_version" ] || { printf 'error: archive version mismatch.\n' >&2; exit 1; }
-	prime_agent_native_probe "$native_extracted/prime-agent" --help >"$prime_agent_native_stage/help"
-	prime_agent_native_check_public_link
-	native_digest=$(awk '{ print $1 }' "$prime_agent_native_stage/selected.sha256")
+	[ "$(cat "$amicus_native_stage/version")" = "$native_version" ] || { printf 'error: archive version mismatch.\n' >&2; exit 1; }
+	amicus_native_probe "$native_extracted/amicus" --help >"$amicus_native_stage/help"
+	amicus_native_check_public_link
+	native_digest=$(awk '{ print $1 }' "$amicus_native_stage/selected.sha256")
 	native_release_name="$native_version-$native_platform-$native_digest"
 	native_destination="$native_root/releases/$native_release_name"
 	if [ -e "$native_destination" ] || [ -L "$native_destination" ]; then
@@ -2301,54 +2301,54 @@ prime_agent_install_native() {
 		native_release_name=${native_destination##*/}
 	fi
 	printf '%s\n' "$native_digest" >"$native_extracted/.archive-sha256"
-	printf '%s\n' "$prime_agent_base_url" >"$native_extracted/.install-source"
+	printf '%s\n' "$amicus_base_url" >"$native_extracted/.install-source"
 	mv "$native_extracted" "$native_destination"
-	if [ "${PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL:-}" != 0 ]; then
+	if [ "${AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL:-}" != 0 ]; then
 		confirm_kernel_runtime_setup
-		if [ "$prime_agent_bootstrap_kernel_on_install" = 1 ]; then
-			if ! prime_agent_run_quiet_with_animation "Preparing Python" "Preparing Python runtime" "Installing uv and Python dependencies." \
-				env PRIME_AGENT_INSTALL_UV=1 "$native_destination/prime-agent" --prime-agent-bootstrap; then
+		if [ "$amicus_bootstrap_kernel_on_install" = 1 ]; then
+			if ! amicus_run_quiet_with_animation "Preparing Python" "Preparing Python runtime" "Installing uv and Python dependencies." \
+				env AMICUS_INSTALL_UV=1 "$native_destination/amicus" --amicus-bootstrap; then
 				printf 'Python preparation failed; retry on first Python use.\n' >&2
 			fi
 		fi
 	fi
-	prime_agent_native_check_public_link
-	native_target="../releases/$native_release_name/prime-agent"
+	amicus_native_check_public_link
+	native_target="../releases/$native_release_name/amicus"
 	native_previous=
-	if [ -L "$native_root/bin/prime-agent" ]; then
-		native_previous=$(readlink "$native_root/bin/prime-agent")
+	if [ -L "$native_root/bin/amicus" ]; then
+		native_previous=$(readlink "$native_root/bin/amicus")
 	fi
 	# A fresh public command must point to an already activated executable.
 	if [ -z "$native_previous" ]; then
-		prime_agent_native_activate "$native_target" ""
+		amicus_native_activate "$native_target" ""
 	fi
-	if [ "${PRIME_AGENT_INSTALL_LINK:-1}" != 0 ] && [ ! -L "$native_public_bin/$prime_agent_cmd" ]; then
-		ln -sn "$native_root/bin/prime-agent" "$native_public_bin/$prime_agent_cmd"
+	if [ "${AMICUS_INSTALL_LINK:-1}" != 0 ] && [ ! -L "$native_public_bin/$amicus_cmd" ]; then
+		ln -sn "$native_root/bin/amicus" "$native_public_bin/$amicus_cmd"
 	fi
 	# Keep an existing release active if creating the public command loses a race.
 	if [ -n "$native_previous" ]; then
-		if prime_agent_native_verify_release_target "$native_previous" current >/dev/null 2>&1; then
-			prime_agent_native_activate "$native_target" "$native_previous"
+		if amicus_native_verify_release_target "$native_previous" current >/dev/null 2>&1; then
+			amicus_native_activate "$native_target" "$native_previous"
 		else
-			prime_agent_native_atomic_link "$native_target" "$native_root/bin/prime-agent" || exit 1
+			amicus_native_atomic_link "$native_target" "$native_root/bin/amicus" || exit 1
 		fi
 	fi
-	prime_agent_native_prune_releases
-	if [ "${PRIME_AGENT_INSTALL_LINK:-1}" != 0 ]; then
-		prime_agent_native_configure_path || printf 'Add %s to PATH to run Prime Agent.\n' "$native_public_bin" >&2
+	amicus_native_prune_releases
+	if [ "${AMICUS_INSTALL_LINK:-1}" != 0 ]; then
+		amicus_native_configure_path || printf 'Add %s to PATH to run Amicus.\n' "$native_public_bin" >&2
 	fi
-	prime_agent_screen "Prime Agent installed" "" "Run it with: $prime_agent_cmd" ""
-	printf 'Installed Prime Agent %s at %s\n' "$native_version" "$native_root/bin/prime-agent"
-	prime_agent_native_cleanup
+	amicus_screen "Amicus installed" "" "Run it with: $amicus_cmd" ""
+	printf 'Installed Amicus %s at %s\n' "$native_version" "$native_root/bin/amicus"
+	amicus_native_cleanup
 }
 
-prime_agent_native_configure_path() {
-	case ":$prime_agent_original_path:" in *":$native_public_bin:"*) return ;; esac
-	native_path_line="export PATH=$(prime_agent_shell_quote "$native_public_bin"):\$PATH"
+amicus_native_configure_path() {
+	case ":$amicus_original_path:" in *":$native_public_bin:"*) return ;; esac
+	native_path_line="export PATH=$(amicus_shell_quote "$native_public_bin"):\$PATH"
 	if native_profile=$(detect_shell_profile); then
 		if ! grep -Fx "$native_path_line" "$native_profile" >/dev/null 2>&1; then
 			mkdir -p "$(dirname "$native_profile")"
-			printf '\n# Prime Agent\n%s\n' "$native_path_line" >>"$native_profile"
+			printf '\n# Amicus\n%s\n' "$native_path_line" >>"$native_profile"
 		fi
 	fi
 	printf 'For this shell, run: %s\n' "$native_path_line"

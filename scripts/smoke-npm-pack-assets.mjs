@@ -10,12 +10,12 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const required = [
 	"dist/models.bundled.json",
 	"dist/mcp-services.bundled.json",
-	"dist/prime-agent-runtime/pyproject.toml",
+	"dist/amicus-runtime/pyproject.toml",
 	"dist/skills/websearch/SKILL.md",
 ];
 
 validateBundledCatalogDir(join(root, "packages/coding-agent/dist"), { allowSmallFixture: true });
-const outDir = mkdtempSync(join(tmpdir(), "prime-agent-npm-pack-"));
+const outDir = mkdtempSync(join(tmpdir(), "amicus-npm-pack-"));
 try {
 	const result = spawnSync(
 		"npm",

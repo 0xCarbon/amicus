@@ -1,5 +1,5 @@
 {
-	"name": "@earendil-works/pi-ai",
+	"name": "@amicus/ai",
 	"version": "0.9.8",
 	"description": "Unified LLM API with automatic model discovery and provider configuration",
 	"type": "module",
@@ -56,7 +56,7 @@
 		}
 	},
 	"bin": {
-		"pi-ai": "./dist/cli.js"
+		"amicus-ai": "./dist/cli.js"
 	},
 	"files": [
 		"dist",
@@ -97,7 +97,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/PrimeIntellect-ai/prime-agent.git",
+		"url": "git+https://github.com/0xCarbon/amicus.git",
 		"directory": "packages/ai"
 	},
 	"engines": {

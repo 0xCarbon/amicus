@@ -46,7 +46,7 @@ FIXTURE_NAMESPACE = uuid.UUID("b0d5f4a1-6d64-4bf8-9d7a-2f4f0a9c1e10")
 
 
 def session_id(kind: str, index: int) -> str:
-    return str(uuid.uuid5(FIXTURE_NAMESPACE, f"prime-agent-ui-bench/{kind}/{index}"))
+    return str(uuid.uuid5(FIXTURE_NAMESPACE, f"amicus-ui-bench/{kind}/{index}"))
 
 
 def session_name(kind: str, index: int) -> str:
@@ -550,7 +550,7 @@ class CatalogClient:
         hello = self.receive()
         if (
             hello.get("type") != "daemon_hello"
-            or hello.get("protocol", {}).get("name") != "prime-agent.daemon"
+            or hello.get("protocol", {}).get("name") != "amicus.daemon"
             or hello["protocol"]["version"] != 7
             or "heartbeat_catalog" not in hello.get("serverCapabilities", [])
         ):
@@ -617,7 +617,7 @@ def ui_measure(request: Request, side: Side, trial: int, *, results: Path, homes
         raise RuntimeError("The first installation must succeed before interactive measurements")
     home = homes / user
     workspace = home / "workspace"
-    agent_dir = home / ".prime/agent"
+    agent_dir = home / ".amicus"
     uid = pwd.getpwnam(user).pw_uid
     spec = fixture_spec()
     details: dict[str, dict] = {}
@@ -638,7 +638,7 @@ def ui_measure(request: Request, side: Side, trial: int, *, results: Path, homes
         # Cold resume of a large session from the CLI, from process spawn to usable editor.
         cpu_start = cpu_total()
         terminal = Terminal(
-            [runuser, "-u", user, "--", "prime-agent", "--resume", spec.resume_id],
+            [runuser, "-u", user, "--", "amicus", "--resume", spec.resume_id],
             workspace,
             env,
             results / f"ui-resume-{trial}",
@@ -659,7 +659,7 @@ def ui_measure(request: Request, side: Side, trial: int, *, results: Path, homes
         # Warm navigation scenario in a single TUI process.
         metric = "switch_large"
         terminal = Terminal(
-            [runuser, "-u", user, "--", "prime-agent"], workspace, env, results / f"ui-scenario-{trial}"
+            [runuser, "-u", user, "--", "amicus"], workspace, env, results / f"ui-scenario-{trial}"
         )
         try:
             terminal.ready()
@@ -804,7 +804,7 @@ def ui_measure(request: Request, side: Side, trial: int, *, results: Path, homes
                     "-u",
                     user,
                     "--",
-                    "prime-agent",
+                    "amicus",
                     "--mode",
                     "daemon",
                     "--daemon-socket",

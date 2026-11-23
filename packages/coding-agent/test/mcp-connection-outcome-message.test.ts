@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
-import { type Component, Container, type TUI } from "@earendil-works/pi-tui";
+import { resetOAuthProviders } from "@amicus/ai/oauth";
+import { type Component, Container, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.js";

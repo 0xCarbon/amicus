@@ -1,4 +1,4 @@
-import { type Component, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
+import { type Component, truncateToWidth, visibleWidth } from "@amicus/tui";
 import { theme } from "../theme/theme.js";
 
 /** Plain terminal row immediately above the prompt, shared by recap and conversation detail status. */

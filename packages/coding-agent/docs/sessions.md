@@ -1,16 +1,16 @@
 # Sessions
 
-Prime Agent saves conversations as sessions so you can continue work, branch from earlier turns, and revisit previous paths.
+Amicus saves conversations as sessions so you can continue work, branch from earlier turns, and revisit previous paths.
 
 ## Session Storage
 
-Sessions auto-save to `~/.prime/agent/sessions/`. Each session is a JSONL file with a tree structure.
+Sessions auto-save to `~/.amicus/sessions/`. Each session is a JSONL file with a tree structure.
 
 ```bash
-prime-agent --continue          # Continue the most recent session
-prime-agent --resume [path|id]  # Browse past sessions or resume one directly
-prime-agent --no-session        # Ephemeral mode; do not save
-prime-agent --fork <path|id>    # Fork a session file or partial session ID into a new session
+amicus --continue          # Continue the most recent session
+amicus --resume [path|id]  # Browse past sessions or resume one directly
+amicus --no-session        # Ephemeral mode; do not save
+amicus --fork <path|id>    # Fork a session file or partial session ID into a new session
 ```
 
 Use `/session` in interactive mode to see the current session file, session ID, and message count. Use `/usage` for token, cost, and context usage.
@@ -35,9 +35,9 @@ For the JSONL file format and SessionManager API, see [Session Format](session-f
 
 ## Resuming and Deleting Sessions
 
-`/resume` opens an interactive session picker for the current project. `prime-agent --resume` opens the same picker at startup, and `prime-agent --resume <path|id>` resumes a specific session.
+`/resume` opens an interactive session picker for the current project. `amicus --resume` opens the same picker at startup, and `amicus --resume <path|id>` resumes a specific session.
 
-An invalid ID exits with the closest unambiguous session ID when one is available. To open the picker and send an initial prompt after selecting a session, separate the prompt with `--`: `prime-agent --resume -- "continue this work"`.
+An invalid ID exits with the closest unambiguous session ID when one is available. To open the picker and send an initial prompt after selecting a session, separate the prompt with `--`: `amicus --resume -- "continue this work"`.
 
 In the picker you can:
 
@@ -48,19 +48,19 @@ In the picker you can:
 - rename with Ctrl+R
 - delete with Ctrl+D, then confirm
 
-When available, Prime Agent uses the `trash` CLI for deletion instead of permanently removing files.
+When available, Amicus uses the `trash` CLI for deletion instead of permanently removing files.
 
 ## Editing Session Transcripts
 
-`prime-agent session edit [selector]` opens an interactive transcript editor for a saved session. The selector accepts a session ID or partial ID, a session name, or a `.jsonl` path; without a selector the most recent session for the current directory is used. The editor refuses a session that is active in another agent unless `--force` is passed.
+`amicus session edit [selector]` opens an interactive transcript editor for a saved session. The selector accepts a session ID or partial ID, a session name, or a `.jsonl` path; without a selector the most recent session for the current directory is used. The editor refuses a session that is active in another agent unless `--force` is passed.
 
 ```bash
-prime-agent session edit                            # interactive editor for the most recent session
-prime-agent session edit 01a0f899                   # by session ID prefix
-prime-agent session edit my-agent                   # by session name
-prime-agent session edit --print > transcript.txt   # print the lossless transcript document
-prime-agent session edit --text                     # edit the transcript as one document in $EDITOR
-prime-agent session edit --document transcript.txt  # apply a saved document
+amicus session edit                            # interactive editor for the most recent session
+amicus session edit 01a0f899                   # by session ID prefix
+amicus session edit my-agent                   # by session name
+amicus session edit --print > transcript.txt   # print the lossless transcript document
+amicus session edit --text                     # edit the transcript as one document in $EDITOR
+amicus session edit --document transcript.txt  # apply a saved document
 ```
 
 The editor lists every entry in flow order with its role, a summary, and a badge when validation flags it. Keys are configurable through `keybindings.json`; the defaults are:
@@ -127,7 +127,7 @@ Use `/name <name>` to set a human-readable session name:
 /name Refactor auth module
 ```
 
-Named sessions are easier to find in `/resume` and `prime-agent --resume`.
+Named sessions are easier to find in `/resume` and `amicus --resume`.
 
 ## Branching with `/tree`
 
@@ -191,7 +191,7 @@ Use `/tree` when you want to keep alternatives together. Use `/fork` or `/clone`
 
 ## Branch Summaries
 
-When `/tree` switches away from one branch to another, Prime Agent can summarize the abandoned branch and attach that summary at the new position. This preserves important context from the path you left without replaying the whole branch.
+When `/tree` switches away from one branch to another, Amicus can summarize the abandoned branch and attach that summary at the new position. This preserves important context from the path you left without replaying the whole branch.
 
 When prompted, choose one of:
 

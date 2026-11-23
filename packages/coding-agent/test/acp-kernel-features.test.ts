@@ -7,7 +7,7 @@ import type { KernelClient } from "../src/core/kernel/index.js";
 import type { PythonSkillRuntimeInfo } from "../src/core/skills.js";
 import { IpythonKernelProvisioner } from "../src/core/tools/ipython.js";
 import { acpUpdatesForSessionEvent } from "../src/modes/acp/acp-events.js";
-import { PRIME_AGENT_META_NAMESPACE } from "../src/modes/acp/acp-meta.js";
+import { AMICUS_META_NAMESPACE } from "../src/modes/acp/acp-meta.js";
 import type { AgentConnectionSessionEvent } from "../src/modes/agent-connection/types.js";
 
 /**
@@ -153,7 +153,7 @@ print(json.dumps({
 			},
 		} as AgentConnectionSessionEvent);
 		expect(refined[0]?._meta).toMatchObject({
-			[PRIME_AGENT_META_NAMESPACE]: { refinement: { status: "complete" } },
+			[AMICUS_META_NAMESPACE]: { refinement: { status: "complete" } },
 		});
 	});
 
@@ -238,7 +238,7 @@ print(json.dumps({
 		expect(
 			JSON.parse(available.stdout.trim()).kind,
 			"agent_message skill was not installed into the shared kernel venv",
-		).not.toBe("_PrimeAgentUnavailableSkill");
+		).not.toBe("_AmicusUnavailableSkill");
 
 		const result = await manager.execute(`
 import json
@@ -259,7 +259,7 @@ print(json.dumps({"status": receipt["deliveryStatus"]}))
 			message: sent,
 		} as AgentConnectionSessionEvent);
 		expect(updates[0]?._meta).toMatchObject({
-			[PRIME_AGENT_META_NAMESPACE]: { agentMessage: { toolCallId: "cell-msg", deliveryStatus: "queued" } },
+			[AMICUS_META_NAMESPACE]: { agentMessage: { toolCallId: "cell-msg", deliveryStatus: "queued" } },
 		});
 	});
 });

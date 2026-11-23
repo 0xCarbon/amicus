@@ -1,4 +1,4 @@
-import { type Api, getModels, getSupportedThinkingLevels, type Model } from "@earendil-works/pi-ai";
+import { type Api, getModels, getSupportedThinkingLevels, type Model } from "@amicus/ai";
 import { describe, expect, test, vi } from "vitest";
 import { getBundledModels } from "../src/core/bundled-model-catalog.js";
 import {

@@ -7,7 +7,7 @@ import * as fs from "node:fs";
 import { createRequire } from "node:module";
 import * as path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { KeyId } from "@earendil-works/pi-tui";
+import type { KeyId } from "@amicus/tui";
 import { CONFIG_DIR_NAME, getAgentDir, isBunBinary } from "../../config.js";
 import { resolveUserPath } from "../../utils/paths.js";
 import { createEventBus, type EventBus } from "../event-bus.js";
@@ -56,17 +56,17 @@ function getAliases(): Record<string, string> {
 	};
 
 	const piCodingAgentEntry = packageIndex;
-	const piAgentCoreEntry = resolveWorkspaceOrImport("agent/dist/index.js", "@earendil-works/pi-agent-core");
-	const piTuiEntry = resolveWorkspaceOrImport("tui/dist/index.js", "@earendil-works/pi-tui");
-	const piAiEntry = resolveWorkspaceOrImport("ai/dist/index.js", "@earendil-works/pi-ai");
-	const piAiOauthEntry = resolveWorkspaceOrImport("ai/dist/oauth.js", "@earendil-works/pi-ai/oauth");
+	const piAgentCoreEntry = resolveWorkspaceOrImport("agent/dist/index.js", "@amicus/agent-core");
+	const piTuiEntry = resolveWorkspaceOrImport("tui/dist/index.js", "@amicus/tui");
+	const piAiEntry = resolveWorkspaceOrImport("ai/dist/index.js", "@amicus/ai");
+	const piAiOauthEntry = resolveWorkspaceOrImport("ai/dist/oauth.js", "@amicus/ai/oauth");
 
 	_aliases = {
-		"@earendil-works/pi-coding-agent": piCodingAgentEntry,
-		"@earendil-works/pi-agent-core": piAgentCoreEntry,
-		"@earendil-works/pi-tui": piTuiEntry,
-		"@earendil-works/pi-ai": piAiEntry,
-		"@earendil-works/pi-ai/oauth": piAiOauthEntry,
+		"@amicus/coding-agent": piCodingAgentEntry,
+		"@amicus/agent-core": piAgentCoreEntry,
+		"@amicus/tui": piTuiEntry,
+		"@amicus/ai": piAiEntry,
+		"@amicus/ai/oauth": piAiOauthEntry,
 		"@mariozechner/pi-coding-agent": piCodingAgentEntry,
 		"@mariozechner/pi-agent-core": piAgentCoreEntry,
 		"@mariozechner/pi-tui": piTuiEntry,

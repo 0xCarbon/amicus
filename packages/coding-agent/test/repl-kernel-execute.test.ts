@@ -14,9 +14,9 @@ import { getSessionKernelCwd } from "../src/core/kernel/shared.js";
 
 function resolveReplPython(): string | null {
 	const candidates = [
-		process.env.PRIME_AGENT_KERNEL_PYTHON,
-		resolve(__dirname, "..", "..", "..", "prime-agent-runtime", ".venv", "bin", "python"),
-		join(homedir(), ".prime", "agent", "kernel-venv", "bin", "python"),
+		process.env.AMICUS_KERNEL_PYTHON,
+		resolve(__dirname, "..", "..", "..", "amicus-runtime", ".venv", "bin", "python"),
+		join(homedir(), ".amicus", "kernel-venv", "bin", "python"),
 	].filter((p): p is string => Boolean(p));
 	for (const python of candidates) {
 		if (!existsSync(python)) continue;
@@ -34,7 +34,7 @@ describeIf("ReplKernelManager execute (real runtime)", () => {
 	let manager: ReplKernelManager | undefined;
 
 	beforeEach(() => {
-		dir = mkdtempSync(join(tmpdir(), "prime-agent-repl-execute-"));
+		dir = mkdtempSync(join(tmpdir(), "amicus-repl-execute-"));
 	});
 
 	afterEach(async () => {
@@ -70,7 +70,7 @@ describeIf("ReplKernelManager execute (real runtime)", () => {
 			python: python as string,
 			cwd: project,
 			sessionId: "kernel-cwd-test",
-			env: { PYTHONPATH: resolve(__dirname, "../../../prime-agent-runtime/src") },
+			env: { PYTHONPATH: resolve(__dirname, "../../../amicus-runtime/src") },
 		});
 		expect(manager.currentCwd).toBeUndefined();
 		await manager.start();
@@ -100,7 +100,7 @@ describeIf("ReplKernelManager execute (real runtime)", () => {
 			manager = new ReplKernelManager({
 				python: python as string,
 				cwd: project,
-				env: { PYTHONPATH: resolve(__dirname, "../../../prime-agent-runtime/src") },
+				env: { PYTHONPATH: resolve(__dirname, "../../../amicus-runtime/src") },
 			});
 			await manager.execute("import os\nos.chdir('deleted')");
 			expect(manager.currentCwd).toBe(deleted);

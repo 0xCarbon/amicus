@@ -153,7 +153,7 @@ describe("cold CLI stdin guard", () => {
 		const result = await runColdCli(["--print", "--offline", "--no-session", "Say hi"], {
 			timeoutMs: 30_000,
 			ipc: true,
-			extraEnv: { PRIME_AGENT_INTERNAL_OWNED_WORKER: "1" },
+			extraEnv: { AMICUS_INTERNAL_OWNED_WORKER: "1" },
 		});
 		// The old behavior hung here forever: the child never exits and the
 		// bound SIGKILLs it (signal SIGKILL, code null).

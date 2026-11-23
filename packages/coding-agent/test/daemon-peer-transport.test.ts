@@ -30,8 +30,8 @@ interface FakePeerSocket {
 }
 
 function makeWorkerDaemon(): WorkerInternals {
-	const daemon = new AgentDaemon("/tmp/prime-agent-peer-test.sock", {
-		defaultSessionConfig: { agentDir: "/tmp/prime-agent-peer-test-agent", cwd: "/tmp" },
+	const daemon = new AgentDaemon("/tmp/amicus-peer-test.sock", {
+		defaultSessionConfig: { agentDir: "/tmp/amicus-peer-test-agent", cwd: "/tmp" },
 		createRuntime: async () => {
 			throw new Error("unexpected runtime creation");
 		},
@@ -376,7 +376,7 @@ describe("supervisor direct transport issuance", () => {
 	}
 
 	it("issues a dev/ino-bound single-use ticket only after the worker accepted the grant", async () => {
-		const directory = mkdtempSync(join(tmpdir(), "prime-agent-peer-ticket-"));
+		const directory = mkdtempSync(join(tmpdir(), "amicus-peer-ticket-"));
 		const socketPath = join(directory, "worker.sock");
 		const server = createServer();
 		await new Promise<void>((resolveListen) => server.listen(socketPath, resolveListen));
@@ -441,7 +441,7 @@ describe("supervisor direct transport issuance", () => {
 				workerInstanceId: "instance-1",
 				pid: process.pid,
 				processStartId: getProcessStartId(process.pid),
-				socketPath: "/tmp/prime-agent-peer-missing.sock",
+				socketPath: "/tmp/amicus-peer-missing.sock",
 			},
 		};
 

@@ -1,5 +1,5 @@
 import { win32 } from "node:path";
-import { getOAuthProviders } from "@earendil-works/pi-ai/oauth";
+import { getOAuthProviders } from "@amicus/ai/oauth";
 import {
 	type Component,
 	Container,
@@ -9,7 +9,7 @@ import {
 	Spacer,
 	Text,
 	type TUI,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import { execFileHidden } from "../../../utils/child-process.js";
 import { copyToClipboard } from "../../../utils/clipboard.js";
 import { theme } from "../theme/theme.js";

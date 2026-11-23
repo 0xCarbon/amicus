@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
-import type { AgentTool } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxText, fauxThinking, fauxToolCall } from "@earendil-works/pi-ai";
-import { type Container, setKeybindings, type TUI } from "@earendil-works/pi-tui";
+import type { AgentTool } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxText, fauxThinking, fauxToolCall } from "@amicus/ai";
+import { type Container, setKeybindings, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { Type } from "typebox";
 import { afterEach, describe, expect, test, vi } from "vitest";

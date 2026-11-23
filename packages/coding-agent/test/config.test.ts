@@ -1,8 +1,9 @@
-import { chmodSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from "fs";
+import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "fs";
 import { homedir, tmpdir } from "os";
 import { delimiter, join } from "path";
 import { afterEach, describe, expect, test } from "vitest";
 import {
+	adoptLegacyAgentDir,
 	detectInstallMethod,
 	ENV_LEGACY_SESSION_DIR,
 	ENV_SESSION_DIR,
@@ -61,7 +62,7 @@ function usePackageDir(packageDir: string, execPath = join(packageDir, "dist", "
 
 function createNpmPrefixInstall(template = "pi-prefix-"): { prefix: string; packageDir: string } {
 	const prefix = mkdtempSync(join(tmpdir(), template));
-	const packageDir = join(prefix, "lib", "node_modules", "@earendil-works", "pi-coding-agent");
+	const packageDir = join(prefix, "lib", "node_modules", "@amicus", "coding-agent");
 	tempDir = prefix;
 	usePackageDir(packageDir);
 	return { prefix, packageDir };
@@ -70,7 +71,7 @@ function createNpmPrefixInstall(template = "pi-prefix-"): { prefix: string; pack
 function createHomebrewInstall(): void {
 	const prefix = mkdtempSync(join(tmpdir(), "pi-homebrew-"));
 	tempDir = prefix;
-	usePackageDir(join(prefix, "Cellar", "prime-agent", "0.7.0", "libexec", "lib", "node_modules", "prime-agent"));
+	usePackageDir(join(prefix, "Cellar", "amicus", "0.7.0", "libexec", "lib", "node_modules", "amicus"));
 }
 
 function createPnpmGlobalInstall(): void {
@@ -111,7 +112,7 @@ function createBunGlobalInstall(): void {
 	const prefix = join(temp, ".bun");
 	const bunBin = join(prefix, "bin");
 	writeFakeCli(bunBin, "bun", ["pm", "bin", "-g"], bunBin);
-	usePackageDir(join(prefix, "install", "global", "node_modules", "@earendil-works", "pi-coding-agent"));
+	usePackageDir(join(prefix, "install", "global", "node_modules", "@amicus", "coding-agent"));
 }
 
 describe("detectInstallMethod", () => {
@@ -121,14 +122,14 @@ describe("detectInstallMethod", () => {
 			"Windows .pnpm install paths",
 			() =>
 				setExecPath(
-					"C:\\Users\\Admin\\Documents\\pnpm-repository\\global\\5\\.pnpm\\@earendil-works+pi-coding-agent@0.67.68\\node_modules\\@earendil-works\\pi-coding-agent\\dist\\cli.js",
+					"C:\\Users\\Admin\\Documents\\pnpm-repository\\global\\5\\.pnpm\\@amicus+coding-agent@0.67.68\\node_modules\\@amicus\\coding-agent\\dist\\cli.js",
 				),
 			"pnpm",
 		],
 		[
 			"Windows npm package dirs",
 			() => {
-				const packageDir = "C:\\Users\\Admin\\npm prefix\\node_modules\\@earendil-works\\pi-coding-agent";
+				const packageDir = "C:\\Users\\Admin\\npm prefix\\node_modules\\@amicus\\coding-agent";
 				process.env.PI_PACKAGE_DIR = packageDir;
 				setExecPath(`${packageDir}\\dist\\cli.js`);
 			},
@@ -150,17 +151,15 @@ describe("detectInstallMethod", () => {
 		["unknown wrappers", () => setExecPath("/usr/local/bin/node")],
 	])("refuses to self-update %s installs", (_label, setup) => {
 		setup();
-		expect(getSelfUpdateCommand("prime-agent")).toBeUndefined();
+		expect(getSelfUpdateCommand("amicus")).toBeUndefined();
 	});
 
 	test("does not self-update when the npm install path is not writable", () => {
 		const { packageDir } = createNpmPrefixInstall();
 		chmodSync(packageDir, 0o500);
 
-		expect(getSelfUpdateCommand("@earendil-works/pi-coding-agent")).toBeUndefined();
-		expect(getSelfUpdateUnavailableInstruction("@earendil-works/pi-coding-agent")).toContain(
-			"the install path is not writable",
-		);
+		expect(getSelfUpdateCommand("@amicus/coding-agent")).toBeUndefined();
+		expect(getSelfUpdateUnavailableInstruction("@amicus/coding-agent")).toContain("the install path is not writable");
 	});
 
 	test.each<[string, (prefix: string) => string[] | undefined]>([
@@ -170,27 +169,27 @@ describe("detectInstallMethod", () => {
 	])("npm self-update %s", (_label, npmCommand) => {
 		const { prefix } = createNpmPrefixInstall();
 
-		expect(getSelfUpdateCommand("@earendil-works/pi-coding-agent", npmCommand(prefix))).toEqual({
+		expect(getSelfUpdateCommand("@amicus/coding-agent", npmCommand(prefix))).toEqual({
 			command: "npm",
-			args: ["--prefix", prefix, "install", "-g", "@earendil-works/pi-coding-agent"],
-			display: `npm --prefix ${prefix} install -g @earendil-works/pi-coding-agent`,
+			args: ["--prefix", prefix, "install", "-g", "@amicus/coding-agent"],
+			display: `npm --prefix ${prefix} install -g @amicus/coding-agent`,
 		});
 	});
 
 	test("quotes npm self-update display paths", () => {
 		const { prefix } = createNpmPrefixInstall("pi prefix ");
 
-		expect(getSelfUpdateCommand("@earendil-works/pi-coding-agent")?.display).toBe(
-			`npm --prefix "${prefix}" install -g @earendil-works/pi-coding-agent`,
+		expect(getSelfUpdateCommand("@amicus/coding-agent")?.display).toBe(
+			`npm --prefix "${prefix}" install -g @amicus/coding-agent`,
 		);
 	});
 
-	const tarballUrl = "https://downloads.example.test/prime-agent/prime-agent-0.73.0.tgz";
+	const tarballUrl = "https://downloads.example.test/amicus/amicus-0.73.0.tgz";
 
 	test("installs a tarball spec without uninstalling the same logical package", () => {
 		const { prefix } = createNpmPrefixInstall();
 
-		expect(getSelfUpdateCommand("@earendil-works/pi-coding-agent", undefined, tarballUrl)).toEqual({
+		expect(getSelfUpdateCommand("@amicus/coding-agent", undefined, tarballUrl)).toEqual({
 			command: "npm",
 			args: ["--prefix", prefix, "install", "-g", tarballUrl],
 			display: `npm --prefix ${prefix} install -g ${tarballUrl}`,
@@ -200,10 +199,10 @@ describe("detectInstallMethod", () => {
 	test("installs a renamed tarball package before uninstalling the old one", () => {
 		const { prefix } = createNpmPrefixInstall();
 
-		expect(getSelfUpdateCommand("@earendil-works/pi-coding-agent", undefined, tarballUrl, "prime-agent")).toEqual({
+		expect(getSelfUpdateCommand("@amicus/coding-agent", undefined, tarballUrl, "amicus")).toEqual({
 			command: "npm",
 			args: ["--prefix", prefix, "install", "-g", tarballUrl],
-			display: `npm --prefix ${prefix} install -g ${tarballUrl} && npm --prefix ${prefix} uninstall -g @earendil-works/pi-coding-agent`,
+			display: `npm --prefix ${prefix} install -g ${tarballUrl} && npm --prefix ${prefix} uninstall -g @amicus/coding-agent`,
 			steps: [
 				{
 					command: "npm",
@@ -212,8 +211,8 @@ describe("detectInstallMethod", () => {
 				},
 				{
 					command: "npm",
-					args: ["--prefix", prefix, "uninstall", "-g", "@earendil-works/pi-coding-agent"],
-					display: `npm --prefix ${prefix} uninstall -g @earendil-works/pi-coding-agent`,
+					args: ["--prefix", prefix, "uninstall", "-g", "@amicus/coding-agent"],
+					display: `npm --prefix ${prefix} uninstall -g @amicus/coding-agent`,
 				},
 			],
 		});
@@ -267,7 +266,7 @@ describe("detectInstallMethod", () => {
 
 describe("session paths", () => {
 	test("prefers the app-prefixed session dir env var over the legacy one and expands tilde", () => {
-		expect(ENV_SESSION_DIR).toBe("PRIME_AGENT_SESSION_DIR");
+		expect(ENV_SESSION_DIR).toBe("AMICUS_SESSION_DIR");
 
 		const sessionRoot = join(tmpdir(), `pi-session-root-${Date.now()}`);
 		process.env[ENV_SESSION_DIR] = sessionRoot;
@@ -277,8 +276,8 @@ describe("session paths", () => {
 		delete process.env[ENV_SESSION_DIR];
 		expect(getSessionsDir("/agent")).toBe(join(tmpdir(), "legacy-root"));
 
-		process.env[ENV_SESSION_DIR] = "~/prime-agent-sessions";
-		expect(getSessionsDir("/agent")).toBe(join(homedir(), "prime-agent-sessions"));
+		process.env[ENV_SESSION_DIR] = "~/amicus-sessions";
+		expect(getSessionsDir("/agent")).toBe(join(homedir(), "amicus-sessions"));
 	});
 });
 
@@ -290,6 +289,30 @@ describe("getDaemonLogPath", () => {
 			expect(getDaemonLogPath("/a//b.sock")).toBe(getDaemonLogPath("/a/b.sock"));
 		} finally {
 			if (platformDescriptor) Object.defineProperty(process, "platform", platformDescriptor);
+		}
+	});
+});
+
+describe("legacy agent directory", () => {
+	test.each([
+		{ name: "moves the pre-rename directory into place", targetExists: false, expected: "legacy" },
+		{ name: "never overwrites an existing directory", targetExists: true, expected: "current" },
+	])("$name", ({ targetExists, expected }) => {
+		const home = mkdtempSync(join(tmpdir(), "amicus-legacy-home-"));
+		try {
+			const legacy = join(home, ".prime", "agent");
+			const target = join(home, ".amicus");
+			mkdirSync(legacy, { recursive: true });
+			writeFileSync(join(legacy, "auth.json"), "legacy");
+			if (targetExists) {
+				mkdirSync(target);
+				writeFileSync(join(target, "auth.json"), "current");
+			}
+			adoptLegacyAgentDir(target, home);
+			expect(readFileSync(join(target, "auth.json"), "utf8")).toBe(expected);
+			expect(existsSync(legacy)).toBe(targetExists);
+		} finally {
+			rmSync(home, { recursive: true, force: true });
 		}
 	});
 });

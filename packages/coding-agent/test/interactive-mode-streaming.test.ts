@@ -1,5 +1,5 @@
-import type { AssistantMessage, Usage } from "@earendil-works/pi-ai";
-import { Container, type MarkdownTheme, type TUI } from "@earendil-works/pi-tui";
+import type { AssistantMessage, Usage } from "@amicus/ai";
+import { Container, type MarkdownTheme, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import type { ReadonlyFooterDataProvider } from "../src/core/footer-data-provider.js";

@@ -2,8 +2,8 @@ import { mkdtempSync, rmSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import * as acp from "@agentclientprotocol/sdk";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxToolCall } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../../src/config.js";
 import type { AgentSessionRuntime } from "../../src/core/agent-session-runtime.js";
@@ -12,7 +12,7 @@ import type { ExecuteResult } from "../../src/core/kernel/index.js";
 import { McpManager } from "../../src/core/mcp/mcp-manager.js";
 import { acpMcpToolNames, createAcpMcpToolDefinitions } from "../../src/core/tools/acp-mcp.js";
 import type { IpythonKernelProvisioner } from "../../src/core/tools/ipython.js";
-import { PRIME_AGENT_META_NAMESPACE } from "../../src/modes/acp/acp-meta.js";
+import { AMICUS_META_NAMESPACE } from "../../src/modes/acp/acp-meta.js";
 import { runAcpModeWithConnection } from "../../src/modes/acp/index.js";
 import { InProcessAgentConnection } from "../../src/modes/agent-connection/in-process-agent-connection.js";
 import { createHarness, type Harness } from "./harness.js";
@@ -82,9 +82,7 @@ async function connectAcp(harness: Harness, existing?: InProcessAgentConnection)
 		updates,
 		sessionId: session.sessionId,
 		metaOf: (key: string) =>
-			updates
-				.map((u) => u.update?._meta?.[PRIME_AGENT_META_NAMESPACE]?.[key])
-				.filter((value) => value !== undefined),
+			updates.map((u) => u.update?._meta?.[AMICUS_META_NAMESPACE]?.[key]).filter((value) => value !== undefined),
 	};
 }
 
@@ -148,7 +146,7 @@ function rematerialize(messages: AgentMessage[]): AgentMessage[] {
 	return JSON.parse(JSON.stringify(messages));
 }
 
-describe("ACP mode preserves prime-agent features", () => {
+describe("ACP mode preserves amicus features", () => {
 	it("streams IPython execution as an execute tool call with its cell source", async () => {
 		const harness = await createHarness({ tools: [ipythonTool as never] });
 		harness.setResponses([
@@ -251,7 +249,7 @@ describe("ACP mode preserves prime-agent features", () => {
 		await (connection as any).emit({ type: "heartbeats_changed" });
 		const flags = () =>
 			updates
-				.map((u) => u.update?._meta?.[PRIME_AGENT_META_NAMESPACE]?.heartbeatsChanged)
+				.map((u) => u.update?._meta?.[AMICUS_META_NAMESPACE]?.heartbeatsChanged)
 				.filter((value) => value !== undefined);
 		await waitFor(() => flags().includes(true));
 		expect(flags(), "heartbeat changes must reach the ACP client").toContain(true);
@@ -305,7 +303,7 @@ describe("ACP mode preserves prime-agent features", () => {
 			mcpServers: [],
 		});
 		expect(created.sessionId).toBeTruthy();
-		const cwdMeta = (created._meta?.[PRIME_AGENT_META_NAMESPACE] as { cwd?: unknown } | undefined)?.cwd;
+		const cwdMeta = (created._meta?.[AMICUS_META_NAMESPACE] as { cwd?: unknown } | undefined)?.cwd;
 		expect(cwdMeta).toMatchObject({ requested: "/definitely/not/the/agent/cwd" });
 		harness.cleanup();
 	}, 30_000);
@@ -416,7 +414,7 @@ describe("ACP mode preserves prime-agent features", () => {
 
 	it("surfaces a real /refine outcome to the ACP client", async () => {
 		// Global refinement writes under the agent dir. Use the real env var name
-		// (derived from package piConfig, so PRIME_AGENT_CODING_AGENT_DIR) rather
+		// (derived from package piConfig, so AMICUS_CODING_AGENT_DIR) rather
 		// than a hardcoded guess, and set it before the session exists: this test
 		// must never touch the developer's real harness state.
 		const previousAgentDir = process.env[ENV_AGENT_DIR];
@@ -713,7 +711,7 @@ describe("ACP mode preserves prime-agent features", () => {
 			`a failed turn must not report a clean stop reason (got ${JSON.stringify(failure)})`,
 		).toBe(true);
 		// The client must be told the turn failed, not handed a bare protocol error.
-		expect(JSON.stringify(failure)).toContain("prime-agent turn failed");
+		expect(JSON.stringify(failure)).toContain("amicus turn failed");
 
 		// The point of the test: a pre-turn count watermark would have skipped the
 		// failure, because after the rebuild it sits below that count.
@@ -753,7 +751,7 @@ describe("ACP mode preserves prime-agent features", () => {
 		harness.cleanup();
 	}, 30_000);
 
-	it("advertises prime-agent capabilities without polluting the ACP object root", async () => {
+	it("advertises amicus capabilities without polluting the ACP object root", async () => {
 		const harness = await createHarness();
 		const connection = new InProcessAgentConnection(runtimeHostFor(harness.session));
 		const toAgent = new TransformStream<Uint8Array, Uint8Array>();
@@ -767,15 +765,15 @@ describe("ACP mode preserves prime-agent features", () => {
 			clientCapabilities: {},
 		});
 
-		expect(init.agentInfo).toMatchObject({ name: "prime-agent" });
+		expect(init.agentInfo).toMatchObject({ name: "amicus" });
 		expect(typeof init.agentInfo?.version).toBe("string");
 		// Namespaced only: unknown root keys are reserved for future ACP fields.
-		expect(init._meta).toHaveProperty(PRIME_AGENT_META_NAMESPACE);
+		expect(init._meta).toHaveProperty(AMICUS_META_NAMESPACE);
 		expect(Object.keys(init.agentCapabilities ?? {})).not.toContain("subagents");
 		// close is advertised, so a client knows it may release the session slot.
 		expect(init.agentCapabilities?.sessionCapabilities?.close).toBeDefined();
 		harness.cleanup();
-	}, 30_000);
+	});
 });
 
 /** ACP `session/new` against an arbitrary cwd, which `connectAcp` pins to the harness temp dir. */
@@ -792,7 +790,7 @@ async function newAcpSessionAt(harness: Harness, cwd: string) {
 }
 
 function cwdMeta(created: { _meta?: Record<string, unknown> | null }): unknown {
-	return (created._meta?.[PRIME_AGENT_META_NAMESPACE] as { cwd?: unknown } | undefined)?.cwd;
+	return (created._meta?.[AMICUS_META_NAMESPACE] as { cwd?: unknown } | undefined)?.cwd;
 }
 
 function acpMcpHttpServer(name: string) {
@@ -826,7 +824,7 @@ describe("ACP mode regressions", () => {
 	it("#623: compares session cwd canonically instead of textually", async () => {
 		const harness = await createHarness();
 		acpHarnesses.push(harness);
-		const aliasRoot = mkdtempSync(join(tmpdir(), "prime-agent-acp-cwd-"));
+		const aliasRoot = mkdtempSync(join(tmpdir(), "amicus-acp-cwd-"));
 		acpDirectories.push(aliasRoot);
 		const alias = join(aliasRoot, "alias");
 		// macOS exposes /var as /private/var; a portable symlink exercises the

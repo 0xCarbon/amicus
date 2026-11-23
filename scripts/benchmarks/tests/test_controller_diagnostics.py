@@ -83,7 +83,7 @@ class ControllerDiagnosticsTests(unittest.TestCase):
                 {
                     "id": 100,
                     "run_attempt": 1,
-                    "display_title": "Prime Agent benchmarks · PR #42",
+                    "display_title": "Amicus benchmarks · PR #42",
                     "conclusion": "success",
                 },
             )

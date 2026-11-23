@@ -6,8 +6,8 @@
  * and can be activated via CLI flag, /preset command, or Ctrl+Shift+U to cycle.
  *
  * Config files (merged, project takes precedence):
- * - ~/.prime/agent/presets.json (global)
- * - <cwd>/.prime/agent/presets.json (project-local)
+ * - ~/.amicus/presets.json (global)
+ * - <cwd>/.amicus/presets.json (project-local)
  *
  * Example presets.json:
  * ```json
@@ -40,10 +40,10 @@
 
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Api, Model } from "@earendil-works/pi-ai";
-import type { ExtensionAPI, ExtensionContext } from "@earendil-works/pi-coding-agent";
-import { DynamicBorder, getAgentDir } from "@earendil-works/pi-coding-agent";
-import { Container, Key, type SelectItem, SelectList, Text } from "@earendil-works/pi-tui";
+import type { Api, Model } from "@amicus/ai";
+import type { ExtensionAPI, ExtensionContext } from "@amicus/coding-agent";
+import { DynamicBorder, getAgentDir } from "@amicus/coding-agent";
+import { Container, Key, type SelectItem, SelectList, Text } from "@amicus/tui";
 
 // Preset configuration
 interface Preset {
@@ -69,7 +69,7 @@ interface PresetsConfig {
  */
 function loadPresets(cwd: string): PresetsConfig {
 	const globalPath = join(getAgentDir(), "presets.json");
-	const projectPath = join(cwd, ".prime", "agent", "presets.json");
+	const projectPath = join(cwd, ".amicus", "presets.json");
 
 	let globalPresets: PresetsConfig = {};
 	let projectPresets: PresetsConfig = {};
@@ -200,7 +200,7 @@ export default function presetExtension(pi: ExtensionAPI) {
 		const presetNames = Object.keys(presets);
 
 		if (presetNames.length === 0) {
-			ctx.ui.notify("No presets defined. Add presets to ~/.prime/agent/presets.json", "warning");
+			ctx.ui.notify("No presets defined. Add presets to ~/.amicus/presets.json", "warning");
 			return;
 		}
 
@@ -308,7 +308,7 @@ export default function presetExtension(pi: ExtensionAPI) {
 	async function cyclePreset(ctx: ExtensionContext): Promise<void> {
 		const presetNames = getPresetOrder();
 		if (presetNames.length === 0) {
-			ctx.ui.notify("No presets defined. Add presets to ~/.prime/agent/presets.json", "warning");
+			ctx.ui.notify("No presets defined. Add presets to ~/.amicus/presets.json", "warning");
 			return;
 		}
 

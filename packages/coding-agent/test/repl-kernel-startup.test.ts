@@ -35,7 +35,7 @@ async function withManager(
 
 describe("ReplKernelManager startup", () => {
 	beforeEach(() => {
-		tempDir = mkdtempSync(join(tmpdir(), "prime-agent-repl-startup-"));
+		tempDir = mkdtempSync(join(tmpdir(), "amicus-repl-startup-"));
 	});
 
 	afterEach(() => {

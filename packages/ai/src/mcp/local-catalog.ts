@@ -40,7 +40,7 @@ const LOCAL_SOURCE_ALLOWED: Record<string, true> = { user: true };
  * error and yields zero entries; every problem with an existing file throws
  * with the file path (and entry index where applicable) in the message.
  *
- * Proposed settings wiring (host-owned): `~/.prime/agent/mcp-services.json`.
+ * Proposed settings wiring (host-owned): `~/.amicus/mcp-services.json`.
  */
 export function loadLocalServiceCatalog(filePath: string): LocalCatalogLoadResult {
 	if (!fs.existsSync(filePath)) {

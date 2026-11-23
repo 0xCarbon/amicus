@@ -524,8 +524,8 @@ describe("self-update daemon restart", () => {
 			"fetch",
 			vi.fn(async () =>
 				Response.json({
-					package: "prime-agent",
-					tarball: "https://github.com/canesin/prime-agent/releases/download/v999.0.0/prime-agent-999.0.0.tgz",
+					package: "amicus",
+					tarball: "https://github.com/0xCarbon/amicus/releases/download/v999.0.0/amicus-999.0.0.tgz",
 					version: "999.0.0",
 				}),
 			),
@@ -577,8 +577,8 @@ describe("self-update daemon restart", () => {
 			"fetch",
 			vi.fn(async () =>
 				Response.json({
-					package: "prime-agent",
-					tarball: "https://github.com/canesin/prime-agent/releases/download/v0.2.6/prime-agent-0.2.6.tgz",
+					package: "amicus",
+					tarball: "https://github.com/0xCarbon/amicus/releases/download/v0.2.6/amicus-0.2.6.tgz",
 					version: "0.2.6",
 				}),
 			),
@@ -596,7 +596,7 @@ describe("self-update daemon restart", () => {
 			process.env[SELF_UPDATE_INTERACTIVE_CHILD_ENV] = "1";
 			const artifact = {
 				platform: "linux-x64",
-				file: `prime-agent-${VERSION}-linux-x64.tar.gz`,
+				file: `amicus-${VERSION}-linux-x64.tar.gz`,
 				sha256: "a".repeat(64),
 			};
 			vi.stubGlobal(
@@ -604,8 +604,8 @@ describe("self-update daemon restart", () => {
 				vi.fn(async () =>
 					Response.json({
 						version: VERSION,
-						package: "prime-agent",
-						tarball: `https://github.com/canesin/prime-agent/releases/download/v${VERSION}/prime-agent-${VERSION}.tgz`,
+						package: "amicus",
+						tarball: `https://github.com/0xCarbon/amicus/releases/download/v${VERSION}/amicus-${VERSION}.tgz`,
 						binaries:
 							invalidKind === "bad checksum" ? [{ ...artifact, sha256: "invalid" }] : [artifact, artifact],
 					}),
@@ -623,10 +623,10 @@ describe("self-update daemon restart", () => {
 		"keeps the selected npm release URL when a newer release has %s metadata",
 		async (invalidKind) => {
 			mockState.daemonProbe = { reachable: false };
-			const tarball = "https://github.com/canesin/prime-agent/releases/download/v999.0.0/prime-agent-999.0.0.tgz";
+			const tarball = "https://github.com/0xCarbon/amicus/releases/download/v999.0.0/amicus-999.0.0.tgz";
 			const artifact = {
 				platform: "linux-x64",
-				file: "prime-agent-999.0.0-linux-x64.tar.gz",
+				file: "amicus-999.0.0-linux-x64.tar.gz",
 				sha256: "a".repeat(64),
 			};
 			vi.stubGlobal(
@@ -634,7 +634,7 @@ describe("self-update daemon restart", () => {
 				vi.fn(async () =>
 					Response.json({
 						version: "999.0.0",
-						package: "prime-agent",
+						package: "amicus",
 						tarball,
 						binaries:
 							invalidKind === "bad checksum" ? [{ ...artifact, sha256: "invalid" }] : [artifact, artifact],
@@ -646,7 +646,7 @@ describe("self-update daemon restart", () => {
 
 			expect(mockState.calls.filter((call) => call.startsWith("spawn:"))).toEqual([
 				`spawn:npm install -g ${tarball}`,
-				"spawn:npm uninstall -g @earendil-works/pi-coding-agent",
+				"spawn:npm uninstall -g @amicus/coding-agent",
 			]);
 		},
 	);

@@ -1,7 +1,7 @@
 import { mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentMessage, StreamFn } from "@earendil-works/pi-agent-core";
+import type { AgentMessage, StreamFn } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	type AssistantMessageEventStream,
@@ -13,7 +13,7 @@ import {
 	type Model,
 	registerFauxProvider,
 	setLogSink,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AgentSession } from "../src/core/agent-session.js";
 import { AuthStorage } from "../src/core/auth-storage.js";
@@ -233,8 +233,8 @@ describe("request timing", () => {
 		// Isolate the ambient agent dir so the harness digest renders empty state.
 		const dir = join(tmpdir(), `pi-request-timing-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(dir, { recursive: true });
-		const ambientAgentDir = process.env.PRIME_AGENT_CODING_AGENT_DIR;
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = dir;
+		const ambientAgentDir = process.env.AMICUS_CODING_AGENT_DIR;
+		process.env.AMICUS_CODING_AGENT_DIR = dir;
 		const created: AgentSession[] = [];
 		try {
 			// Flag on: faux never calls onPayload, so request-sent is absent and unmeasured phases are omitted.
@@ -251,7 +251,7 @@ describe("request timing", () => {
 		} finally {
 			for (const session of created) session.dispose();
 			rmSync(dir, { recursive: true, force: true });
-			process.env.PRIME_AGENT_CODING_AGENT_DIR = ambientAgentDir;
+			process.env.AMICUS_CODING_AGENT_DIR = ambientAgentDir;
 		}
 	});
 });

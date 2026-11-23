@@ -38,7 +38,7 @@ def patch_collect_command(task_dir: Path) -> str:
         "git add -N -- . && "
         "git -c diff.srcPrefix=a/ -c diff.dstPrefix=b/ -c diff.mnemonicPrefix=false "
         "-c diff.noprefix=false "
-        f"diff --binary --no-ext-diff {base} -- . > /tmp/prime-agent.patch"
+        f"diff --binary --no-ext-diff {base} -- . > /tmp/amicus.patch"
     )
 
 

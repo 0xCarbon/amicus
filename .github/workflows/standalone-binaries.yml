@@ -94,8 +94,8 @@ jobs:
         run: |
           version=$(node -p "require('./package.json').version")
           node scripts/assemble-release-archives.mjs packages/coding-agent/binaries "$RUNNER_TEMP/standalone" "$version"
-          echo "PRIME_AGENT_TEST_ARCHIVE=$RUNNER_TEMP/standalone/prime-agent-$version-${{ matrix.platform }}.tar.gz" >> "$GITHUB_ENV"
-          echo "PRIME_AGENT_TEST_UV=$(command -v uv)" >> "$GITHUB_ENV"
+          echo "AMICUS_TEST_ARCHIVE=$RUNNER_TEMP/standalone/amicus-$version-${{ matrix.platform }}.tar.gz" >> "$GITHUB_ENV"
+          echo "AMICUS_TEST_UV=$(command -v uv)" >> "$GITHUB_ENV"
 
       - name: Remove the build paths from the test machine
         run: mv "$GITHUB_WORKSPACE/source" "$RUNNER_TEMP/standalone-source"
@@ -118,11 +118,11 @@ jobs:
           version=$(node -p "require('$RUNNER_TEMP/standalone-source/package.json').version")
           docker run --rm --init \
             --volume "$RUNNER_TEMP/standalone:/archives:ro" \
-            --env "ARCHIVE=prime-agent-$version-$TARGET_PLATFORM.tar.gz" \
+            --env "ARCHIVE=amicus-$version-$TARGET_PLATFORM.tar.gz" \
             --env "VERSION=$version" \
             --env DO_NOT_TRACK=1 \
             --env PI_OFFLINE=1 \
-            --env PRIME_AGENT_INSTALL_UV=0 \
+            --env AMICUS_INSTALL_UV=0 \
             alpine:3.21 sh -eu -c '
               apk add --no-cache libstdc++ > /dev/null
               for runtime in node npm bun deno; do
@@ -133,8 +133,8 @@ jobs:
               done
               mkdir /application
               tar -xzf "/archives/$ARCHIVE" -C /application
-              test "$(timeout 60 /application/prime-agent --version)" = "$VERSION"
-              timeout 60 /application/prime-agent --help > /dev/null
+              test "$(timeout 60 /application/amicus --version)" = "$VERSION"
+              timeout 60 /application/amicus --help > /dev/null
             '
 
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7

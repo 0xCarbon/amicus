@@ -11,8 +11,8 @@ import {
 import { getProcessStartId } from "../src/core/session-lease.js";
 
 it("recognizes Windows worker named pipes on every platform", () => {
-	expect(isWorkerSocketPath("\\\\.\\pipe\\prime-agent-worker-98ed5cb228d2-5b1d3aeb91ee")).toBe(true);
-	expect(isWorkerSocketPath("\\\\.\\pipe\\prime-agent-daemon")).toBe(false);
+	expect(isWorkerSocketPath("\\\\.\\pipe\\amicus-worker-98ed5cb228d2-5b1d3aeb91ee")).toBe(true);
+	expect(isWorkerSocketPath("\\\\.\\pipe\\amicus-daemon")).toBe(false);
 });
 
 describe("evaluateShutdownQuietPeriod", () => {
@@ -67,7 +67,7 @@ describe("planReap", () => {
 		const daemon = makeDaemon({ socketPath: "/tmp/hung.sock", status: "unreachable", pid: 7 });
 		const skipped = planReap([daemon], false)[0]!;
 		expect(skipped.kind).toBe("skip");
-		expect(skipped.kind === "skip" ? skipped.reason : "").toContain("prime-agent shutdown --force");
+		expect(skipped.kind === "skip" ? skipped.reason : "").toContain("amicus shutdown --force");
 		expect(planReap([daemon], true)[0]!.kind).toBe("kill");
 	});
 

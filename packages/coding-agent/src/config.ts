@@ -35,7 +35,7 @@ export const isBunBinary =
 /** Detect if Bun is the runtime (compiled binary or bun run) */
 export const isBunRuntime = !!process.versions.bun;
 
-export const SELF_UPDATE_INTERACTIVE_CHILD_ENV = "PRIME_AGENT_INTERACTIVE_SELF_UPDATE";
+export const SELF_UPDATE_INTERACTIVE_CHILD_ENV = "AMICUS_INTERACTIVE_SELF_UPDATE";
 export const SELF_UPDATE_NOT_ATTEMPTED_EXIT_CODE = 75;
 
 // =============================================================================
@@ -328,7 +328,7 @@ export function getSelfUpdateUnavailableInstruction(
 ): string {
 	const method = detectInstallMethod();
 	if (method === "bun-binary") {
-		return `Download from: https://github.com/canesin/prime-agent/releases/latest`;
+		return `Download from: https://github.com/0xCarbon/amicus/releases/latest`;
 	}
 	if (method === "homebrew") {
 		return `Update with: brew upgrade ${APP_NAME}`;
@@ -491,13 +491,13 @@ const envPrefix =
 		.toUpperCase()
 		.replace(/[^A-Z0-9]+/g, "_")
 		.replace(/^_+|_+$/g, "") || "PI";
-export const PACKAGE_NAME: string = pkg.name || "@earendil-works/pi-coding-agent";
+export const PACKAGE_NAME: string = pkg.name || "@amicus/coding-agent";
 export const APP_NAME: string = piConfigName || "pi";
 export const APP_TITLE: string = piConfigName ? APP_NAME : "π";
-export const CONFIG_DIR_NAME: string = pkg.piConfig?.configDir || ".prime/agent";
+export const CONFIG_DIR_NAME: string = pkg.piConfig?.configDir || ".amicus";
 export const VERSION: string = pkg.version || "0.0.0";
 
-// e.g., PI_CODING_AGENT_DIR or PRIME_AGENT_CODING_AGENT_DIR
+// e.g., PI_CODING_AGENT_DIR or AMICUS_CODING_AGENT_DIR
 export const ENV_AGENT_DIR = `${envPrefix}_CODING_AGENT_DIR`;
 export const ENV_SESSION_DIR = `${envPrefix}_SESSION_DIR`;
 export const ENV_LEGACY_SESSION_DIR = `${envPrefix}_CODING_AGENT_SESSION_DIR`;
@@ -519,16 +519,36 @@ export function getShareViewerUrl(gistId: string): string {
 }
 
 // =============================================================================
-// User Config Paths (~/.prime/agent/*)
+// User Config Paths (~/.amicus/*)
 // =============================================================================
 
-/** Get the agent config directory (e.g., ~/.prime/agent/) */
+/** Pre-rename location, moved into place once so sessions, credentials and settings carry over. */
+export const LEGACY_AGENT_DIR_SEGMENTS = [".prime", "agent"] as const;
+let legacyAgentDirAdopted = false;
+
+export function adoptLegacyAgentDir(target: string, home: string = homedir()): void {
+	const legacy = join(home, ...LEGACY_AGENT_DIR_SEGMENTS);
+	if (existsSync(target) || !existsSync(legacy)) return;
+	try {
+		mkdirSync(dirname(target), { recursive: true });
+		renameSync(legacy, target);
+	} catch {
+		// Another process won the race or the move crosses devices; start from the new location.
+	}
+}
+
+/** Get the agent config directory (e.g., ~/.amicus/) */
 export function getAgentDir(): string {
 	const envDir = process.env[ENV_AGENT_DIR];
 	if (envDir) {
 		return expandTildePath(envDir);
 	}
-	return join(homedir(), CONFIG_DIR_NAME);
+	const agentDir = join(homedir(), CONFIG_DIR_NAME);
+	if (!legacyAgentDirAdopted) {
+		legacyAgentDirAdopted = true;
+		adoptLegacyAgentDir(agentDir);
+	}
+	return agentDir;
 }
 
 /** Get path to user's custom themes directory */
@@ -557,7 +577,7 @@ export function getMcpCacheDir(): string {
 	return join(getAgentDir(), "mcp");
 }
 
-/** Directory where daemon and client diagnostic logs are written (e.g. ~/.prime/agent/logs/). */
+/** Directory where daemon and client diagnostic logs are written (e.g. ~/.amicus/logs/). */
 export function getLogsDir(): string {
 	return join(getAgentDir(), "logs");
 }

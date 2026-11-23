@@ -42,7 +42,7 @@ def cleanup(repository: str, run_id: int, attempt: int) -> int:
     if not REPO_RE.fullmatch(repository):
         raise ValueError("invalid repository")
     labels = [
-        "prime-agent-behavioral-v1",
+        "amicus-behavioral-v1",
         f"repository:{repository}",
         f"run:{run_id}",
         f"attempt:{attempt}",

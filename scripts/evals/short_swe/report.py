@@ -9,7 +9,7 @@ import math
 from collections import defaultdict
 from pathlib import Path
 
-MARKER = "<!-- prime-agent-behavioral-eval:v1 -->"
+MARKER = "<!-- amicus-behavioral-eval:v1 -->"
 TASK_COUNT = 28
 TASKSET_SIZES = {"swebench-verified": 15, "swebench-pro": 8, "scaleswe": 5}
 RESOLVED_LOSS_LIMIT = 5

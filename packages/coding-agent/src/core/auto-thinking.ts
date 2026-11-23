@@ -1,4 +1,4 @@
-import type { AgentMessage, ThinkingLevel } from "@earendil-works/pi-agent-core";
+import type { AgentMessage, ThinkingLevel } from "@amicus/agent-core";
 
 /** Difficulty probabilities Jev assigns to trivial, moderate and hard requests. */
 export type AutoThinkingProbabilities = readonly [trivial: number, moderate: number, hard: number];

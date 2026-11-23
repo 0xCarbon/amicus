@@ -1,7 +1,7 @@
 import { lstatSync, mkdtempSync, readFileSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AssistantMessage } from "@earendil-works/pi-ai";
+import type { AssistantMessage } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { AgentSession, AgentSessionEvent } from "../src/core/agent-session.js";
 import { SettingsManager } from "../src/core/settings-manager.js";
@@ -97,7 +97,7 @@ afterEach(() => {
 
 describe("telemetry identity and transport", () => {
 	it("persists a stable 0600 installation id and replaces invalid state", () => {
-		const agentDir = mkdtempSync(join(tmpdir(), "prime-agent-telemetry-"));
+		const agentDir = mkdtempSync(join(tmpdir(), "amicus-telemetry-"));
 		const path = join(agentDir, "telemetry.json");
 		const randomId = uuidGenerator();
 
@@ -113,7 +113,7 @@ describe("telemetry identity and transport", () => {
 	});
 
 	it("does not follow a telemetry state symlink", async () => {
-		const agentDir = mkdtempSync(join(tmpdir(), "prime-agent-telemetry-"));
+		const agentDir = mkdtempSync(join(tmpdir(), "amicus-telemetry-"));
 		const targetPath = join(agentDir, "target.json");
 		const telemetryPath = join(agentDir, "telemetry.json");
 		writeFileSync(targetPath, "do not overwrite");
@@ -128,7 +128,7 @@ describe("telemetry identity and transport", () => {
 	});
 
 	it("batches events through the configured Prime endpoint", async () => {
-		const agentDir = mkdtempSync(join(tmpdir(), "prime-agent-telemetry-"));
+		const agentDir = mkdtempSync(join(tmpdir(), "amicus-telemetry-"));
 		const requests: Array<{ url: string; init: RequestInit }> = [];
 		const client = new TelemetryClient({
 			agentDir,
@@ -160,7 +160,7 @@ describe("telemetry identity and transport", () => {
 	it("drains every queued batch before flush resolves", async () => {
 		const batchSizes: number[] = [];
 		const client = new TelemetryClient({
-			agentDir: mkdtempSync(join(tmpdir(), "prime-agent-telemetry-")),
+			agentDir: mkdtempSync(join(tmpdir(), "amicus-telemetry-")),
 			fetch: async (_input, init) => {
 				const body = JSON.parse(String(init?.body)) as { events: TelemetryEvent[] };
 				batchSizes.push(body.events.length);
@@ -179,7 +179,7 @@ describe("telemetry identity and transport", () => {
 
 	it("never throws when the endpoint fails or local state cannot be written", async () => {
 		const failing = new TelemetryClient({
-			agentDir: mkdtempSync(join(tmpdir(), "prime-agent-telemetry-")),
+			agentDir: mkdtempSync(join(tmpdir(), "amicus-telemetry-")),
 			fetch: async () => {
 				throw new Error("network failed");
 			},
@@ -188,7 +188,7 @@ describe("telemetry identity and transport", () => {
 		failing.capture("agent started", {});
 		await expect(failing.flush()).resolves.toBeUndefined();
 
-		const parent = mkdtempSync(join(tmpdir(), "prime-agent-telemetry-"));
+		const parent = mkdtempSync(join(tmpdir(), "amicus-telemetry-"));
 		const agentDir = join(parent, "not-a-directory");
 		writeFileSync(agentDir, "occupied");
 		const unwritable = new TelemetryClient({ agentDir, randomId: uuidGenerator() });
@@ -200,11 +200,11 @@ describe("telemetry identity and transport", () => {
 describe("agent telemetry aggregation", () => {
 	beforeEach(() => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 	});
 
 	it("includes platform fidelity properties on every event", async () => {
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const sink = new FakeTelemetrySink();
 
 		await captureAgentCommandUsed({

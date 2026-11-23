@@ -76,7 +76,7 @@ describe("session edit command", () => {
 		const write = vi.spyOn(process.stdout, "write").mockImplementation(() => true);
 		await runSessionEditCommand([sessionPath, "--print"]);
 		const printed = write.mock.calls.map((call) => String(call[0])).join("");
-		expect(printed).toContain("# prime-agent session editor");
+		expect(printed).toContain("# amicus session editor");
 		expect(printed).toContain("@@@@ entry aaaa0001");
 		expect(printed).toContain("hello");
 		expect(readFileSync(sessionPath, "utf8")).toBe(originalFile);

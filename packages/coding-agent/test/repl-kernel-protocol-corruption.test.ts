@@ -140,7 +140,7 @@ function restoreCount(path: string): number {
 
 describe("ReplKernelManager corrupt protocol repair", () => {
 	beforeEach(() => {
-		tempDir = mkdtempSync(join(tmpdir(), "prime-agent-repl-corrupt-"));
+		tempDir = mkdtempSync(join(tmpdir(), "amicus-repl-corrupt-"));
 	});
 
 	afterEach(() => {

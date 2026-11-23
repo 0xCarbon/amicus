@@ -32,7 +32,7 @@ function fixture(channel = "production"): ReceiptFixture {
 	const version = channel === "production" ? "1.2.3" : "1.2.3-beta.5.1.abcdef0";
 	const manifestFile = channel === "production" ? "latest.json" : "beta.json";
 	const binaries = ["darwin-arm64", "darwin-x64"].map((platform) => {
-		const file = `prime-agent-${version}-${platform}.tar.gz`;
+		const file = `amicus-${version}-${platform}.tar.gz`;
 		writeFileSync(join(artifacts, file), `receipt fixture for ${platform}`);
 		return { platform, file, sha256: sha256(join(artifacts, file)), executableSha256: "a".repeat(64) };
 	});

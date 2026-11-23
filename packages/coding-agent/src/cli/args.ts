@@ -2,7 +2,7 @@
  * CLI argument parsing and help display
  */
 
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
+import type { ThinkingLevel } from "@amicus/agent-core";
 import { APP_NAME } from "../config.js";
 import { THINKING_LEVELS } from "../core/thinking-levels.js";
 
@@ -67,7 +67,7 @@ const FREEFORM_VALUE_FLAGS = new Set(["--goal", "--autonomous-gate"]);
 /** Prompt value flags whose text may start with a long-option-looking token, e.g. YAML frontmatter ("---"). */
 const PROMPT_VALUE_FLAGS = new Set(["--system-prompt", "--append-system-prompt"]);
 
-export const INTERNAL_RUNTIME_COMMAND_MARKER = "\0prime-agent-runtime-command";
+export const INTERNAL_RUNTIME_COMMAND_MARKER = "\0amicus-runtime-command";
 
 export function isValidThinkingLevel(level: string): level is ThinkingLevel {
 	return THINKING_LEVELS.includes(level as ThinkingLevel);

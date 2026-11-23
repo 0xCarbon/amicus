@@ -2,7 +2,7 @@ import { mkdtempSync, rmSync } from "node:fs";
 import type { Socket } from "node:net";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AgentCronJobStore } from "../src/core/cron-jobs.js";
 import type { ActiveSessionState, DaemonSocketClient } from "../src/modes/daemon/active-session-state.js";
@@ -21,7 +21,7 @@ describe("daemon conditional cron follow-up", () => {
 	});
 
 	it("routes a fenced non-slash marker to the active-goal follow-up transport", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-conditional-follow-up-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-conditional-follow-up-"));
 		tempDirs.push(tempDir);
 		const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 			defaultSessionConfig: { agentDir: tempDir, cwd: tempDir },
@@ -148,7 +148,7 @@ describe("daemon conditional cron follow-up", () => {
 	});
 
 	it("rebuilds a persisted receipt-phase follow-up after daemon interruption", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-conditional-follow-up-recovery-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-conditional-follow-up-recovery-"));
 		tempDirs.push(tempDir);
 		const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 			defaultSessionConfig: { agentDir: tempDir, cwd: tempDir },
@@ -228,7 +228,7 @@ describe("daemon conditional cron follow-up", () => {
 	) => Promise<boolean>;
 
 	async function interruptedFollowUp(recover: RecoverFollowUp, extraSession: Record<string, unknown> = {}) {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-conditional-follow-up-recovery-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-conditional-follow-up-recovery-"));
 		tempDirs.push(tempDir);
 		const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 			defaultSessionConfig: { agentDir: tempDir, cwd: tempDir },

@@ -1,11 +1,4 @@
-import {
-	type Component,
-	Container,
-	type MarkdownTheme,
-	Text,
-	truncateToWidth,
-	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
+import { type Component, Container, type MarkdownTheme, Text, truncateToWidth, wrapTextWithAnsi } from "@amicus/tui";
 import { type AgentSessionMessage, formatAgentMessageParticipant } from "../../../core/agent-messages.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 

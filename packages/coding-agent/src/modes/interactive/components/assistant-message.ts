@@ -1,7 +1,7 @@
 import { resolve, sep } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { AssistantMessage } from "@earendil-works/pi-ai";
-import { type Component, Container, Markdown, type MarkdownTheme, Spacer, Text } from "@earendil-works/pi-tui";
+import type { AssistantMessage } from "@amicus/ai";
+import { type Component, Container, Markdown, type MarkdownTheme, Spacer, Text } from "@amicus/tui";
 import { LOGIN_RECOVERY_MESSAGE } from "../../../core/auth-guidance.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 import {

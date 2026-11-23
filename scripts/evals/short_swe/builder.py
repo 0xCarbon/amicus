@@ -171,7 +171,7 @@ def main() -> None:
     run_as_builder(
         [
             "node",
-            "scripts/pack-prime-agent-release.mjs",
+            "scripts/pack-amicus-release.mjs",
             "--base-url",
             "https://invalid.local/releases",
             "--version",
@@ -183,10 +183,10 @@ def main() -> None:
         timeout=240,
     )
     expected = {
-        f"prime-agent-{VERSION}.tgz",
-        f"prime-agent-ai-{VERSION}.tgz",
-        f"prime-agent-core-{VERSION}.tgz",
-        f"prime-agent-tui-{VERSION}.tgz",
+        f"amicus-{VERSION}.tgz",
+        f"amicus-ai-{VERSION}.tgz",
+        f"amicus-core-{VERSION}.tgz",
+        f"amicus-tui-{VERSION}.tgz",
     }
     source = open_candidate_artifacts()
     destination = create_snapshot()

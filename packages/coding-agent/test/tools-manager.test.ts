@@ -3,14 +3,14 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const toolState = vi.hoisted(() => ({
-	toolsDir: `/tmp/prime-agent-tools-manager-${process.pid}`,
+	toolsDir: `/tmp/amicus-tools-manager-${process.pid}`,
 	platform: "linux",
 	architecture: "x64",
 	extractZip: async (_source: string, _options: { dir: string }): Promise<void> => {},
 }));
 
 vi.mock("../src/config.js", () => ({
-	APP_NAME: "prime-agent",
+	APP_NAME: "amicus",
 	getBinDir: () => toolState.toolsDir,
 }));
 

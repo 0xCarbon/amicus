@@ -1,4 +1,4 @@
-import type { AssistantMessage, ToolResultMessage, UserMessage } from "@earendil-works/pi-ai";
+import type { AssistantMessage, ToolResultMessage, UserMessage } from "@amicus/ai";
 import { describe, expect, it } from "vitest";
 import {
 	formatChangeSummary,

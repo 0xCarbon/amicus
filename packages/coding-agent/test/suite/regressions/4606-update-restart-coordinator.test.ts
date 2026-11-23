@@ -27,7 +27,7 @@ const fauxExtensionPath = resolve(__dirname, "../../fixtures/eng-4600-faux-exten
 const launcherFixturePath = resolve(__dirname, "../../fixtures/eng-4606-update-launcher.ts");
 const tsxPath = resolve(__dirname, "../../../../../node_modules/tsx/dist/cli.mjs");
 const tsconfigPath = resolve(__dirname, "../../../../../tsconfig.json");
-const supervisorRegistryDirEnv = "PRIME_AGENT_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
+const supervisorRegistryDirEnv = "AMICUS_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
 const supervisors = new Set<SupervisorHandle>();
 const harnesses: Harness[] = [];
 const sockets = new Set<string>();
@@ -326,8 +326,8 @@ describe("update restart coordinator lifecycle (ENG-4606)", () => {
 		expect(await connection.getMessages()).toContainEqual(
 			expect.objectContaining({
 				role: "custom",
-				customType: "prime-agent.update_complete",
-				content: expect.stringMatching(/^\[update-complete\]\n\nPrime Agent updated to v/),
+				customType: "amicus.update_complete",
+				content: expect.stringMatching(/^\[update-complete\]\n\nAmicus updated to v/),
 				display: true,
 			}),
 		);

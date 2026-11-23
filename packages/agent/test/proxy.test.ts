@@ -1,4 +1,4 @@
-import { getModels } from "@earendil-works/pi-ai";
+import { getModels } from "@amicus/ai";
 import { afterEach, expect, it, vi } from "vitest";
 import { streamProxy } from "../src/proxy.js";
 

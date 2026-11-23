@@ -7,13 +7,13 @@ import { timingSafeEqual } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { basename, dirname, join, resolve } from "node:path";
-import type { LocalCatalogLoadResult, McpServiceEntry, McpServiceSetupField } from "@earendil-works/pi-ai/mcp";
+import type { LocalCatalogLoadResult, McpServiceEntry, McpServiceSetupField } from "@amicus/ai/mcp";
 import {
 	createMcpOAuthProvider,
 	loadLocalServiceCatalog,
 	parseMcpServiceCatalogFile,
 	SERVICE_CATALOG,
-} from "@earendil-works/pi-ai/mcp";
+} from "@amicus/ai/mcp";
 import { getPackageDir, isBunBinary } from "../../config.js";
 import type { AuthCredential, AuthStorage } from "../auth-storage.js";
 import { CatalogCache } from "../model-catalog-cache.js";

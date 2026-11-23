@@ -23,7 +23,7 @@ export async function runCli(): Promise<void> {
 	installOwnedSessionWorkerOwnerWatch();
 
 	const args = process.argv.slice(2);
-	if (args.length === 1 && args[0] === "--prime-agent-bootstrap") {
+	if (args.length === 1 && args[0] === "--amicus-bootstrap") {
 		try {
 			await runRuntimeBootstrap();
 		} catch (error) {

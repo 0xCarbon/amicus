@@ -18,7 +18,7 @@ import {
 } from "../../core/session-manager.js";
 import { spawnHidden } from "../../utils/child-process.js";
 
-export const DAEMON_CATALOG_ROLE_ENV = "PRIME_AGENT_INTERNAL_DAEMON_CATALOG";
+export const DAEMON_CATALOG_ROLE_ENV = "AMICUS_INTERNAL_DAEMON_CATALOG";
 const DAEMON_CATALOG_START_TIMEOUT_MS = 30_000;
 
 export function isDaemonCatalogSourcePath(modulePath: string, packageDir: string): boolean {
@@ -237,8 +237,8 @@ async function handleCatalogRequest(request: CatalogRequest): Promise<void> {
 			case "mark_interrupted":
 				appendCustomMessageToExistingFile(
 					request.sessionPath,
-					"prime-agent.worker_recovery",
-					"<prime_agent_worker_interrupted>\nThe isolated session worker stopped during in-flight work. The saved transcript was recovered, but uncertain model, tool, bash, or child-agent work was not replayed. Inspect external side effects before continuing.\n</prime_agent_worker_interrupted>",
+					"amicus.worker_recovery",
+					"<amicus_worker_interrupted>\nThe isolated session worker stopped during in-flight work. The saved transcript was recovered, but uncertain model, tool, bash, or child-agent work was not replayed. Inspect external side effects before continuing.\n</amicus_worker_interrupted>",
 					false,
 					{
 						activeSessionId: request.activeSessionId,

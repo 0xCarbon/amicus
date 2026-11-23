@@ -1,6 +1,6 @@
 import * as path from "node:path";
-import { getProviders, type OAuthProviderId, type OAuthSelectPrompt } from "@earendil-works/pi-ai";
-import type { Component, TUI } from "@earendil-works/pi-tui";
+import { getProviders, type OAuthProviderId, type OAuthSelectPrompt } from "@amicus/ai";
+import type { Component, TUI } from "@amicus/tui";
 import { getAuthPath, getDocsPath } from "../../config.js";
 import type { McpRemoveAccountResult } from "../../core/mcp/connection-store.js";
 import type { ModelRegistry } from "../../core/model-registry.js";
@@ -42,7 +42,7 @@ export type AuthenticationResult =
 export const BEDROCK_PROVIDER_ID = "amazon-bedrock";
 
 export const ANTHROPIC_SUBSCRIPTION_AUTH_WARNING =
-	"Anthropic subscription auth is active. Usage draws from your plan limits, but Prime Agent identifies as Claude Code and this may violate Anthropic's terms — your account can be restricted or banned. An Anthropic API key avoids the risk. Manage usage at https://claude.ai/settings/usage.";
+	"Anthropic subscription auth is active. Usage draws from your plan limits, but Amicus identifies as Claude Code and this may violate Anthropic's terms — your account can be restricted or banned. An Anthropic API key avoids the risk. Manage usage at https://claude.ai/settings/usage.";
 
 function isAnthropicSubscriptionAuthKey(apiKey: string | undefined): boolean {
 	return typeof apiKey === "string" && apiKey.startsWith("sk-ant-oat");
@@ -480,7 +480,7 @@ export class ProviderAuthFlows {
 						resolve(undefined);
 					},
 					{
-						prompt: "Which account should Prime Agent use?",
+						prompt: "Which account should Amicus use?",
 						selectedIndex: current >= 0 ? current + 1 : 0,
 						requestRender: () => this.host.ui.requestRender(),
 						onExit: () => this.host.exitApp?.(),

@@ -16,7 +16,7 @@ export function validateMacosRelease(artifactsDir, platform, referenceManifest, 
 	const references = JSON.parse(readFileSync(referenceManifest, "utf8")).binaries?.filter((entry) => entry.platform === platform);
 	if (references?.length !== 1 || references[0].executableSha256 !== release.executableSha256)
 		throw new Error("Final executable identity differs from the tested standalone build");
-	const temporary = mkdtempSync(join(tmpdir(), "prime-agent-signature-"));
+	const temporary = mkdtempSync(join(tmpdir(), "amicus-signature-"));
 	try {
 		const extracted = join(temporary, "extracted app");
 		const home = join(temporary, "home");
@@ -24,7 +24,7 @@ export function validateMacosRelease(artifactsDir, platform, referenceManifest, 
 		mkdirSync(home);
 		execFileSync("tar", ["-xzf", join(artifactsDir, release.file), "-C", extracted], { env: { ...process.env, COPYFILE_DISABLE: "1" } });
 		validateBinaryAssets(extracted);
-		const binary = join(extracted, "prime-agent");
+		const binary = join(extracted, "amicus");
 		if (sha256File(binary) !== release.executableSha256) throw new Error("Extracted executable checksum mismatch");
 		verifyMacosBinary(binary, platform);
 		const display = spawnSync("/usr/bin/codesign", ["--display", "--verbose=4", binary], { encoding: "utf8" });
@@ -33,7 +33,7 @@ export function validateMacosRelease(artifactsDir, platform, referenceManifest, 
 		console.log(signature);
 		const options = {
 			cwd: home,
-			env: { HOME: home, PATH: "/usr/bin:/bin", TMPDIR: temporary, DO_NOT_TRACK: "1", PRIME_AGENT_CODING_AGENT_DIR: join(home, "agent") },
+			env: { HOME: home, PATH: "/usr/bin:/bin", TMPDIR: temporary, DO_NOT_TRACK: "1", AMICUS_CODING_AGENT_DIR: join(home, "agent") },
 			encoding: "utf8",
 			timeout: 30000,
 		};

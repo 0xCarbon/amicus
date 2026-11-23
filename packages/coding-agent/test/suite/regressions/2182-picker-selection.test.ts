@@ -1,5 +1,5 @@
-import type { ModelThinkingLevel } from "@earendil-works/pi-ai";
-import { Container, Input, setKeybindings, type TUI } from "@earendil-works/pi-tui";
+import type { ModelThinkingLevel } from "@amicus/ai";
+import { Container, Input, setKeybindings, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, beforeAll, beforeEach, expect, it, vi } from "vitest";
 import { KEYBINDINGS, KeybindingsManager } from "../../../src/core/keybindings.js";

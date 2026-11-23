@@ -3,8 +3,8 @@
 // real MCP handshake, and serves mcp.* host-requests including the service-catalog inventory.
 
 import { join } from "node:path";
-import { registerBuiltinMcpOAuthProviders } from "@earendil-works/pi-ai/mcp";
-import { registerOAuthProvider, unregisterOAuthProvider } from "@earendil-works/pi-ai/oauth";
+import { registerBuiltinMcpOAuthProviders } from "@amicus/ai/mcp";
+import { registerOAuthProvider, unregisterOAuthProvider } from "@amicus/ai/oauth";
 import { getAgentDir, getMcpCacheDir } from "../../config.js";
 import type { AuthStorage } from "../auth-storage.js";
 import type { McpServerConfig } from "../settings-manager.js";

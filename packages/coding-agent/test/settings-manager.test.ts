@@ -9,12 +9,12 @@ describe("SettingsManager", () => {
 	const agentDir = join(testDir, "agent");
 	const projectDir = join(testDir, "project");
 	const globalPath = join(agentDir, "settings.json");
-	const projectPath = join(projectDir, ".prime", "agent", "settings.json");
+	const projectPath = join(projectDir, ".amicus", "settings.json");
 
 	beforeEach(() => {
 		if (existsSync(testDir)) rmSync(testDir, { recursive: true });
 		mkdirSync(agentDir, { recursive: true });
-		mkdirSync(join(projectDir, ".prime", "agent"), { recursive: true });
+		mkdirSync(join(projectDir, ".amicus"), { recursive: true });
 	});
 
 	afterEach(() => {
@@ -114,10 +114,10 @@ describe("SettingsManager", () => {
 
 		it("creates the project settings directory only when project settings are written", async () => {
 			writeSettings(globalPath, { theme: "dark" });
-			rmSync(join(projectDir, ".prime", "agent"), { recursive: true });
+			rmSync(join(projectDir, ".amicus"), { recursive: true });
 
 			const manager = SettingsManager.create(projectDir, agentDir);
-			expect(existsSync(join(projectDir, ".prime", "agent"))).toBe(false);
+			expect(existsSync(join(projectDir, ".amicus"))).toBe(false);
 			expect(manager.getTheme()).toBe("dark");
 
 			manager.setProjectPackages([{ source: "npm:test-pkg" }]);

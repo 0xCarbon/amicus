@@ -1,4 +1,4 @@
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 
 export interface OnboardingSettingsReader {
 	getOnboardingShown(): boolean;

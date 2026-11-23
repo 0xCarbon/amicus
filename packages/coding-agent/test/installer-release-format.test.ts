@@ -16,9 +16,9 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { hostNativePlatform } from "./installer-platform.js";
 
 const version = "1.2.3";
-const nodeFile = `prime-agent-${version}.tgz`;
+const nodeFile = `amicus-${version}.tgz`;
 // The inventory must advertise the archive the installer actually selects here.
-const nativeFile = `prime-agent-${version}-${hostNativePlatform()}.tar.gz`;
+const nativeFile = `amicus-${version}-${hostNativePlatform()}.tar.gz`;
 const digest = "a".repeat(64);
 let root: string;
 let harness: string;
@@ -37,16 +37,16 @@ async function install(
 ) {
 	checksums = inventory;
 	const home = mkdtempSync(join(root, "home-"));
-	const publicCommand = join(home, ".local/bin/prime-agent");
-	const nativeRoot = join(home, ".local/share/prime-agent");
+	const publicCommand = join(home, ".local/bin/amicus");
+	const nativeRoot = join(home, ".local/share/amicus");
 	const hasNpm = existing === "npm" || existing === "both";
 	const hasUnmanagedRoot = existing === "unmanaged-root" || existing === "both";
 	if (hasNpm) {
-		const npmEntry = join(home, ".local/lib/node_modules/prime-agent/dist/bundle/cli.js");
+		const npmEntry = join(home, ".local/lib/node_modules/amicus/dist/bundle/cli.js");
 		mkdirSync(dirname(npmEntry), { recursive: true });
 		writeFileSync(npmEntry, "existing npm entrypoint");
 		mkdirSync(join(home, ".local/bin"), { recursive: true });
-		symlinkSync("../lib/node_modules/prime-agent/dist/bundle/cli.js", publicCommand);
+		symlinkSync("../lib/node_modules/amicus/dist/bundle/cli.js", publicCommand);
 	}
 	if (hasUnmanagedRoot) {
 		mkdirSync(nativeRoot, { recursive: true });
@@ -57,12 +57,12 @@ async function install(
 			HOME: home,
 			PATH: "/usr/bin:/bin",
 			TMPDIR: root,
-			PRIME_AGENT_INSTALL_METHOD: method,
-			PRIME_AGENT_DOWNLOAD_BASE_URL: base,
-			PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
-			PRIME_AGENT_INSTALLER_NONINTERACTIVE: "1",
-			PRIME_AGENT_INSTALLER_PLAIN: "1",
-			PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
+			AMICUS_INSTALL_METHOD: method,
+			AMICUS_DOWNLOAD_BASE_URL: base,
+			AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
+			AMICUS_INSTALLER_NONINTERACTIVE: "1",
+			AMICUS_INSTALLER_PLAIN: "1",
+			AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
 		},
 		stdio: ["ignore", "pipe", "pipe"],
 	});
@@ -77,10 +77,10 @@ async function install(
 		child.once("error", reject);
 		child.once("close", done);
 	});
-	expect(existsSync(join(home, ".local/share/prime-agent/.install-lock"))).toBe(false);
+	expect(existsSync(join(home, ".local/share/amicus/.install-lock"))).toBe(false);
 	expect(existsSync(publicCommand)).toBe(hasNpm);
 	if (hasNpm) {
-		expect(readlinkSync(publicCommand)).toBe("../lib/node_modules/prime-agent/dist/bundle/cli.js");
+		expect(readlinkSync(publicCommand)).toBe("../lib/node_modules/amicus/dist/bundle/cli.js");
 		expect(readFileSync(publicCommand, "utf8")).toBe("existing npm entrypoint");
 	}
 	if (hasUnmanagedRoot) expect(readFileSync(join(nativeRoot, "keep"), "utf8")).toBe("user-owned data");
@@ -96,7 +96,7 @@ describe.skipIf(process.platform === "win32")("installer release format selectio
 			harness,
 			installer.replace(
 				/\nmain "\$@"\s*$/,
-				'\nprime_agent_install_node() { printf "node-route:%s\\\\n" "$1"; }\nmain "$@"\n',
+				'\namicus_install_node() { printf "node-route:%s\\\\n" "$1"; }\nmain "$@"\n',
 			),
 		);
 		await new Promise<void>((done) => server.listen(0, "127.0.0.1", done));
@@ -110,7 +110,7 @@ describe.skipIf(process.platform === "win32")("installer release format selectio
 	});
 
 	it("uses Node for a release whose checksum inventory only advertises npm packages", async () => {
-		const result = await install(`${digest}  ${nodeFile}\n${digest}  prime-agent-ai-${version}.tgz\n`);
+		const result = await install(`${digest}  ${nodeFile}\n${digest}  amicus-ai-${version}.tgz\n`);
 		expect(result.code, result.output).toBe(0);
 		expect(result.output).toContain(`node-route:${version}`);
 	});
@@ -142,7 +142,7 @@ describe.skipIf(process.platform === "win32")("installer release format selectio
 		["empty inventory", ""],
 		["invalid npm checksum", `bad  ${nodeFile}\n`],
 		["duplicate npm checksum", `${digest}  ${nodeFile}\n${digest}  ${nodeFile}\n`],
-		["missing native platform", `${digest}  ${nodeFile}\n${digest}  prime-agent-${version}-other.tar.gz\n`],
+		["missing native platform", `${digest}  ${nodeFile}\n${digest}  amicus-${version}-other.tar.gz\n`],
 		["invalid native checksum", `${digest}  ${nodeFile}\nbad  ${nativeFile}\n`],
 		["missing native archive", `${digest}  ${nodeFile}\n${digest}  ${nativeFile}\n`],
 	])("does not fall back after %s", async (_label, inventory) => {

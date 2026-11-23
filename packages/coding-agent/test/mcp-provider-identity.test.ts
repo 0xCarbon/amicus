@@ -6,7 +6,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
+import { resetOAuthProviders } from "@amicus/ai/oauth";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.js";
 import { McpConnectionStore } from "../src/core/mcp/connection-store.js";
@@ -16,8 +16,8 @@ import type { McpServerConfig } from "../src/core/settings-manager.js";
 import { InteractiveMode } from "../src/modes/interactive/interactive-mode.js";
 
 const createProviderMock = vi.hoisted(() => vi.fn());
-vi.mock("@earendil-works/pi-ai/mcp", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@earendil-works/pi-ai/mcp")>();
+vi.mock("@amicus/ai/mcp", async (importOriginal) => {
+	const actual = await importOriginal<typeof import("@amicus/ai/mcp")>();
 	return {
 		...actual,
 		createMcpOAuthProvider: ((config: unknown) => {

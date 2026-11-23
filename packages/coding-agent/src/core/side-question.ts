@@ -1,5 +1,5 @@
-import { Agent, type AgentMessage } from "@earendil-works/pi-agent-core";
-import { type AssistantMessage, clampThinkingLevel, type UserMessage } from "@earendil-works/pi-ai";
+import { Agent, type AgentMessage } from "@amicus/agent-core";
+import { type AssistantMessage, clampThinkingLevel, type UserMessage } from "@amicus/ai";
 import {
 	completeWithProviderRetry,
 	DEFAULT_PROVIDER_RETRY_POLICY,

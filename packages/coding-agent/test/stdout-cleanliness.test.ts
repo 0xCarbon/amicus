@@ -21,7 +21,7 @@ async function runCli(args: string[]): Promise<{ stdout: string; stderr: string;
 	tempDirs.push(tempRoot);
 	const agentDir = join(tempRoot, "agent");
 	const projectDir = join(tempRoot, "project");
-	const projectConfigDir = join(projectDir, ".prime", "agent");
+	const projectConfigDir = join(projectDir, ".amicus");
 	mkdirSync(agentDir, { recursive: true });
 	mkdirSync(projectConfigDir, { recursive: true });
 

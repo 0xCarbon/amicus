@@ -1,5 +1,5 @@
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
-import { Container } from "@earendil-works/pi-tui";
+import { fauxAssistantMessage } from "@amicus/ai";
+import { Container } from "@amicus/tui";
 import { beforeAll, describe, expect, it, vi } from "vitest";
 import { type SideQuestionEvent, startSideQuestion } from "../../../src/core/side-question.js";
 import { BashExecutionComponent } from "../../../src/modes/interactive/components/bash-execution.js";

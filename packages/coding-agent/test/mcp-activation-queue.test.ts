@@ -1,8 +1,8 @@
 import { mkdtempSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { getOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
-import { type Component, Container, type OverlayHandle, type TUI } from "@earendil-works/pi-tui";
+import { getOAuthProvider, resetOAuthProviders } from "@amicus/ai/oauth";
+import { type Component, Container, type OverlayHandle, type TUI } from "@amicus/tui";
 import { afterEach, beforeAll, beforeEach, describe, expect, test, vi } from "vitest";
 import type { McpRemoveAccountResult } from "../src/core/mcp/connection-store.js";
 import { ProviderAuthFlows, type ProviderAuthFlowsHost } from "../src/modes/interactive/auth-flows.js";

@@ -1,4 +1,4 @@
-import { Container, Spacer, Text } from "@earendil-works/pi-tui";
+import { Container, Spacer, Text } from "@amicus/tui";
 import type { CompactionOutcomeMessage } from "../../../core/messages.js";
 import { theme } from "../theme/theme.js";
 

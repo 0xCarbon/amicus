@@ -2,7 +2,7 @@ import { type ChildProcess, spawn } from "node:child_process";
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createCliSubprocessEnv, createCliSubprocessLaunchSpec } from "../../../src/cli/subprocess-launch.js";
 import { ENV_AGENT_DIR } from "../../../src/config.js";
@@ -74,12 +74,12 @@ async function runCli(
 			TSX_TSCONFIG_PATH: repoTsconfigPath,
 			[ENV_AGENT_DIR]: options.agentDir,
 			PI_SKIP_VERSION_CHECK: "1",
-			PRIME_AGENT_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "0",
-			PRIME_AGENT_INTERNAL_DAEMON_WORKER: undefined,
-			PRIME_AGENT_INTERNAL_DAEMON_WORKER_TOKEN: undefined,
-			PRIME_AGENT_INTERNAL_DAEMON_WORKER_ACTIVE_SESSION_ID: undefined,
-			PRIME_AGENT_INTERNAL_DAEMON_SUPERVISOR_SOCKET: undefined,
-			PRIME_AGENT_INTERNAL_DAEMON_WORKER_RECOVERY_JOURNAL: undefined,
+			AMICUS_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "0",
+			AMICUS_INTERNAL_DAEMON_WORKER: undefined,
+			AMICUS_INTERNAL_DAEMON_WORKER_TOKEN: undefined,
+			AMICUS_INTERNAL_DAEMON_WORKER_ACTIVE_SESSION_ID: undefined,
+			AMICUS_INTERNAL_DAEMON_SUPERVISOR_SOCKET: undefined,
+			AMICUS_INTERNAL_DAEMON_WORKER_RECOVERY_JOURNAL: undefined,
 			RLM_DEPTH: undefined,
 			RLM_MAX_DEPTH: undefined,
 			...options.environment,
@@ -242,7 +242,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 	});
 
 	it("launches real daemon workers for every migrated client surface", async () => {
-		const root = mkdtempSync(join(tmpdir(), "prime-agent-4685-clients-"));
+		const root = mkdtempSync(join(tmpdir(), "amicus-4685-clients-"));
 		tempRoots.add(root);
 		const agentDir = join(root, "agent dir");
 		const socketPath = join(root, "daemon.sock");
@@ -280,7 +280,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 	}, 90_000);
 
 	it("keeps the rollback frontend fully off the daemon path", async () => {
-		const root = mkdtempSync(join(tmpdir(), "prime-agent-4685-rollback-"));
+		const root = mkdtempSync(join(tmpdir(), "amicus-4685-rollback-"));
 		tempRoots.add(root);
 		const agentDir = join(root, "agent");
 		const socketPath = join(root, "must-not-exist.sock");
@@ -301,7 +301,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 			],
 			{
 				agentDir,
-				environment: { PRIME_AGENT_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "1" },
+				environment: { AMICUS_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "1" },
 			},
 		);
 
@@ -310,7 +310,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 	}, 30_000);
 
 	it("loads headless runtime services only in the worker", async () => {
-		const root = mkdtempSync(join(tmpdir(), "prime-agent-4685-services-"));
+		const root = mkdtempSync(join(tmpdir(), "amicus-4685-services-"));
 		tempRoots.add(root);
 		const agentDir = join(root, "agent");
 		const socketPath = join(root, "daemon.sock");
@@ -319,7 +319,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 		daemonSockets.add(socketPath);
 		writeFileSync(
 			extensionPath,
-			'import { appendFileSync } from "node:fs";\nexport default function() { appendFileSync(process.env.PRIME_AGENT_TEST_EXTENSION_LOAD_MARKER, "loaded\\n"); }\n',
+			'import { appendFileSync } from "node:fs";\nexport default function() { appendFileSync(process.env.AMICUS_TEST_EXTENSION_LOAD_MARKER, "loaded\\n"); }\n',
 		);
 
 		const result = await runCli(
@@ -341,7 +341,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 			],
 			{
 				agentDir,
-				environment: { PRIME_AGENT_TEST_EXTENSION_LOAD_MARKER: markerPath },
+				environment: { AMICUS_TEST_EXTENSION_LOAD_MARKER: markerPath },
 			},
 		);
 
@@ -374,7 +374,7 @@ describe("ENG-4685 daemon-backed client modes", () => {
 	});
 
 	it("drains accepted daemon RPC prompt work before EOF", async () => {
-		const root = mkdtempSync(join(tmpdir(), "prime-agent-4685-rpc-eof-"));
+		const root = mkdtempSync(join(tmpdir(), "amicus-4685-rpc-eof-"));
 		tempRoots.add(root);
 		const socketPath = join(root, "daemon.sock");
 		daemonSockets.add(socketPath);

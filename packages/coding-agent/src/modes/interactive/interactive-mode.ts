@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import * as fs from "node:fs";
 import * as os from "node:os";
 import * as path from "node:path";
-import type { AgentMessage, ThinkingLevel } from "@earendil-works/pi-agent-core";
+import type { AgentMessage, ThinkingLevel } from "@amicus/agent-core";
 import {
 	type Api,
 	type AssistantMessage,
@@ -13,9 +13,9 @@ import {
 	supportsFastMode,
 	supportsServiceTier,
 	type ToolCall,
-} from "@earendil-works/pi-ai";
-import { BUILTIN_MCP_CATALOG } from "@earendil-works/pi-ai/mcp";
-import { registerOAuthProvider, unregisterOAuthProvider } from "@earendil-works/pi-ai/oauth";
+} from "@amicus/ai";
+import { BUILTIN_MCP_CATALOG } from "@amicus/ai/mcp";
+import { registerOAuthProvider, unregisterOAuthProvider } from "@amicus/ai/oauth";
 import type {
 	AutocompleteItem,
 	AutocompleteProvider,
@@ -26,7 +26,7 @@ import type {
 	OverlayHandle,
 	OverlayOptions,
 	SlashCommand,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import {
 	type ClickRegion,
 	CombinedAutocompleteProvider,
@@ -45,7 +45,7 @@ import {
 	TUI,
 	truncateToWidth,
 	visibleWidth,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import { spawnSync } from "child_process";
 import {
 	buildDaemonUpdateRestartReport,
@@ -172,7 +172,7 @@ import {
 	type TelemetryOnboardingOutcome,
 } from "../../core/telemetry.js";
 import { type TruncationResult, truncateTail } from "../../core/tools/truncate.js";
-import { PRIME_COMPACT_BUTTERFLY_LOGO } from "../../themes/prime-logo.js";
+import { AMICUS_COMPACT_LOGO } from "../../themes/amicus-logo.js";
 import { getChangelogPath, parseChangelog } from "../../utils/changelog.js";
 import { spawnHidden, spawnSyncHidden } from "../../utils/child-process.js";
 import { copyToClipboard } from "../../utils/clipboard.js";
@@ -520,7 +520,7 @@ export class BrandSplashHeader implements Component {
 		private readonly verboseInstructions?: string,
 		private readonly options: BrandSplashHeaderOptions = {},
 	) {
-		this.logoRaw = (options.logo ?? PRIME_COMPACT_BUTTERFLY_LOGO).split("\n");
+		this.logoRaw = (options.logo ?? AMICUS_COMPACT_LOGO).split("\n");
 		this.logoCanvasWidth = this.logoRaw.reduce((max, line) => Math.max(max, visibleWidth(line)), 0);
 	}
 
@@ -539,7 +539,7 @@ export class BrandSplashHeader implements Component {
 		const metaWidth = showLogo ? contentWidth - this.logoCanvasWidth - this.gutter : contentWidth;
 		const extraMetadata = this.options.getExtraMetadata?.() ?? [];
 		const version = theme.fg("muted", `v${this.version}`);
-		const titleText = "prime agent";
+		const titleText = "amicus";
 		const title = theme.fg("text", titleText);
 		const modelLabel = "model ";
 		const cwdLabel = "cwd ";
@@ -9841,7 +9841,7 @@ export class InteractiveMode {
 					verb === "removed"
 						? `Removed MCP server "${name}" (${transport}). It is no longer available through mcp.`
 						: usesOAuth
-							? `${verb === "replaced" ? "Replaced" : "Added"} MCP server "${name}" (${transport}). ${hasMcpProviderRefresh ? "Run" : "Restart Prime Agent, then run"} /mcp login ${name} to connect.`
+							? `${verb === "replaced" ? "Replaced" : "Added"} MCP server "${name}" (${transport}). ${hasMcpProviderRefresh ? "Run" : "Restart Amicus, then run"} /mcp login ${name} to connect.`
 							: `${verb === "replaced" ? "Replaced" : "Added"} MCP server "${name}" (${transport}). Available next turn through mcp.`;
 				await this.reloadAfterMcpChange(usesOAuth ? successMessage : result.message, successMessage);
 			} else if (result.action === "list") {

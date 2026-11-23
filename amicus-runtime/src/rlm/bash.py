@@ -34,7 +34,7 @@ _READ_CHUNK = 65536
 # guarantee single-digit fds in redirection syntax.
 _STATUS_FD = 9
 _OUTPUT_FD = 8
-_COMPLETION_PREFIX = b"\x1eprime-agent-complete:"
+_COMPLETION_PREFIX = b"\x1eamicus-complete:"
 _COMPLETION_SUFFIX = b"\x1f"
 # Cancelled one-shot awaits: TERM grace before the group KILL, then the bounded
 # wait for a confirmed group exit before CancelledError propagates.
@@ -694,14 +694,14 @@ class BashHandle:
 
         activity = {"id": secrets.token_hex(16), "pid": self._pid, "active": True}
         # Publish synchronously before bash() returns and the creating cell can end.
-        repl.emit({"application/vnd.prime-agent.bash-activity+json": activity})
+        repl.emit({"application/vnd.amicus.bash-activity+json": activity})
         notice = self._notify_background_completion(cell_finished, activity)
         try:
             task = loop.create_task(notice)
         except BaseException:
             self.kill(signal.SIGKILL if _IS_POSIX else signal.SIGTERM)
             notice.close()
-            repl.emit({"application/vnd.prime-agent.bash-activity+json": {**activity, "active": False}})
+            repl.emit({"application/vnd.amicus.bash-activity+json": {**activity, "active": False}})
             raise
         task.add_done_callback(_consume_notice_task)
 
@@ -743,7 +743,7 @@ class BashHandle:
             return
         finally:
             # Reap and deliver (or report rejection) before releasing kernel residency.
-            repl.emit({"application/vnd.prime-agent.bash-activity+json": {**activity, "active": False}})
+            repl.emit({"application/vnd.amicus.bash-activity+json": {**activity, "active": False}})
 
     def _arm_consumed_notice(self, command: str) -> None:
         # Armed only post-acceptance: the withdrawal can never overtake its notice.
@@ -976,27 +976,27 @@ def _shell() -> str:
     import shutil
 
     # Read per call so env changes made in the REPL apply to later commands.
-    override = os.environ.get("PRIME_AGENT_BASH_SHELL")
+    override = os.environ.get("AMICUS_BASH_SHELL")
     if override:
         if not os.path.isabs(override):
-            raise ValueError("PRIME_AGENT_BASH_SHELL must be an absolute path")
+            raise ValueError("AMICUS_BASH_SHELL must be an absolute path")
         return override
     if not _IS_POSIX:
         # Never consult PATH on Windows: a repo-controlled PATH could supply
-        # the shell. The host injects PRIME_AGENT_BASH_SHELL when one exists.
+        # the shell. The host injects AMICUS_BASH_SHELL when one exists.
         raise RuntimeError(
-            "bash() needs PRIME_AGENT_BASH_SHELL set to the absolute path of a "
+            "bash() needs AMICUS_BASH_SHELL set to the absolute path of a "
             "POSIX shell on Windows (e.g. install Git Bash in its default "
             "location so the host injects it)"
         )
     # PATH fallback only serves bare/standalone POSIX runtime use: the host
-    # always injects PRIME_AGENT_BASH_SHELL (an absolute path) when a shell exists.
+    # always injects AMICUS_BASH_SHELL (an absolute path) when a shell exists.
     shell = shutil.which("bash")
     return shell or "/bin/sh"
 
 
 def _with_prefix(command: str) -> str:
-    prefix = os.environ.get("PRIME_AGENT_BASH_COMMAND_PREFIX")
+    prefix = os.environ.get("AMICUS_BASH_COMMAND_PREFIX")
     return f"{prefix}\n{command}" if prefix else command
 
 
@@ -1019,13 +1019,13 @@ def _status_script(command: str, completion_a: str, completion_b: str) -> str:
     emit = _fence_printf()
     return (
         f"exec {_STATUS_FD}>&0 {_OUTPUT_FD}>&1 0</dev/null\n"
-        f"read -r _prime_agent_gate <&{_STATUS_FD} || exit 127\n"
+        f"read -r _amicus_gate <&{_STATUS_FD} || exit 127\n"
         "{\n"
         f"{command}\n"
         f"}} {_OUTPUT_FD}>&- {_STATUS_FD}>&-\n"
         "__prime_status=$?\n"
         "\\set +x\n"
-        f"{emit} '\\036prime-agent-complete:%s%s\\037' "
+        f"{emit} '\\036amicus-complete:%s%s\\037' "
         f"'{completion_a}' '{completion_b}' >&{_OUTPUT_FD} || exit \"$__prime_status\"\n"
         f"{emit} '%s\\n' \"$__prime_status\" >&{_STATUS_FD}\n"
         f"exec {_OUTPUT_FD}>&- {_STATUS_FD}>&-\n"
@@ -1150,8 +1150,8 @@ def _record_journal(pid: int, active: bool) -> bool:
     # a processStartId so host reaping stays identity-verified.
     from datetime import datetime, timezone
 
-    path = os.environ.get("PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL")
-    owner = os.environ.get("PRIME_AGENT_KERNEL_OWNER_PID")
+    path = os.environ.get("AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL")
+    owner = os.environ.get("AMICUS_KERNEL_OWNER_PID")
     if not path or not owner:
         return True
     try:

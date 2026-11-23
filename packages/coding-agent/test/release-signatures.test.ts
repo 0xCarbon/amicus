@@ -173,7 +173,7 @@ describe("release signature command", () => {
 
 function binaryAssets(directory: string, binary: Buffer): void {
 	mkdirSync(directory, { recursive: true });
-	writeFileSync(join(directory, "prime-agent"), binary, { mode: 0o755 });
+	writeFileSync(join(directory, "amicus"), binary, { mode: 0o755 });
 	const packageDir = dirname(dirname(fileURLToPath(import.meta.url)));
 	for (const asset of ["models.bundled.json", "mcp-services.bundled.json"]) {
 		copyFileSync(join(packageDir, "dist", asset), join(directory, asset));
@@ -184,8 +184,8 @@ function binaryAssets(directory: string, binary: Buffer): void {
 		"CHANGELOG.md",
 		"LICENSE",
 		"photon_rs_bg.wasm",
-		"prime-agent-runtime/pyproject.toml",
-		"prime-agent-runtime/src/rlm/repl.py",
+		"amicus-runtime/pyproject.toml",
+		"amicus-runtime/src/rlm/repl.py",
 		"theme/prime.json",
 		"theme/dark.json",
 		"theme/light.json",
@@ -219,12 +219,12 @@ describe.skipIf(process.platform === "win32")("release archive executable identi
 			expect(manifest.version).toBe(`v${version}`);
 			expect(manifest.binaries.map((entry) => entry.platform)).toEqual(targets);
 			for (const entry of manifest.binaries) {
-				const original = join(binaries, entry.platform, "prime-agent");
+				const original = join(binaries, entry.platform, "amicus");
 				const archive = join(output, entry.file);
 				const extracted = join(output, entry.platform);
 				mkdirSync(extracted);
 				execFileSync("tar", ["-xzf", archive, "-C", extracted]);
-				expect(sha256(join(extracted, "prime-agent"))).toBe(sha256(original));
+				expect(sha256(join(extracted, "amicus"))).toBe(sha256(original));
 				expect(entry.executableSha256).toBe(sha256(original));
 				expect(entry.sha256).toBe(sha256(archive));
 				expect(readFileSync(join(output, "SHA256SUMS"), "utf8")).toContain(`${entry.sha256}  ${entry.file}\n`);
@@ -239,7 +239,7 @@ describe.skipIf(process.platform === "win32")("release archive executable identi
 	it("does not emit an archive inventory when the executable cannot be packaged", () => {
 		const binaries = join(root, "invalid-binaries");
 		binaryAssets(join(binaries, "linux-x64"), Buffer.from("not executable"));
-		chmodSync(join(binaries, "linux-x64/prime-agent"), 0o644);
+		chmodSync(join(binaries, "linux-x64/amicus"), 0o644);
 		const output = join(root, "invalid-output");
 		const result = spawnSync(process.execPath, [assemblyScript, binaries, output, "1.2.3"], { encoding: "utf8" });
 		expect(result.status).not.toBe(0);

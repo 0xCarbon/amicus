@@ -1,6 +1,6 @@
-import type { AgentTool } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxToolCall, type ToolResultMessage } from "@earendil-works/pi-ai";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { AgentTool } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxToolCall, type ToolResultMessage } from "@amicus/ai";
+import type { ExtensionAPI } from "@amicus/coding-agent";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import {
@@ -1476,8 +1476,8 @@ describe("AgentSession scheduler scenarios", () => {
 			autoRefineReviewer: reviewer,
 		});
 		harnesses.push(harness);
-		const previousAgentDir = process.env.PRIME_AGENT_CODING_AGENT_DIR;
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = `${harness.tempDir}/agent`;
+		const previousAgentDir = process.env.AMICUS_CODING_AGENT_DIR;
+		process.env.AMICUS_CODING_AGENT_DIR = `${harness.tempDir}/agent`;
 		try {
 			const localDir = getLocalHarnessStateDir(harness.sessionManager.getSessionArtifactDir())!;
 			const memoryIds = () => {
@@ -1544,9 +1544,9 @@ describe("AgentSession scheduler scenarios", () => {
 			expect(harness.getPendingResponseCount()).toBe(0);
 		} finally {
 			if (previousAgentDir === undefined) {
-				delete process.env.PRIME_AGENT_CODING_AGENT_DIR;
+				delete process.env.AMICUS_CODING_AGENT_DIR;
 			} else {
-				process.env.PRIME_AGENT_CODING_AGENT_DIR = previousAgentDir;
+				process.env.AMICUS_CODING_AGENT_DIR = previousAgentDir;
 			}
 		}
 	});

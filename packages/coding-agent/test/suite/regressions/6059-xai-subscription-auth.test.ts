@@ -6,8 +6,8 @@ import {
 	getApiProvider,
 	type Model,
 	registerApiProvider,
-} from "@earendil-works/pi-ai";
-import { xaiOAuthProvider } from "@earendil-works/pi-ai/oauth";
+} from "@amicus/ai";
+import { xaiOAuthProvider } from "@amicus/ai/oauth";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { AgentSession } from "../../../src/core/agent-session.js";
 import { AuthStorage } from "../../../src/core/auth-storage.js";

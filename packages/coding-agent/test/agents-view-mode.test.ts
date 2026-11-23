@@ -1,4 +1,4 @@
-import { setKeybindings } from "@earendil-works/pi-tui";
+import { setKeybindings } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";
@@ -1622,7 +1622,7 @@ describe("agents view open during a daemon update restart", () => {
 		[
 			"waits through the update restart and surfaces the wait notice",
 			true,
-			"Waited for the Prime Agent daemon update restart to finish",
+			"Waited for the Amicus daemon update restart to finish",
 		],
 		[
 			"surfaces a permanent create failure unmasked by the wait",
@@ -1667,16 +1667,16 @@ describe("agents view open during a daemon update restart", () => {
 
 describe("waitThroughDaemonUpdateRestart", () => {
 	const updateRestartDeadline =
-		/The Prime Agent daemon did not finish its update restart within \d+ seconds\. Try opening this agent again once the update finishes\. Last error: Daemon is preparing an update restart/;
+		/The Amicus daemon did not finish its update restart within \d+ seconds\. Try opening this agent again once the update finishes\. Last error: Daemon is preparing an update restart/;
 
 	// Post-arm transient shapes only; arming is pinned at the loop/deadline layers.
 	it("retries every restart-transient failure and reports that it waited", async () => {
 		const transientFailures = [
-			() => new Error("Failed to connect to the Prime Agent daemon: connect ENOENT"),
+			() => new Error("Failed to connect to the Amicus daemon: connect ENOENT"),
 			() => Object.assign(new Error("connect ECONNREFUSED"), { code: "ECONNREFUSED" }),
-			() => new Error("Connection to the Prime Agent daemon closed."),
-			() => new Error('Timed out after 30000ms waiting for the Prime Agent daemon response to "create".'),
-			() => new DaemonControlPlaneTransportError(new Error("Connection to the Prime Agent daemon closed.")),
+			() => new Error("Connection to the Amicus daemon closed."),
+			() => new Error('Timed out after 30000ms waiting for the Amicus daemon response to "create".'),
+			() => new DaemonControlPlaneTransportError(new Error("Connection to the Amicus daemon closed.")),
 			() => new Error("Unknown active session: update-restart-session"),
 			() => new DaemonSessionRecoveringError("update-restart-session"),
 		];

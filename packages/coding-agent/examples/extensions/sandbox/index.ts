@@ -10,10 +10,10 @@
  * via `tool_call` input mutation without replacing the tool.
  *
  * Config files (merged, project takes precedence):
- * - ~/.prime/agent/extensions/sandbox.json (global)
- * - <cwd>/.prime/agent/sandbox.json (project-local)
+ * - ~/.amicus/extensions/sandbox.json (global)
+ * - <cwd>/.amicus/sandbox.json (project-local)
  *
- * Example .prime/agent/sandbox.json:
+ * Example .amicus/sandbox.json:
  * ```json
  * {
  *   "enabled": true,
@@ -35,8 +35,8 @@
  * - `/sandbox` - show current sandbox configuration
  *
  * Setup:
- * 1. Copy sandbox/ directory to ~/.prime/agent/extensions/
- * 2. Run `npm install` in ~/.prime/agent/extensions/sandbox/
+ * 1. Copy sandbox/ directory to ~/.amicus/extensions/
+ * 2. Run `npm install` in ~/.amicus/extensions/sandbox/
  *
  * Linux also requires: bubblewrap, socat, ripgrep
  */
@@ -44,9 +44,9 @@
 import { spawn } from "node:child_process";
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+import type { ExtensionAPI } from "@amicus/coding-agent";
+import { type BashOperations, createBashTool, getAgentDir } from "@amicus/coding-agent";
 import { SandboxManager, type SandboxRuntimeConfig } from "@anthropic-ai/sandbox-runtime";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
-import { type BashOperations, createBashTool, getAgentDir } from "@earendil-works/pi-coding-agent";
 
 interface SandboxConfig extends SandboxRuntimeConfig {
 	enabled?: boolean;
@@ -77,7 +77,7 @@ const DEFAULT_CONFIG: SandboxConfig = {
 };
 
 function loadConfig(cwd: string): SandboxConfig {
-	const projectConfigPath = join(cwd, ".prime", "agent", "sandbox.json");
+	const projectConfigPath = join(cwd, ".amicus", "sandbox.json");
 	const globalConfigPath = join(getAgentDir(), "extensions", "sandbox.json");
 
 	let globalConfig: Partial<SandboxConfig> = {};

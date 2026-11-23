@@ -18,7 +18,7 @@ describe("ACP session event mapping", () => {
 		expect(updates).toEqual([
 			{
 				sessionUpdate: "agent_thought_chunk",
-				messageId: "prime-agent-assistant-1",
+				messageId: "amicus-assistant-1",
 				content: { type: "text", text: "reasoning" },
 			},
 		]);
@@ -32,17 +32,17 @@ describe("ACP session event mapping", () => {
 
 		expect(acpUpdatesForSessionEvent(start, state)).toEqual([]);
 		expect(acpUpdatesForSessionEvent(assistantDelta("thinking_delta", "think"), state)[0]).toMatchObject({
-			messageId: "prime-agent-assistant-1",
+			messageId: "amicus-assistant-1",
 		});
 		expect(acpUpdatesForSessionEvent(assistantDelta("text_delta", "answer"), state)[0]).toMatchObject({
-			messageId: "prime-agent-assistant-1",
+			messageId: "amicus-assistant-1",
 		});
 		expect(acpUpdatesForSessionEvent(end, state)).toEqual([]);
 		expect(state.activeAssistantMessageId).toBeUndefined();
 
 		expect(acpUpdatesForSessionEvent(start, state)).toEqual([]);
 		expect(acpUpdatesForSessionEvent(assistantDelta("text_delta", "next"), state)[0]).toMatchObject({
-			messageId: "prime-agent-assistant-2",
+			messageId: "amicus-assistant-2",
 		});
 	});
 

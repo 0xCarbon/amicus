@@ -13,15 +13,15 @@
  *
  * Enable with `PI_REQUEST_TIMING=1` (env, inherited by daemon workers) or
  * `"requestTiming": true` in settings.json. Entries go to the shared JSONL
- * diagnostic log (~/.prime/agent/logs/agent.jsonl) under the component
+ * diagnostic log (~/.amicus/logs/agent.jsonl) under the component
  * "coding-agent.request-timing".
  *
  * Zero overhead when disabled: the wrappers pass straight through with no
  * timestamps, no payload serialization, and no log entries.
  */
 
-import type { AgentMessage, StreamFn } from "@earendil-works/pi-agent-core";
-import { type AssistantMessageEventStream, getLogger, type Message } from "@earendil-works/pi-ai";
+import type { AgentMessage, StreamFn } from "@amicus/agent-core";
+import { type AssistantMessageEventStream, getLogger, type Message } from "@amicus/ai";
 
 const log = getLogger("coding-agent.request-timing");
 

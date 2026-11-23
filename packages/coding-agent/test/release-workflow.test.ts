@@ -109,11 +109,11 @@ describe("release workflow signature gates", () => {
 			try {
 				mkdirSync(join(directory, "packages/coding-agent"), { recursive: true });
 				for (const channel of channels) {
-					const name = `prime-agent-${channel}`;
+					const name = `amicus-${channel}`;
 					const download = validation.steps.find(
 						(entry) =>
 							entry.uses?.startsWith("actions/download-artifact@") &&
-							(entry.with?.name === name || entry.with?.pattern === "prime-agent-*"),
+							(entry.with?.name === name || entry.with?.pattern === "amicus-*"),
 					);
 					expect(download, `Missing download for ${channel}`).toBeDefined();
 					if (download!.if) expect(download!.if).toBe(`env.PUBLISH_${channel.toUpperCase()} == 'true'`);
@@ -122,7 +122,7 @@ describe("release workflow signature gates", () => {
 					const path = download!.with!.name || channels.length === 1 ? destination : join(destination, name);
 					mkdirSync(path, { recursive: true });
 					writeFileSync(join(path, channel === "production" ? "latest.json" : "beta.json"), "{}");
-					writeFileSync(join(path, "prime-agent-1.2.3-darwin-arm64.tar.gz"), "");
+					writeFileSync(join(path, "amicus-1.2.3-darwin-arm64.tar.gz"), "");
 				}
 				const result = spawnSync(
 					"bash",
@@ -132,7 +132,7 @@ describe("release workflow signature gates", () => {
 						"pipefail",
 						"-c",
 						`node() { test -f "$2/latest.json" || test -f "$2/beta.json"; }
-npx() { test -f "$PRIME_AGENT_TEST_ARCHIVE"; printf '%s\\n' "$PRIME_AGENT_TEST_ARCHIVE"; }
+npx() { test -f "$AMICUS_TEST_ARCHIVE"; printf '%s\\n' "$AMICUS_TEST_ARCHIVE"; }
 ${step(validation, "Verify and exercise exact final Mac archives").run}`,
 					],
 					{
@@ -150,7 +150,7 @@ ${step(validation, "Verify and exercise exact final Mac archives").run}`,
 				expect(result.status, result.stderr).toBe(0);
 				expect(result.stdout.trim().split("\n")).toEqual(
 					channels.map((channel) =>
-						join(directory, `final-artifacts/prime-agent-${channel}/prime-agent-1.2.3-darwin-arm64.tar.gz`),
+						join(directory, `final-artifacts/amicus-${channel}/amicus-1.2.3-darwin-arm64.tar.gz`),
 					),
 				);
 			} finally {
@@ -183,8 +183,8 @@ ${step(validation, "Verify and exercise exact final Mac archives").run}`,
 		expect(musl.if).toBe(`\${{ contains(matrix.platform, 'musl') }}`);
 		expect(musl.run).toContain("docker run");
 		expect(musl.run).toContain("alpine:");
-		expect(musl.run).toContain("prime-agent --version");
-		expect(musl.run).toContain("prime-agent --help");
+		expect(musl.run).toContain("amicus --version");
+		expect(musl.run).toContain("amicus --help");
 		const upload = build.steps.find((entry) => entry.uses?.startsWith("actions/upload-artifact@"))!;
 		expect(build.steps.indexOf(musl)).toBeLessThan(build.steps.indexOf(upload));
 		// A container smoke test only proves execution when the runner matches the target architecture.
@@ -297,7 +297,7 @@ ${step(validation, "Verify and exercise exact final Mac archives").run}`,
 							GITHUB_EVENT_NAME: scenario.event,
 							GITHUB_REF_TYPE: scenario.refType,
 							GITHUB_REF_NAME: "main",
-							GITHUB_REPOSITORY: "PrimeIntellect-ai/prime-agent",
+							GITHUB_REPOSITORY: "0xCarbon/amicus",
 							GITHUB_SHA: "run-sha",
 							GITHUB_OUTPUT: output,
 							PUBLISH_PRODUCTION: scenario.production,
@@ -318,15 +318,15 @@ describe("release manifest schemas", () => {
 	const manifestV1Platforms = ["darwin-arm64", "darwin-x64", "linux-arm64", "linux-x64"];
 	const binaries = releasePlatforms.map((platform, index) => ({
 		platform,
-		file: `prime-agent-1.2.4-${platform}.tar.gz`,
+		file: `amicus-1.2.4-${platform}.tar.gz`,
 		sha256: (index + 1).toString(16).padStart(64, "0"),
 		executableSha256: (index + 11).toString(16).padStart(64, "0"),
 	}));
 	const tarballs = [
-		["prime-agent-ai", "1"],
-		["prime-agent-core", "2"],
-		["prime-agent-tui", "3"],
-		["prime-agent", "4"],
+		["amicus-ai", "1"],
+		["amicus-core", "2"],
+		["amicus-tui", "3"],
+		["amicus", "4"],
 	].map(([name, hash]) => ({
 		name,
 		file: `${name}-1.2.4.tgz`,
@@ -344,12 +344,12 @@ describe("release manifest schemas", () => {
 				[
 					"--input-type=module",
 					"-e",
-					`import { writeReleaseMetadata } from ${JSON.stringify(join(repository, "scripts/pack-prime-agent-release.mjs"))}; writeReleaseMetadata(${JSON.stringify(
+					`import { writeReleaseMetadata } from ${JSON.stringify(join(repository, "scripts/pack-amicus-release.mjs"))}; writeReleaseMetadata(${JSON.stringify(
 						{
 							artifactsDir: directory,
 							channel,
 							releaseVersion: "1.2.4",
-							codingAgentTarball: "prime-agent-1.2.4.tgz",
+							codingAgentTarball: "amicus-1.2.4.tgz",
 							tarballs,
 							binaries,
 						},

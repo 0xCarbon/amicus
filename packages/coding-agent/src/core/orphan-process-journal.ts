@@ -3,7 +3,7 @@ import { win32 } from "node:path";
 import { spawnSyncHidden } from "../utils/child-process.js";
 import { getProcessStartId } from "./session-lease.js";
 
-export const ORPHAN_PROCESS_JOURNAL_ENV = "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL";
+export const ORPHAN_PROCESS_JOURNAL_ENV = "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL";
 
 interface OrphanProcessRecord {
 	version: 1;

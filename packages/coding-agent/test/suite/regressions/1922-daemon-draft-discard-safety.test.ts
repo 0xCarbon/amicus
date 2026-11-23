@@ -21,7 +21,7 @@ afterEach(() => {
 });
 
 function tempDirectory(): string {
-	const directory = mkdtempSync(join(tmpdir(), "prime-agent-1922-"));
+	const directory = mkdtempSync(join(tmpdir(), "amicus-1922-"));
 	tempDirectories.push(directory);
 	return directory;
 }

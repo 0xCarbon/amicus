@@ -1,5 +1,5 @@
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import type { ServiceTier, Transport } from "@earendil-works/pi-ai";
+import type { ThinkingLevel } from "@amicus/agent-core";
+import type { ServiceTier, Transport } from "@amicus/ai";
 import {
 	Container,
 	type SelectItem,
@@ -9,7 +9,7 @@ import {
 	SettingsList,
 	Spacer,
 	Text,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import type { IdleEvictionMinutes } from "../../../core/session-action-store.js";
 import type { MermaidRenderingMode, WarningSettings } from "../../../core/settings-manager.js";
 import { getSelectListTheme, getSettingsListTheme, theme } from "../theme/theme.js";
@@ -390,7 +390,7 @@ export class SettingsSelectorComponent extends Container {
 		items.splice(skillCommandsItemIndex + 1, 0, {
 			id: "builtin-skills",
 			label: "Built-in skills",
-			description: "Load built-in skills shipped with prime-agent (takes effect after reload)",
+			description: "Load built-in skills shipped with amicus (takes effect after reload)",
 			currentValue: config.enableBuiltinSkills ? "true" : "false",
 			values: ["true", "false"],
 		});

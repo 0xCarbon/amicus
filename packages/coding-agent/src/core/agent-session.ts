@@ -15,7 +15,7 @@ import {
 	type GetContinuationMessagesContext,
 	type ShouldStopAfterTurnContext,
 	type ThinkingLevel,
-} from "@earendil-works/pi-agent-core";
+} from "@amicus/agent-core";
 import type {
 	Api,
 	AssistantMessage,
@@ -25,7 +25,7 @@ import type {
 	TextContent,
 	Usage,
 	UserMessage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import {
 	clampServiceTier,
 	clampThinkingLevel,
@@ -35,7 +35,7 @@ import {
 	modelsAreEqual,
 	resetApiProviders,
 	supportsServiceTier,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { theme } from "../modes/interactive/theme/theme.js";
 import { stripFrontmatter } from "../utils/frontmatter.js";
 import { sleep } from "../utils/sleep.js";
@@ -10679,7 +10679,7 @@ export class AgentSession {
 			}
 			let refinementAuditAppendError: { error: unknown } | undefined;
 			try {
-				this.sessionManager.appendCustomEntry("prime-agent.refinement", result);
+				this.sessionManager.appendCustomEntry("amicus.refinement", result);
 			} catch (error) {
 				refinementAuditAppendError = { error };
 			}
@@ -11771,7 +11771,7 @@ export class AgentSession {
 
 	private _addWebsearchKeyEnv(env: Record<string, string>): void {
 		if (this._agentDir) {
-			env.PRIME_AGENT_CODING_AGENT_DIR = this._agentDir;
+			env.AMICUS_CODING_AGENT_DIR = this._agentDir;
 		}
 
 		if (process.env[SERPER_ENV_VAR]?.trim()) {
@@ -11829,7 +11829,7 @@ export class AgentSession {
 	}
 
 	private _createEphemeralRlmSessionDir(): string {
-		this._rlmSessionDir = mkdtempSync(join(tmpdir(), "prime-agent-rlm-"));
+		this._rlmSessionDir = mkdtempSync(join(tmpdir(), "amicus-rlm-"));
 		return this._rlmSessionDir;
 	}
 

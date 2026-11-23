@@ -1,4 +1,4 @@
-import { setKeybindings, visibleWidth } from "@earendil-works/pi-tui";
+import { setKeybindings, visibleWidth } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";
@@ -20,14 +20,14 @@ describe("OnboardingChoiceComponent", () => {
 			() => {},
 			() => {},
 			{
-				prompt: "Which account should Prime Agent use?",
+				prompt: "Which account should Amicus use?",
 				note: "You can change this anytime with /login.",
 			},
 		);
 		const lines = component.render(90);
 		const output = stripAnsi(lines.join("\n"));
 
-		expect(output).toContain("Which account should Prime Agent use?");
+		expect(output).toContain("Which account should Amicus use?");
 		expect(output).toContain("> Personal account");
 		expect(output).toContain("  Team account");
 		expect(output).toContain("You can change this anytime with /login.");

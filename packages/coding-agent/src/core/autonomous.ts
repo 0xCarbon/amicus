@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { createReadStream } from "node:fs";
 import { lstat, readlink } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { AssistantMessage, Usage, UserMessage } from "@earendil-works/pi-ai";
+import type { AssistantMessage, Usage, UserMessage } from "@amicus/ai";
 import { spawnHidden, waitForChildProcess } from "../utils/child-process.js";
 import { killProcessTree, trackDetachedChildPid, untrackDetachedChildPid } from "../utils/shell.js";
 
@@ -548,7 +548,7 @@ async function captureGitWorktreeSnapshot(
 		".",
 		":(exclude)verification",
 		":(exclude)target",
-		":(exclude).vf-prime-agent",
+		":(exclude).vf-amicus",
 		":(exclude)Cargo.lock",
 		":(exclude)submission.tar.gz",
 		":(exclude)runner_args.log",

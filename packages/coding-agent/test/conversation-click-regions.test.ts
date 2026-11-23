@@ -1,4 +1,4 @@
-import { type ClickRegion, Container, setKeybindings, type TUI, visibleWidth } from "@earendil-works/pi-tui";
+import { type ClickRegion, Container, setKeybindings, type TUI, visibleWidth } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { beforeEach, describe, expect, test, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";

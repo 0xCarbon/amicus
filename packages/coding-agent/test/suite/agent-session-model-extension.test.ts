@@ -1,6 +1,6 @@
 import { appendFileSync, readFileSync } from "node:fs";
-import type { AgentTool, ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxToolCall, type Model } from "@earendil-works/pi-ai";
+import type { AgentTool, ThinkingLevel } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxToolCall, type Model } from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AgentCronJob } from "../../src/core/cron-jobs.js";

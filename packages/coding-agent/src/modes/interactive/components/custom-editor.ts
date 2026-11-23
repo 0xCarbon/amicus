@@ -6,7 +6,7 @@ import {
 	type TUI,
 	truncateToWidth,
 	visibleWidth,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import type { AppKeybinding, KeybindingsManager } from "../../../core/keybindings.js";
 import { ArgTokenHighlighter } from "./prompt-highlight.js";
 

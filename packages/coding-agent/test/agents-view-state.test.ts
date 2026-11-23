@@ -2205,7 +2205,7 @@ describe("#502 agents view catalog refresh races", () => {
 				"reconnectClient",
 			);
 		// The update-restart coordinator owns the relaunch: this loop only polls.
-		await reconnectClient.call(harness, client, new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+		await reconnectClient.call(harness, client, new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 		expect(recoverDaemon).not.toHaveBeenCalled();
 		await reconnectClient.call(harness, client, new Error("Daemon socket closed"));
 		expect(recoverDaemon).toHaveBeenCalled();

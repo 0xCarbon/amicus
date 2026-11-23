@@ -3,7 +3,7 @@ import { constants, generateKeyPairSync, privateDecrypt } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { join } from "node:path";
-import type { OAuthAuthInfo } from "@earendil-works/pi-ai";
+import type { OAuthAuthInfo } from "@amicus/ai";
 import { fetchWithTimeout, isRecord, numberField, readResponseMessage, stringEnv, stringField } from "./prime-http.js";
 
 export const PRIME_INFERENCE_PROVIDER_ID = "prime-inference";
@@ -136,8 +136,8 @@ function importedPrimeTeam(config: PrimeCliConfig): PrimeTeam | null {
 
 export function resolvePrimeInferenceAuthConfig(): PrimeChallengeConfig {
 	return {
-		baseUrl: normalizeBaseUrl(stringEnv("PRIME_AGENT_INFERENCE_API_BASE_URL")),
-		frontendUrl: normalizeUrl(stringEnv("PRIME_AGENT_INFERENCE_FRONTEND_URL"), DEFAULT_PRIME_FRONTEND_URL),
+		baseUrl: normalizeBaseUrl(stringEnv("AMICUS_INFERENCE_API_BASE_URL")),
+		frontendUrl: normalizeUrl(stringEnv("AMICUS_INFERENCE_FRONTEND_URL"), DEFAULT_PRIME_FRONTEND_URL),
 	};
 }
 

@@ -192,7 +192,7 @@ describe("daemon command", () => {
 			{ type: "cron_add", activeSessionId: "active-1", schedule: "in 5m", prompt: "check status" },
 		],
 	])("%s", async (_name, argv, expected) => {
-		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", ...argv])).resolves.toBe(true);
+		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", ...argv])).resolves.toBe(true);
 
 		expect(daemonClientMock.instances[0]?.requests[0]).toMatchObject(expected);
 	});
@@ -207,7 +207,7 @@ describe("daemon command", () => {
 			["create", "--goal-token-budget", "50000", "my-session"],
 		],
 	])("%s", async (_name, argv) => {
-		await handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", ...argv]);
+		await handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", ...argv]);
 
 		expect(daemonClientMock.instances[0]?.requests ?? []).toEqual([]);
 	});
@@ -240,14 +240,7 @@ describe("daemon command", () => {
 	it("ignores stale agent_end events before a daemon prompt starts", async () => {
 		daemonClientMock.behavior.promptSucceeds = true;
 		daemonClientMock.behavior.emitStaleAgentEndOnAttach = true;
-		const command = handleDaemonCommand([
-			"daemon",
-			"--socket",
-			"/tmp/prime-agent.sock",
-			"prompt",
-			"active-1",
-			"hello",
-		]);
+		const command = handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "prompt", "active-1", "hello"]);
 
 		await flushPromises();
 
@@ -270,14 +263,7 @@ describe("daemon command", () => {
 	});
 
 	it("ends json attach when the session closes", async () => {
-		const command = handleDaemonCommand([
-			"daemon",
-			"--socket",
-			"/tmp/prime-agent.sock",
-			"--json",
-			"attach",
-			"active-1",
-		]);
+		const command = handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "--json", "attach", "active-1"]);
 
 		await flushPromises();
 
@@ -295,7 +281,7 @@ describe("daemon command", () => {
 		const unsafeIntegerName = "9007199254740992";
 		daemonClientMock.behavior.sessions = [makeSessionSummary("active-1", "session-1", unsafeIntegerName)];
 
-		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock"])).resolves.toBe(true);
+		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock"])).resolves.toBe(true);
 
 		const client = daemonClientMock.instances[1];
 		expect(client?.requests[0]).toEqual({ type: "list", all: true });
@@ -307,7 +293,7 @@ describe("daemon command", () => {
 		daemonClientMock.behavior.sessions = [makeSessionSummary("active-1", "session-1", "alpha")];
 
 		await expect(
-			handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", "--json", "cron", "list", "alpha"]),
+			handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "--json", "cron", "list", "alpha"]),
 		).resolves.toBe(true);
 
 		expect(daemonClientMock.instances[0]?.requests).toEqual([
@@ -323,7 +309,7 @@ describe("daemon command", () => {
 		["reports an empty roster without a table", ["sessions"], false, false, []],
 	])("%s", async (_name, argv, all, json, sessions) => {
 		daemonClientMock.behavior.sessions = sessions;
-		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", ...argv])).resolves.toBe(true);
+		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", ...argv])).resolves.toBe(true);
 
 		expect(daemonClientMock.instances[0]?.requests).toEqual([{ type: "list", all }]);
 		const logged = String(vi.mocked(console.log).mock.calls[0]?.[0]);
@@ -337,7 +323,7 @@ describe("daemon command", () => {
 	});
 
 	it("rejects unknown sessions options", async () => {
-		await handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", "sessions", "--bogus"]);
+		await handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "sessions", "--bogus"]);
 		expect(process.exitCode).toBe(1);
 		expect(consoleErrorMessages.join(" ")).toContain("Unknown sessions option: --bogus");
 	});
@@ -350,7 +336,7 @@ describe("daemon command", () => {
 		await handleDaemonCommand([
 			"daemon",
 			"--socket",
-			"/tmp/prime-agent-goal-leak-test.sock",
+			"/tmp/amicus-goal-leak-test.sock",
 			"start",
 			"--goal",
 			"Leak test goal",
@@ -372,7 +358,7 @@ describe("daemon command", () => {
 		await handleDaemonCommand([
 			"daemon",
 			"--socket",
-			"/tmp/prime-agent.sock",
+			"/tmp/amicus.sock",
 			"create",
 			"--goal",
 			"Write tests",
@@ -386,7 +372,7 @@ describe("daemon command", () => {
 		});
 
 		// Second create without goal — config must NOT have initialGoal.
-		await handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", "create", "second"]);
+		await handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "create", "second"]);
 		const secondConfig = daemonClientMock.instances.at(-1)?.requests[0]?.config;
 		expect(secondConfig?.initialGoal).toBeUndefined();
 	});
@@ -398,7 +384,7 @@ describe("daemon command", () => {
 			logCalls.push(messages);
 		});
 
-		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/prime-agent.sock", "--json"])).resolves.toBe(true);
+		await expect(handleDaemonCommand(["daemon", "--socket", "/tmp/amicus.sock", "--json"])).resolves.toBe(true);
 
 		// No attach-guard error: the machine-readable path prints the summary and exits.
 		expect(process.exitCode).toBeUndefined();

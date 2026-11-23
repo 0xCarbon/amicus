@@ -1,4 +1,4 @@
-import { setKeybindings } from "@earendil-works/pi-tui";
+import { setKeybindings } from "@amicus/tui";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import type { AgentSessionMessage } from "../src/core/agent-messages.js";
 import { KeybindingsManager } from "../src/core/keybindings.js";

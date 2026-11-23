@@ -25,7 +25,7 @@ from schema import (
 )
 
 REMOTE = "/opt/prime-benchmark"
-OWNER_LABEL = "prime-agent-benchmarks-v1"
+OWNER_LABEL = "amicus-benchmarks-v1"
 FILES = (
     "schema.py",
     "terminal.py",

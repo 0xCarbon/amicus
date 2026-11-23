@@ -1,5 +1,5 @@
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { type Api, clampThinkingLevel, type Model } from "@earendil-works/pi-ai";
+import type { ThinkingLevel } from "@amicus/agent-core";
+import { type Api, clampThinkingLevel, type Model } from "@amicus/ai";
 
 export const THINKING_LEVELS: ThinkingLevel[] = ["off", "minimal", "low", "medium", "high", "xhigh", "max"];
 

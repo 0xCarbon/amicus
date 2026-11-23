@@ -1,7 +1,7 @@
 /**
  * Ambient environment sanitation for tests.
  *
- * A running Prime Agent session exports its own runtime configuration into every
+ * A running Amicus session exports its own runtime configuration into every
  * shell it spawns. A developer who runs the test suite from inside such a session
  * therefore inherits variables that silently change product behaviour: version
  * checks short-circuit, and the npm bridge classifies itself as an internal daemon
@@ -22,16 +22,16 @@ export const AMBIENT_RUNTIME_ENV_VARS: readonly string[] = [
 	// src/utils/version-check.ts
 	"PI_OFFLINE",
 	"PI_SKIP_VERSION_CHECK",
-	"PRIME_AGENT_DOWNLOAD_BASE_URL",
+	"AMICUS_DOWNLOAD_BASE_URL",
 	// src/cli/npm-native-bridge.ts
 	"PI_STARTUP_BENCHMARK",
-	"PRIME_AGENT_INSTALL_DIR",
-	"PRIME_AGENT_INSTALL_METHOD",
-	"PRIME_AGENT_INTERACTIVE_SELF_UPDATE",
-	"PRIME_AGENT_INTERNAL_DAEMON_CATALOG",
-	"PRIME_AGENT_INTERNAL_DAEMON_WORKER",
-	"PRIME_AGENT_INTERNAL_OWNED_WORKER",
-	"PRIME_AGENT_MIGRATE_RETRY",
+	"AMICUS_INSTALL_DIR",
+	"AMICUS_INSTALL_METHOD",
+	"AMICUS_INTERACTIVE_SELF_UPDATE",
+	"AMICUS_INTERNAL_DAEMON_CATALOG",
+	"AMICUS_INTERNAL_DAEMON_WORKER",
+	"AMICUS_INTERNAL_OWNED_WORKER",
+	"AMICUS_MIGRATE_RETRY",
 ];
 
 /**

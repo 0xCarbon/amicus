@@ -1,5 +1,5 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type { Component, MarkdownTheme, TUI } from "@earendil-works/pi-tui";
+import type { AgentMessage } from "@amicus/agent-core";
+import type { Component, MarkdownTheme, TUI } from "@amicus/tui";
 import { isAgentSessionMessage } from "../../../core/agent-messages.js";
 import {
 	ASYNC_BASH_COMPLETION_CUSTOM_TYPE,

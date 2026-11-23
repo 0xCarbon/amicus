@@ -1,4 +1,4 @@
-import { fauxAssistantMessage, type TextContent } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, type TextContent } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { SessionActionRecoverySnapshot } from "../../../src/core/agent-session.js";
 import type { AgentSessionRuntime } from "../../../src/core/agent-session-runtime.js";
@@ -81,7 +81,7 @@ function createWriteClient(writes: string[], attached: string[]): DaemonSocketCl
 function createCustomMessage(content: string): CustomMessage {
 	return {
 		role: "custom",
-		customType: "prime-agent.test",
+		customType: "amicus.test",
 		content,
 		display: false,
 		timestamp: Date.now(),

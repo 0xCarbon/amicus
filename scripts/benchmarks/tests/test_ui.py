@@ -53,8 +53,8 @@ def small_fixture(**overrides):
 def ui_request() -> Request:
     """A minimal valid request for ui_measure entry checks."""
     return Request(
-        repository="PrimeIntellect-ai/prime-agent",
-        source_repository="PrimeIntellect-ai/prime-agent",
+        repository="0xCarbon/amicus",
+        source_repository="0xCarbon/amicus",
         sha="a" * 40,
         harness_sha="a" * 40,
         pr=42,
@@ -381,8 +381,8 @@ class SchemaTests(unittest.TestCase):
         started = datetime(2026, 9, 9, tzinfo=UTC)
         config = Config.load()
         report = Report(
-            repository="PrimeIntellect-ai/prime-agent",
-            head_repository="PrimeIntellect-ai/prime-agent",
+            repository="0xCarbon/amicus",
+            head_repository="0xCarbon/amicus",
             pr=42,
             run_id=100,
             harness_sha="a" * 40,
@@ -409,8 +409,8 @@ class SchemaTests(unittest.TestCase):
         started = datetime(2026, 9, 9, tzinfo=UTC)
         config = Config.load()
         report = Report(
-            repository="PrimeIntellect-ai/prime-agent",
-            head_repository="PrimeIntellect-ai/prime-agent",
+            repository="0xCarbon/amicus",
+            head_repository="0xCarbon/amicus",
             pr=42,
             run_id=100,
             harness_sha="a" * 40,

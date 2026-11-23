@@ -1,4 +1,4 @@
-import { Spacer, Text } from "@earendil-works/pi-tui";
+import { Spacer, Text } from "@amicus/tui";
 import {
 	isMcpDisconnectionOutcome,
 	type McpConnectionOutcomeMessage,

@@ -66,7 +66,7 @@ class OracleHarness(Harness[OracleHarnessConfig]):
         mcp_urls: dict[str, str],
         data: TaskData,
     ) -> ProgramResult:
-        path = "/tmp/prime-agent-swebench-oracle.py"
+        path = "/tmp/amicus-swebench-oracle.py"
         await runtime.write(path, SCRIPT.encode())
         return await runtime.run(["python", path], {})
 

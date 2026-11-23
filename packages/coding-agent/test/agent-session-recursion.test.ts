@@ -2,7 +2,7 @@ import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "nod
 import { tmpdir } from "node:os";
 import { basename, dirname, join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import { Agent, type AgentMessage, type StreamFn } from "@earendil-works/pi-agent-core";
+import { Agent, type AgentMessage, type StreamFn } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	type Context,
@@ -10,7 +10,7 @@ import {
 	fauxAssistantMessage,
 	type TextContent,
 	type Usage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
@@ -2833,7 +2833,7 @@ describe("AgentSession RLM session dir", () => {
 		const root = createSession(SessionManager.inMemory(tempDir));
 		const inspectable = root as unknown as InspectableRlmDirSession;
 
-		const before = readdirSync(tmpdir()).filter((name) => name.startsWith("prime-agent-rlm-"));
+		const before = readdirSync(tmpdir()).filter((name) => name.startsWith("amicus-rlm-"));
 
 		expect(inspectable._ensureRlmSessionDir()).toBeUndefined();
 		const env = inspectable._rlmKernelEnv();
@@ -2842,7 +2842,7 @@ describe("AgentSession RLM session dir", () => {
 		expect(env.RLM_GLOBAL_HARNESS_STATE_DIR).toBeDefined();
 		expect(env).toMatchObject({ RLM_DEPTH: "0" });
 
-		const after = readdirSync(tmpdir()).filter((name) => name.startsWith("prime-agent-rlm-"));
+		const after = readdirSync(tmpdir()).filter((name) => name.startsWith("amicus-rlm-"));
 		expect(after).toEqual(before);
 	});
 
@@ -2958,7 +2958,7 @@ describe("AgentSession RLM session dir", () => {
 		try {
 			const root = createSession(SessionManager.inMemory(tempDir), configuredAgentDir, serperKey, websearch);
 			const env = (root as unknown as InspectableRlmDirSession)._rlmKernelEnv();
-			expect(env.PRIME_AGENT_CODING_AGENT_DIR).toBe(configuredAgentDir);
+			expect(env.AMICUS_CODING_AGENT_DIR).toBe(configuredAgentDir);
 			expect(env.SERPER_API_KEY).toBe(key);
 		} finally {
 			if (previousKey === undefined) delete process.env.SERPER_API_KEY;

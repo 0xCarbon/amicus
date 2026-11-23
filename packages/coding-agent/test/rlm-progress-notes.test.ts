@@ -1,14 +1,14 @@
 import { mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { Agent } from "@earendil-works/pi-agent-core";
+import { Agent } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	type Context,
 	createAssistantMessageEventStream,
 	type TextContent,
 	type Usage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { AgentSession, RLM_CHILD_UPDATE_MIN_INTERVAL_MS } from "../src/core/agent-session.js";
 import { AuthStorage } from "../src/core/auth-storage.js";

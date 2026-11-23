@@ -14,9 +14,9 @@ import { theme } from "../interactive/theme/theme.js";
 /**
  * Daemon incident notices for the agents view.
  *
- * `prime-agent incident` (the classifier in src/cli/incident.ts) already
+ * `amicus incident` (the classifier in src/cli/incident.ts) already
  * reconstructs daemon incidents from the shared structured log
- * (~/.prime/agent/logs/agent.jsonl); this module reuses that classifier —
+ * (~/.amicus/logs/agent.jsonl); this module reuses that classifier —
  * never re-implementing it — to surface a single collapsed, dismissible
  * notice line in the agents-view header. A notice appears when the recent
  * window of the log contains a worker crash, a command-timeout burst, or an
@@ -26,7 +26,7 @@ import { theme } from "../interactive/theme/theme.js";
  * bounded tail, so incidents spanning a log rotation surface too.
  */
 
-/** Recent-log window, matching the `prime-agent incident` default. */
+/** Recent-log window, matching the `amicus incident` default. */
 export const INCIDENT_NOTICE_WINDOW_MS = 24 * 60 * 60 * 1000;
 /** Initial tail bound: incidents older than the tail bytes are simply not seen. */
 export const INCIDENT_NOTICE_TAIL_BYTES = 512 * 1024;
@@ -42,7 +42,7 @@ export const INCIDENT_NOTICE_MAX_WINDOW_ENTRIES = 20_000;
 /** How often the agents view re-reads appended agent.jsonl bytes. */
 export const INCIDENT_NOTICE_POLL_INTERVAL_MS = 30_000;
 
-const INCIDENT_NOTICE_POINTER = "— run prime-agent incident for the timeline";
+const INCIDENT_NOTICE_POINTER = "— run amicus incident for the timeline";
 const NEWLINE_BYTE = 0x0a;
 const SEVERITY_RANK: Record<IncidentSeverity, number> = { critical: 3, error: 2, warn: 1, info: 0 };
 
@@ -433,7 +433,7 @@ export function refreshIncidentNoticeState(state: IncidentNoticeState, logPath: 
 		} else if (state.logFileId !== undefined && chunk.fileId !== state.logFileId) {
 			// A rotation between polls strands the un-consumed tail of the previous
 			// generation at the .old path: no later poll re-reads it, so a crash
-			// logged in that gap would surface in `prime-agent incident` but never
+			// logged in that gap would surface in `amicus incident` but never
 			// in the notice. The live read just detected the new generation, so
 			// continue the old one from its consumed offset — the file id still
 			// matches, the read is an offset continuation, and no consumed line is

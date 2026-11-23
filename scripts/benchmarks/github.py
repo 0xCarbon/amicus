@@ -10,7 +10,7 @@ from report import MARKER, fingerprint, render
 from schema import Config, Report, Side
 
 WORKFLOW = "benchmarks.yml"
-TITLE = "Prime Agent benchmarks · PR #"
+TITLE = "Amicus benchmarks · PR #"
 GENERATION = re.compile(r"<!-- run:(\d+):(\d+) head:([a-f0-9]{40}) -->")
 
 

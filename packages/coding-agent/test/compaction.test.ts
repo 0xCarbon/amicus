@@ -1,6 +1,6 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type { AssistantMessage, Message, Model, ToolCall, Usage } from "@earendil-works/pi-ai";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import type { AssistantMessage, Message, Model, ToolCall, Usage } from "@amicus/ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { beforeEach, describe, expect, it, vi } from "vitest";
@@ -17,7 +17,7 @@ import {
 import { SUMMARIZATION_SYSTEM_PROMPT, serializeConversation } from "../src/core/compaction/utils.js";
 
 const { completeSimpleMock } = vi.hoisted(() => ({ completeSimpleMock: vi.fn() }));
-vi.mock("@earendil-works/pi-ai", async (importOriginal) => {
+vi.mock("@amicus/ai", async (importOriginal) => {
 	const actual = await importOriginal<Record<string, unknown>>();
 	return { ...actual, completeSimple: completeSimpleMock };
 });

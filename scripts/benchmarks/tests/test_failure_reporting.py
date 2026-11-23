@@ -349,7 +349,7 @@ class ExitStatusTests(unittest.TestCase):
                     os.environ,
                     {
                         "GITHUB_EVENT_PATH": str(event),
-                        "GITHUB_REPOSITORY": "PrimeIntellect-ai/prime-agent",
+                        "GITHUB_REPOSITORY": "0xCarbon/amicus",
                         "GITHUB_RUN_ID": "100",
                         "GITHUB_RUN_ATTEMPT": "1",
                         "GITHUB_STEP_SUMMARY": str(summary),
@@ -377,7 +377,7 @@ class ExitStatusTests(unittest.TestCase):
                 {
                     "id": 100,
                     "run_attempt": 1,
-                    "display_title": "Prime Agent benchmarks · PR #42",
+                    "display_title": "Amicus benchmarks · PR #42",
                     "conclusion": "success",
                 },
             )

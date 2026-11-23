@@ -1,6 +1,6 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import stripAnsi from "strip-ansi";
 import { afterEach, describe, expect, test } from "vitest";
 import { previewPythonCode, pythonStatementLines } from "../../../src/core/tools/code-preview.js";

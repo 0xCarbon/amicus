@@ -25,7 +25,7 @@
 #
 # Escape hatch for an intentional push (allows mirrors, deletions, and large
 # ref updates on real remotes):
-#   PRIME_AGENT_ALLOW_MIRROR_PUSH=1 git push <remote> ...
+#   AMICUS_ALLOW_MIRROR_PUSH=1 git push <remote> ...
 #
 # Installed by husky via .husky/pre-push (active after `npm ci`). Clones and
 # worktrees without husky's .husky/_ shims activate the tracked hooks directly:
@@ -36,7 +36,7 @@ set -f
 remote=$1
 url=$2
 
-case $PRIME_AGENT_ALLOW_MIRROR_PUSH in
+case $AMICUS_ALLOW_MIRROR_PUSH in
 1)
 	exit 0
 	;;
@@ -108,6 +108,6 @@ fi
 	echo "pre-push guard: refusing push to $url: $detail"
 	echo "Allowed on real GitHub remotes: updates of refs/heads and refs/tags only, no deletions, at most $max_refs refs."
 	echo "Mirror pushes copy refs/remotes/* onto the remote; normal pushes never target them."
-	echo "To push anyway: PRIME_AGENT_ALLOW_MIRROR_PUSH=1 git push $remote ..."
+	echo "To push anyway: AMICUS_ALLOW_MIRROR_PUSH=1 git push $remote ..."
 } >&2
 exit 1
