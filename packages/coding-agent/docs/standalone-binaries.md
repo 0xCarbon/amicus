@@ -2,11 +2,8 @@
 
 The macOS and Linux release archives contain `amicus` and its support files. Normal application execution does not require Node, npm, or Bun. Keep the archive contents together: moving only the executable breaks asset and Python runtime discovery. Linux archives cover glibc and musl (Alpine), on ARM64 and x64, plus baseline x64 builds for CPUs without AVX2. Windows is outside this distribution.
 
-On macOS, use the published installer:
-
-```sh
-curl --proto '=https' --proto-redir '=https' -fsSL https://app.primeintellect.ai/amicus/install.sh | sh
-```
+> [!NOTE]
+> Amicus releases currently publish npm tarballs only (see [Quickstart](quickstart.md)). CI builds and tests these archives on every change, but they are not attached to releases yet, so the installer steps below apply once they are.
 
 The current macOS archives are not Developer ID signed or notarized. A browser-downloaded archive may retain quarantine metadata and be blocked by Gatekeeper, so manual macOS archive installation is not supported yet. Do not bypass Gatekeeper; use the installer until signed and notarized downloads are available.
 

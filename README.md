@@ -1,9 +1,8 @@
 <p align="center">
-  <a href="https://primeintellect.ai">
+  <a href="https://github.com/0xCarbon/amicus">
     <picture>
-      <source media="(prefers-color-scheme: light)" srcset="https://github.com/user-attachments/assets/40c36e38-c5bd-4c5a-9cb3-f7b902cd155d">
-      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/user-attachments/assets/6414bc9b-126b-41ca-9307-9e982430cde8">
-      <img alt="Prime Intellect" src="https://github.com/user-attachments/assets/6414bc9b-126b-41ca-9307-9e982430cde8" width="312" style="max-width: 100%;">
+      <source media="(prefers-color-scheme: dark)" srcset="assets/brand/amicus-scales.svg">
+      <img alt="Amicus scales mark" src="assets/brand/amicus-scales-black.svg" width="96">
     </picture>
   </a>
 </p>
@@ -14,8 +13,7 @@ Amicus: A Self-Improving RLM Harness
 
 <p align="center">
   <a href="packages/coding-agent/docs/index.md">Documentation</a> &bull;
-  <a href="https://github.com/PrimeIntellect-ai/verifiers">Verifiers</a> &bull;
-  <a href="https://github.com/PrimeIntellect-ai/prime-rl">PRIME-RL</a>
+  <a href="https://github.com/0xCarbon/amicus/issues">Issues</a>
 </p>
 
 <p align="center">
@@ -25,29 +23,23 @@ Amicus: A Self-Improving RLM Harness
   <a href="https://github.com/0xCarbon/amicus/actions/workflows/fork-release.yml">
     <img src="https://github.com/0xCarbon/amicus/actions/workflows/fork-release.yml/badge.svg" alt="Release" />
   </a>
-  <a href="https://arxiv.org/abs/2608.23552">
-    <img src="https://img.shields.io/badge/arXiv-2608.23552-b31b1b.svg" alt="arXiv" />
-  </a>
 </p>
 
-<p align="center">
-  <a href="https://trendshift.io/repositories/104249?utm_source=repository-badge&amp;utm_medium=badge&amp;utm_campaign=badge-repository-104249" target="_blank" rel="noopener noreferrer">
-    <img src="https://trendshift.io/api/badge/repositories/104249" alt="PrimeIntellect-ai%2Famicus | Trendshift" width="250" height="55" />
-  </a>
-</p>
-
-Amicus is an open-source coding and research agent for general and long-running work. It is designed around two core abstractions:
+Amicus[^fork] is an open-source coding and research agent for general and long-running work. Its name comes from *amicus curiae*, the friend of the court who advises without being a party. It is designed around two core abstractions:
 
 - The **[Recursive Language Model (RLM)](https://www.primeintellect.ai/blog/rlm)** treats context as variables (*prompt-as-a-variable*) and tools like recursive subagents as function calls (*programmatic tool /sub-agent calling*) inside a persistent REPL.
 - The **[Continual Harness](https://arxiv.org/abs/2605.09998)** stores supplemental prompts, memories, skill descriptions, and reusable subagent specifications as durable state that Amicus can refine through small, evidence-backed updates, local to the session by default.
 
 ## Install
 
-Install the latest stable release on macOS or Linux:
+Install the latest release with Node.js 22 or newer:
 
 ```bash
-curl --proto '=https' --proto-redir '=https' -fsSL https://app.primeintellect.ai/amicus/install.sh | sh
+npm install -g "$(curl -fsSL https://github.com/0xCarbon/amicus/releases/latest/download/latest.json \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0, "utf8")).tarball')"
 ```
+
+To run from a checkout instead, see [Development](packages/coding-agent/docs/development.md).
 
 ## Why Amicus
 
@@ -111,25 +103,23 @@ Amicus is built for long-running work, especially for evaluations in research. T
 
 ## Contributing
 
-Start with a GitHub Discussion for [general questions](https://github.com/0xCarbon/amicus/discussions/categories/general), [bug reports](https://github.com/0xCarbon/amicus/discussions/categories/bug-reports), and [feature requests](https://github.com/0xCarbon/amicus/discussions/categories/feature-requests). Maintainers promote accepted work into Issues, and pull requests are reviewed from maintainers and vouched contributors.
-
-Read the [contribution guidelines](CONTRIBUTING.md) for the full process. Report security vulnerabilities privately by following the [security policy](SECURITY.md).
+Report bugs and request features in [GitHub Issues](https://github.com/0xCarbon/amicus/issues). Pull requests are reviewed from maintainers and vouched contributors; read the [contribution guidelines](CONTRIBUTING.md) first. Report security vulnerabilities privately by following the [security policy](SECURITY.md).
 
 ## Acknowledgements
 
-Our agent and TUI is built on top of [`pi`](https://github.com/earendil-works/pi). We thank the authors of `pi` for their valuable work.
+Amicus builds on [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent) by Prime Intellect, whose agent and TUI are in turn built on [`pi`](https://github.com/earendil-works/pi). We thank both teams for their work.
 
 ## License
 
-Amicus is fully open source and released under the [MIT License](LICENSE).
+Amicus is open source under the [MIT License](LICENSE).
 
 ## Citation
 
-If you use this codebase in your research, please cite Amicus:
+Amicus is derived from Prime Agent. If you use this codebase in research, please cite the original work:
 
 ```bibtex
 @article{karten2026prime,
-  title={Amicus: A Self-Improving RLM Harness},
+  title={Prime Agent: A Self-Improving RLM Harness},
   author={Karten, Seth and Zhang, Alex L. and Thomas, Kevin and Müller, Sebastian and Bakouch, Elie and Auras, Daniel and Senghaas, Mika and Obeid, Fares and Dunas, Konstantin and Hagemann, Johannes and Jaghouar, Sami},
   journal={arXiv preprint arXiv:2608.23552},
   year={2026}
@@ -137,3 +127,5 @@ If you use this codebase in your research, please cite Amicus:
 ```
 
 Available at [https://arxiv.org/abs/2608.23552](https://arxiv.org/abs/2608.23552).
+
+[^fork]: Amicus is forked from [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent) (v0.9.8, September 2026) and is developed independently by 0xCarbon. It is not affiliated with or endorsed by Prime Intellect.

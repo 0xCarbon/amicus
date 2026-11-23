@@ -503,7 +503,7 @@ download_amicus_package "$1" "$amicus_base_url/releases/v$1/$amicus_package-$1.t
 			rmSync(join(dirname(realpathSync(command())), "install.sh"));
 			for (const rollback of [true, false])
 				await expect(getNativeUpdatePlan({ force: true, rollback, executable: retained })).rejects.toThrow(
-					"https://app.primeintellect.ai/amicus/install.sh",
+					"https://github.com/0xCarbon/amicus#install",
 				);
 			expect(readlinkSync(command())).toBe(current);
 			expect(readlinkSync(join(dirname(command()), "previous"))).toBe(previous);

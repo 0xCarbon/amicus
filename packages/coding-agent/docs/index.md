@@ -1,13 +1,14 @@
 # Amicus Documentation
 
-Amicus is an RLM-native coding and research harness built around a persistent Python REPL kernel, recursive subagents, durable sessions, and a multi-process local runtime. It began as a hard fork of pi-mono, but Amicus is now the product, CLI, install source, and development repository.
+Amicus is an RLM-native coding and research harness built around a persistent Python REPL kernel, recursive subagents, durable sessions, and a multi-process local runtime. It is developed by 0xCarbon as an independent fork of [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent), which began as a hard fork of pi-mono.
 
 ## Quick Start
 
-Install the latest stable release on Linux or macOS:
+Install the latest release on Linux or macOS (Node.js 22 or newer):
 
 ```bash
-curl --proto '=https' --proto-redir '=https' -fsSL https://app.primeintellect.ai/amicus/install.sh | sh
+npm install -g "$(curl -fsSL https://github.com/0xCarbon/amicus/releases/latest/download/latest.json \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0, "utf8")).tarball')"
 ```
 
 Then run it in a project directory:

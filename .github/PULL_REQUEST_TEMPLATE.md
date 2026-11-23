@@ -6,7 +6,7 @@ https://github.com/0xCarbon/amicus/issues
 
 ## Context
 
-<!-- Link the accepted Issue or Discussion and explain why this change is needed. -->
+<!-- Link the accepted Issue and explain why this change is needed. -->
 
 ## Changes
 

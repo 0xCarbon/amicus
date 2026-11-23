@@ -1,0 +1,1 @@
+- Fixed the install instructions and installer recovery message to point at Amicus releases instead of a Prime Intellect URL that does not exist.

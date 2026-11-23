@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://primeintellect.ai">
+  <a href="https://github.com/0xCarbon/amicus">
     <picture>
       <source media="(prefers-color-scheme: dark)" srcset="../../assets/brand/amicus-scales.svg">
       <img alt="Amicus scales mark" src="../../assets/brand/amicus-scales-black.svg" width="96">
@@ -13,7 +13,7 @@
   RLM-native terminal coding and research harness.
 </p>
 
-Amicus began as a hard fork of [pi-mono](https://github.com/badlogic/pi-mono), but it is now developed and distributed independently. This workspace retains inherited `@amicus/*` source package identifiers, the `pi` package manifest key, and a source-package `pi` bin entry for internal compatibility. Public releases are currently versioned tarball artifacts installed by the scripts below; release packaging rewrites the application package and command to `amicus`. Do not use the inherited npm package as the Amicus install path.
+Amicus is developed independently by 0xCarbon as a fork of Prime Agent.[^fork] The workspace packages are `@amicus/*`, and the inherited `piConfig` manifest key remains for compatibility. Releases are versioned tarballs; release packaging publishes the application package and command as `amicus`.
 
 ## Table of Contents
 
@@ -42,14 +42,11 @@ Amicus began as a hard fork of [pi-mono](https://github.com/badlogic/pi-mono), b
 
 ## Quick Start
 
-```bash
-curl -fsSL https://app.primeintellect.ai/amicus/install.sh | sh
-```
-
-To install the beta built from the latest commit on `main`:
+Requires Node.js 22 or newer:
 
 ```bash
-curl -fsSL https://app.primeintellect.ai/amicus/install.sh | sh -s -- beta
+npm install -g "$(curl -fsSL https://github.com/0xCarbon/amicus/releases/latest/download/latest.json \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0, "utf8")).tarball')"
 ```
 
 Authenticate with an API key:
@@ -723,3 +720,5 @@ MIT
 - [Amicus AI](../ai): Core LLM toolkit
 - [Amicus Core](../agent): Agent framework
 - [Amicus TUI](../tui): Terminal UI components
+
+[^fork]: Amicus is forked from [Prime Agent](https://github.com/PrimeIntellect-ai/prime-agent) by Prime Intellect, which began as a hard fork of [pi-mono](https://github.com/badlogic/pi-mono). It is not affiliated with or endorsed by Prime Intellect.
