@@ -31,13 +31,13 @@ function loadWorkflow(): ForkReleaseWorkflow {
 	return parse(readFileSync(workflowPath, "utf8")) as ForkReleaseWorkflow;
 }
 
-describe("canesin fork release workflow", () => {
+describe("Amicus release workflow", () => {
 	it("serializes every fork-main release without dropping queued runs", () => {
 		const workflow = loadWorkflow();
 
 		expect(workflow.concurrency).toEqual({
 			"cancel-in-progress": false,
-			group: "release-canesin-fork",
+			group: "release-amicus",
 			queue: "max",
 		});
 		expect(workflow.jobs.release.if).toBe("github.repository == '0xCarbon/amicus'");
@@ -49,26 +49,28 @@ describe("canesin fork release workflow", () => {
 		expect(checkout?.with?.["fetch-depth"]).toBe(0);
 	});
 
-	it("checks immutability and latest precedence before publishing all artifacts", () => {
+	it("selects latest precedence, publishes all artifacts, then removes any release that is not immutable", () => {
 		const steps = loadWorkflow().jobs.release.steps;
-		const adminTokenExpression = ["$", "{{ secrets.FORK_RELEASE_ADMIN_TOKEN }}"].join("");
+		const githubTokenExpression = ["$", "{{ secrets.GITHUB_TOKEN }}"].join("");
 		const latestOutputExpression = ["$", "{{ steps.latest.outputs.flag }}"].join("");
-		const immutableIndex = steps.findIndex((step) => step.name === "Require immutable releases");
 		const latestIndex = steps.findIndex((step) => step.name === "Select latest release");
-		const publishIndex = steps.findIndex((step) => step.name === "Publish fork release");
-		const immutableStep = steps[immutableIndex];
+		const publishIndex = steps.findIndex((step) => step.name === "Publish release");
+		const immutableIndex = steps.findIndex((step) => step.name === "Require an immutable release");
 		const latestStep = steps[latestIndex];
 		const publishStep = steps[publishIndex];
+		const immutableStep = steps[immutableIndex];
 
-		expect(immutableIndex).toBeGreaterThan(-1);
-		expect(latestIndex).toBeGreaterThan(immutableIndex);
+		expect(latestIndex).toBeGreaterThan(-1);
 		expect(publishIndex).toBeGreaterThan(latestIndex);
-		expect(immutableStep?.env).toEqual({
-			GH_TOKEN: adminTokenExpression,
-		});
-		expect(immutableStep?.run).toContain('if [ -z "$GH_TOKEN" ]');
-		expect(immutableStep?.run).toContain("immutable-releases");
-		expect(immutableStep?.run).toContain('if [ "$enabled" != "true" ]');
+		expect(immutableIndex).toBeGreaterThan(publishIndex);
+		expect(steps.every((step) => !Object.values(step.env ?? {}).some((value) => value.includes("ADMIN_TOKEN")))).toBe(
+			true,
+		);
+		expect(immutableStep?.env?.GH_TOKEN).toBe(githubTokenExpression);
+		expect(immutableStep?.run).toContain("--jq .immutable");
+		expect(immutableStep?.run).toContain('if [ "$immutable" != "true" ]');
+		expect(immutableStep?.run).toContain("gh release delete");
+		expect(immutableStep?.run).toContain("exit 1");
 		expect(latestStep?.id).toBe("latest");
 		expect(latestStep?.run).toContain("scripts/release-latest-decision.mjs");
 		expect(publishStep?.run).toContain(latestOutputExpression);
