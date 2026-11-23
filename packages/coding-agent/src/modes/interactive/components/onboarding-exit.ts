@@ -1,4 +1,4 @@
-import { getKeybindings } from "@earendil-works/pi-tui";
+import { getKeybindings } from "@amicus/tui";
 
 /**
  * Onboarding owns the screen before the editor exists, so its panels answer the

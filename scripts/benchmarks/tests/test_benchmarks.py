@@ -48,8 +48,8 @@ HEAD = "b" * 40
 
 def fixture() -> Report:
     return Report(
-        repository="PrimeIntellect-ai/prime-agent",
-        head_repository="PrimeIntellect-ai/prime-agent",
+        repository="0xCarbon/amicus",
+        head_repository="0xCarbon/amicus",
         pr=42,
         run_id=100,
         attempt=1,
@@ -265,7 +265,7 @@ class ReportTests(unittest.TestCase):
 
 class FakeGitHub(GitHub):
     def __init__(self):
-        self.repository = "PrimeIntellect-ai/prime-agent"
+        self.repository = "0xCarbon/amicus"
         self.base_repository = self.head_repository = self.repository
         self.base_ref = "main"
         self.base_sha = self.main_sha = SHA
@@ -305,7 +305,7 @@ class ResolverTests(unittest.TestCase):
     def test_open_prs_use_current_main_and_exact_head_with_the_trusted_harness(self):
         config = Config.load()
         for base_ref in ("main", "refactor/stack-parent"):
-            for head_repository in ("PrimeIntellect-ai/prime-agent", "contributor/prime-agent"):
+            for head_repository in ("0xCarbon/amicus", "contributor/amicus"):
                 with self.subTest(base_ref=base_ref, head_repository=head_repository):
                     github = FakeGitHub()
                     github.base_ref = base_ref
@@ -332,7 +332,7 @@ class ResolverTests(unittest.TestCase):
                         github.state = "closed"
                         error = "requires an open PR"
                     else:
-                        github.base_repository = "other/prime-agent"
+                        github.base_repository = "other/amicus"
                         error = "belongs to another repository"
                     with self.assertRaisesRegex(ValueError, error):
                         github.resolve(42, "c" * 40, 100, 1, Config.load())
@@ -576,15 +576,15 @@ class LifecycleTests(unittest.TestCase):
         run = {
             "event": "pull_request_target",
             "path": ".github/workflows/benchmarks.yml",
-            "repository": {"full_name": "PrimeIntellect-ai/prime-agent"},
-            "head_repository": {"full_name": "contributor/prime-agent"},
+            "repository": {"full_name": "0xCarbon/amicus"},
+            "head_repository": {"full_name": "contributor/amicus"},
             "head_branch": "refactor/stack-child",
             "head_sha": HEAD,
             "id": 100,
             "run_attempt": 1,
             "display_title": f"{TITLE}42",
         }
-        with patch.dict(os.environ, {"GITHUB_REPOSITORY": "PrimeIntellect-ai/prime-agent"}):
+        with patch.dict(os.environ, {"GITHUB_REPOSITORY": "0xCarbon/amicus"}):
             self.assertEqual(workflow_source({"workflow_run": run}), run)
         validate_completion(fixture(), fixture(), run)
         forged = fixture()
@@ -606,7 +606,7 @@ class LifecycleTests(unittest.TestCase):
 class MeasurementTests(unittest.TestCase):
     def test_cleanup_accepts_a_session_that_exits_between_list_and_stop(self):
         stale = subprocess.CalledProcessError(
-            1, ["prime-agent", "stop", "session", "--json"], stderr="Error: Unknown active session: session\n"
+            1, ["amicus", "stop", "session", "--json"], stderr="Error: Unknown active session: session\n"
         )
         with patch(
             "worker.run_as",
@@ -614,7 +614,7 @@ class MeasurementTests(unittest.TestCase):
         ) as run:
             stop_agents(Path("/fixture"))
         self.assertEqual(run.call_count, 3)
-        self.assertEqual(run.call_args.args[1], ["prime-agent", "list", "--json"])
+        self.assertEqual(run.call_args.args[1], ["amicus", "list", "--json"])
 
     def test_cleanup_preserves_real_stop_failures(self):
         for error, remaining in (
@@ -623,7 +623,7 @@ class MeasurementTests(unittest.TestCase):
             ("Error: Unknown active session: another\n", '{"sessions": []}'),
         ):
             with self.subTest(error=error, remaining=remaining):
-                failure = subprocess.CalledProcessError(1, ["prime-agent", "stop"], stderr=error)
+                failure = subprocess.CalledProcessError(1, ["amicus", "stop"], stderr=error)
                 with patch(
                     "worker.run_as",
                     side_effect=['{"sessions": [{"activeSessionId": "session"}]}', failure, remaining],
@@ -670,16 +670,16 @@ class MeasurementTests(unittest.TestCase):
         self.assertIsNotNone(side.metrics["cold"][0].value)
         terminal.child.send.assert_not_called()
         for call in launch.call_args_list:
-            self.assertEqual(call.args[0], ["/usr/sbin/runuser", "-u", "benchmark1", "--", "prime-agent"])
+            self.assertEqual(call.args[0], ["/usr/sbin/runuser", "-u", "benchmark1", "--", "amicus"])
             self.assertNotIn("PRIME_API_KEY", call.args[2])
 
     def test_dependency_inventory_warning_preserves_successful_installation(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             home = root / "benchmark1"
-            (home / ".prime/agent/kernel-venv/bin").mkdir(parents=True)
-            (home / ".prime/agent/kernel-venv/bin/python").touch()
-            command = home / ".local/bin/prime-agent"
+            (home / ".amicus/kernel-venv/bin").mkdir(parents=True)
+            (home / ".amicus/kernel-venv/bin/python").touch()
+            command = home / ".local/bin/amicus"
             command.parent.mkdir(parents=True)
             command.write_text("#!/usr/bin/env node\n")
             side = Side(sha=SHA)

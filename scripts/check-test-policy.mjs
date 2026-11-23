@@ -5,7 +5,7 @@ import { relative, resolve } from "node:path";
 
 const root = resolve(import.meta.dirname, "..");
 const testFilePattern =
-	/(?:^|\/)(?:test|tests|__tests__)(?:\/|$)|\.(?:test|spec)\.[cm]?[jt]sx?$|(?:^|\/)vitest\.config\.[cm]?[jt]s$|^prime-agent-runtime\/test\/.*\.py$/;
+	/(?:^|\/)(?:test|tests|__tests__)(?:\/|$)|\.(?:test|spec)\.[cm]?[jt]sx?$|(?:^|\/)vitest\.config\.[cm]?[jt]s$|^amicus-runtime\/test\/.*\.py$/;
 
 function git(args, allowFailure = false) {
 	try {
@@ -290,12 +290,27 @@ function directObjectProperties(argument) {
 }
 
 function changedTestFiles(base) {
-	if (!base) return [...walkFiles(resolve(root, "packages")), ...walkFiles(resolve(root, "prime-agent-runtime", "test"))];
-	const roots = ["packages", "prime-agent-runtime/test", "scripts"];
-	const tracked = git(["diff", "--name-only", "--diff-filter=ACMR", base, "--", ...roots]);
-	const untracked = git(["ls-files", "--others", "--exclude-standard", "--", ...roots], true);
-	return [...new Set(`${tracked}\n${untracked}`.split("\n"))].filter(
-		(path) => path && testFilePattern.test(path) && existsSync(resolve(root, path)),
+	if (!base)
+		return [...walkFiles(resolve(root, "packages")), ...walkFiles(resolve(root, "amicus-runtime", "test"))].map(
+			(path) => ({ path, basePath: path }),
+		);
+	const roots = ["packages", "amicus-runtime/test", "scripts"];
+	// Renames keep their baseline, so moving a file never turns existing exceptions into new violations.
+	const underRoots = (path) => roots.some((dir) => path === dir || path.startsWith(`${dir}/`));
+	const tracked = git(["diff", "--name-status", "-M", "--diff-filter=ACMR", base])
+		.split("\n")
+		.filter(Boolean)
+		.map((line) => {
+			const [status, first, second] = line.split("\t");
+			return status.startsWith("R") ? { path: second, basePath: first } : { path: first, basePath: first };
+		})
+		.filter(({ path }) => underRoots(path));
+	const untracked = git(["ls-files", "--others", "--exclude-standard", "--", ...roots], true)
+		.split("\n")
+		.map((path) => ({ path, basePath: path }));
+	const unique = new Map([...tracked, ...untracked].map((entry) => [entry.path, entry]));
+	return [...unique.values()].filter(
+		({ path }) => path && testFilePattern.test(path) && existsSync(resolve(root, path)),
 	);
 }
 
@@ -566,9 +581,9 @@ function counts(violations) {
 
 const base = resolveBase();
 const failures = [];
-for (const path of changedTestFiles(base)) {
+for (const { path, basePath } of changedTestFiles(base)) {
 	const current = scan(readFileSync(resolve(root, path), "utf8"), path);
-	const oldContent = base ? git(["show", `${base}:${path}`], true) : "";
+	const oldContent = base ? git(["show", `${base}:${basePath}`], true) : "";
 	const allowed = counts(oldContent ? scan(oldContent, path) : []);
 	const seen = new Map();
 	for (const violation of current) {

@@ -196,11 +196,11 @@ describe("kernel bootstrap", () => {
 	beforeEach(async () => {
 		runtimeIdentity = await resolveRuntimeIdentity();
 		originalEnv = { ...process.env };
-		tempDir = mkdtempSync(join(tmpdir(), "prime-agent-kernel-bootstrap-"));
+		tempDir = mkdtempSync(join(tmpdir(), "amicus-kernel-bootstrap-"));
 		process.env.HOME = tempDir;
 		process.env.PATH = originalEnv.PATH ?? "";
-		delete process.env.PRIME_AGENT_KERNEL_PYTHON;
-		delete process.env.PRIME_AGENT_KERNEL_VENV;
+		delete process.env.AMICUS_KERNEL_PYTHON;
+		delete process.env.AMICUS_KERNEL_VENV;
 		delete process.env.XDG_DATA_HOME;
 	});
 
@@ -217,7 +217,7 @@ describe("kernel bootstrap", () => {
 		const logPath = installFakeUv();
 		const venv = join(tempDir, "kernel-venv");
 		const pythonSkill = createPythonSkill();
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		await expect(ensureKernelPython({ pythonSkills: [pythonSkill] })).resolves.toBe(join(venv, "bin", "python"));
 
@@ -227,7 +227,7 @@ describe("kernel bootstrap", () => {
 		expect(log).not.toContain("--seed");
 		expect(log).toContain("pip install --python");
 		expect(log).not.toContain("ipykernel");
-		expect(log).toContain("prime-agent-runtime");
+		expect(log).toContain("amicus-runtime");
 		expect(log).toContain("dill");
 		expect(log).toContain(`--editable ${pythonSkill.packagePath}`);
 		for (const uvArg of DEFAULT_RLM_EXTRA_UV_ARGS) {
@@ -257,8 +257,8 @@ describe("kernel bootstrap", () => {
 		{ name: "a sibling skill directory", packageName: undefined, dependency: "attach-image" },
 		{
 			name: "a sibling whose package and directory names differ",
-			packageName: "prime-agent-skill-attach-image",
-			dependency: "prime-agent-skill-attach-image",
+			packageName: "amicus-skill-attach-image",
+			dependency: "amicus-skill-attach-image",
 		},
 		{
 			name: "a dependency declared with extras and a version bound",
@@ -273,7 +273,7 @@ describe("kernel bootstrap", () => {
 			writeFileSync(dependencySkill.pyprojectPath, `[project]\nname = "${packageName}"\nversion = "0.1.0"\n`);
 		}
 		const dependentSkill = createPythonSkillWithDependency("orchestration-heartbeat", dependency);
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		await expect(ensureKernelPython({ pythonSkills: [dependentSkill] })).resolves.toBe(join(venv, "bin", "python"));
 
@@ -291,7 +291,7 @@ describe("kernel bootstrap", () => {
 		writeFakePython(python, ["rlm", ...DEFAULT_RLM_EXTRA_IMPORT_NAMES]);
 		writeBootstrapVersion(venv, [createPythonSkill()]);
 		const marker = readFileSync(markerPath, "utf8");
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 		renameFault.remaining = 3;
 
 		await expect(ensureKernelPython({ pythonSkills: [createPythonSkill("agent-b")] })).rejects.toThrow(/EBUSY/);
@@ -305,7 +305,7 @@ describe("kernel bootstrap", () => {
 		const venv = join(tempDir, "kernel-venv");
 		createPythonSkill("agent-b");
 		const pythonSkill = createPythonSkillWithDependency("agent-a", "agent-b");
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		await expect(ensureKernelPython({ pythonSkills: [pythonSkill] })).resolves.toBe(join(venv, "bin", "python"));
 		const syncedLog = readFileSync(logPath, "utf8");
@@ -323,7 +323,7 @@ describe("kernel bootstrap", () => {
 		const venv = join(tempDir, "kernel-venv");
 		const installedSkill = createPythonSkill("agent-a");
 		const brokenSkill = createPythonSkill("agent-b");
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 		process.env.UV_FAIL_ARG = brokenSkill.packagePath;
 		renameFault.remaining = 2;
 
@@ -353,7 +353,7 @@ describe("kernel bootstrap", () => {
 		writeFakePython(python, ["rlm", ...DEFAULT_RLM_EXTRA_IMPORT_NAMES]);
 		writeBootstrapVersion(venv, [staleSkill, recordedSkill]);
 		writeFileSync(staleSkill.pyprojectPath, `[project]\nname = "${staleSkill.name}"\nversion = "0.2.0"\n`);
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		const child = spawn(process.execPath, [tsxPath, kernelSyncChildPath], {
 			env: {
@@ -418,7 +418,7 @@ describe("kernel bootstrap", () => {
 		const logPath = installFakeUv();
 		const venv = join(tempDir, "kernel-venv");
 		const python = join(venv, "bin", "python");
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		await expect(Promise.all([ensureKernelPython(), ensureKernelPython()])).resolves.toEqual([python, python]);
 
@@ -462,7 +462,7 @@ describe("kernel bootstrap", () => {
 					join(venv, ".bootstrap-version"),
 					`${JSON.stringify({
 						schema: 4,
-						runtime: "prime-agent-runtime",
+						runtime: "amicus-runtime",
 						extraUvArgs: DEFAULT_RLM_EXTRA_UV_ARGS,
 						pythonSkills: [
 							{
@@ -497,7 +497,7 @@ describe("kernel bootstrap", () => {
 		const python = join(venv, "bin", "python");
 		mkdirSync(join(venv, "bin"), { recursive: true });
 		prepare(venv, python);
-		process.env.PRIME_AGENT_KERNEL_VENV = venv;
+		process.env.AMICUS_KERNEL_VENV = venv;
 
 		await expect(ensureKernelPython()).resolves.toBe(python);
 
@@ -533,30 +533,30 @@ describe("kernel bootstrap", () => {
 			name: "rejects an interpreter with a stale rlm runtime",
 			write: (path: string) => writeFakePython(path, ["dill"]),
 			withSkill: false,
-			error: /current prime-agent-runtime with callable rlm\.spawn/,
+			error: /current amicus-runtime with callable rlm\.spawn/,
 		},
 		{
 			name: "rejects an interpreter exposing only the legacy harness API",
 			write: (path: string) => writeFakePython(path, ["rlm"], ["_harness_methods"]),
 			withSkill: false,
-			error: /current prime-agent-runtime with callable rlm\.spawn/,
+			error: /current amicus-runtime with callable rlm\.spawn/,
 		},
 		{
 			name: "rejects an interpreter with a pre-progress-note rlm runtime",
 			write: (path: string) => writeFakePython(path, ["rlm"], ["progress_note"]),
 			withSkill: false,
-			error: /current prime-agent-runtime with callable rlm\.spawn, rlm\.create_session, rlm\.host_request, rlm\.progress_note/,
+			error: /current amicus-runtime with callable rlm\.spawn, rlm\.create_session, rlm\.host_request, rlm\.progress_note/,
 		},
 		{
 			name: "rejects an interpreter missing the runtime, without bootstrapping a venv",
 			write: (path: string) => writeFakePython(path, []),
 			withSkill: false,
-			error: /PRIME_AGENT_KERNEL_PYTHON points to a Python missing/,
+			error: /AMICUS_KERNEL_PYTHON points to a Python missing/,
 		},
-	])("PRIME_AGENT_KERNEL_PYTHON $name", async ({ write, withSkill, error }) => {
+	])("AMICUS_KERNEL_PYTHON $name", async ({ write, withSkill, error }) => {
 		const overridePython = join(tempDir, "override-python");
 		write(overridePython);
-		process.env.PRIME_AGENT_KERNEL_PYTHON = overridePython;
+		process.env.AMICUS_KERNEL_PYTHON = overridePython;
 		const options = withSkill ? { pythonSkills: [createPythonSkill()] } : {};
 
 		if (error) {

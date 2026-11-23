@@ -1,6 +1,6 @@
 # Examples
 
-Example code for the Prime Agent SDK and extension system.
+Example code for the Amicus SDK and extension system.
 
 ## Directories
 

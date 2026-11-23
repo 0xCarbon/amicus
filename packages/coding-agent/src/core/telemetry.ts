@@ -2,7 +2,7 @@ import { randomUUID } from "node:crypto";
 import { lstatSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { arch, platform } from "node:os";
 import { join } from "node:path";
-import type { AssistantMessage, Usage } from "@earendil-works/pi-ai";
+import type { AssistantMessage, Usage } from "@amicus/ai";
 import { detectInstallMethod, VERSION } from "../config.js";
 import { writeFileAtomicSync } from "../utils/atomic-file.js";
 import type { AgentSession, AgentSessionEvent } from "./agent-session.js";
@@ -210,7 +210,7 @@ export function isTelemetryEnabled(settingsManager: SettingsManager): boolean {
 	if (parseBooleanOverride(process.env.DO_NOT_TRACK) === true) {
 		return false;
 	}
-	const override = parseBooleanOverride(process.env.PRIME_AGENT_TELEMETRY);
+	const override = parseBooleanOverride(process.env.AMICUS_TELEMETRY);
 	if (override !== undefined) {
 		return override;
 	}
@@ -309,7 +309,7 @@ export class TelemetryClient implements TelemetrySink {
 	private disabled = false;
 
 	constructor(private readonly options: TelemetryClientOptions) {
-		this.endpoint = options.endpoint ?? process.env.PRIME_AGENT_TELEMETRY_ENDPOINT ?? DEFAULT_TELEMETRY_ENDPOINT;
+		this.endpoint = options.endpoint ?? process.env.AMICUS_TELEMETRY_ENDPOINT ?? DEFAULT_TELEMETRY_ENDPOINT;
 		this.fetchImpl = options.fetch ?? fetch;
 		this.now = options.now ?? Date.now;
 		this.randomId = options.randomId ?? randomUUID;
@@ -400,7 +400,7 @@ export class TelemetryClient implements TelemetrySink {
 				method: "POST",
 				headers: {
 					"content-type": "application/json",
-					"user-agent": `prime-agent/${VERSION}`,
+					"user-agent": `amicus/${VERSION}`,
 				},
 				body: JSON.stringify(batch),
 				signal: AbortSignal.timeout(this.requestTimeoutMs),

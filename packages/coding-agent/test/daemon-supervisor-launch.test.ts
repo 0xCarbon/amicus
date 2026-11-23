@@ -42,7 +42,7 @@ function startChild(): ChildProcess {
 
 function setup() {
 	directory = mkdtempSync(join(tmpdir(), "prime-launch-test-"));
-	vi.stubEnv("PRIME_AGENT_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR", directory);
+	vi.stubEnv("AMICUS_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR", directory);
 	const socketPath = join(directory, "supervisor.sock");
 	launcher = Object.assign(Object.create(AgentDaemon.prototype), {
 		options: { defaultSessionConfig: { cwd: directory } },

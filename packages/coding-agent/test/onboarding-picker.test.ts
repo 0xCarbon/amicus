@@ -1,4 +1,4 @@
-import { setKeybindings, visibleWidth } from "@earendil-works/pi-tui";
+import { setKeybindings, visibleWidth } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";

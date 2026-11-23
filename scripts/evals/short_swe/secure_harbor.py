@@ -28,7 +28,7 @@ class SecureVerifiedMixin:
 
     async def stage_verifier(self, runtime: Runtime) -> None:
         await super().stage_verifier(runtime)
-        raw = await runtime.read("/tmp/prime-agent.patch", max_bytes=MAX_PATCH_BYTES + 1)
+        raw = await runtime.read("/tmp/amicus.patch", max_bytes=MAX_PATCH_BYTES + 1)
         if isinstance(raw, bytes) and len(raw) > MAX_PATCH_BYTES:
             raise RuntimeError(
                 "candidate patch exceeds the filtering cap; refusing to apply an unfiltered tail"
@@ -37,9 +37,9 @@ class SecureVerifiedMixin:
             return
         filtered = filter_test_control(raw)
         if filtered.encode("utf-8") != raw:
-            await runtime.write("/tmp/prime-agent.patch", filtered.encode("utf-8"))
+            await runtime.write("/tmp/amicus.patch", filtered.encode("utf-8"))
         result = await runtime.run(
-            ["sh", "-c", "test ! -s /tmp/prime-agent.patch || git apply --binary /tmp/prime-agent.patch"],
+            ["sh", "-c", "test ! -s /tmp/amicus.patch || git apply --binary /tmp/amicus.patch"],
             {},
         )
         if result.exit_code:
@@ -93,7 +93,7 @@ class SecureHarbor(HarborEnv):
         if not solution.ok:
             return
         artifacts = solution.state.artifacts
-        expected = {"/logs/artifacts", "/tmp/prime-agent.patch"}
+        expected = {"/logs/artifacts", "/tmp/amicus.patch"}
         if set(artifacts) != expected or artifacts["/logs/artifacts"] is not None:
             raise RuntimeError("solver produced undeclared verifier artifacts")
         grader = type(task)(verifier_box_data(task.data), task.config)

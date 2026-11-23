@@ -1,5 +1,5 @@
-import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { clampThinkingLevel, fauxAssistantMessage, type Model, type SimpleStreamOptions } from "@earendil-works/pi-ai";
+import type { ThinkingLevel } from "@amicus/agent-core";
+import { clampThinkingLevel, fauxAssistantMessage, type Model, type SimpleStreamOptions } from "@amicus/ai";
 import { afterEach, describe, expect, it } from "vitest";
 import { type HarnessState, planRefinement, reviewAutoRefine } from "../../../src/core/refinement/refinement.js";
 import { type SideQuestionEvent, startSideQuestion } from "../../../src/core/side-question.js";

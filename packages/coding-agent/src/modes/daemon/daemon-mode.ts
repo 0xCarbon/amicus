@@ -11,7 +11,7 @@ import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { stat } from "node:fs/promises";
 import { createConnection, createServer, type Server, type Socket } from "node:net";
 import { basename, dirname, isAbsolute, join, resolve } from "node:path";
-import { type Api, findEnvKeys, getLogger, type Model } from "@earendil-works/pi-ai";
+import { type Api, findEnvKeys, getLogger, type Model } from "@amicus/ai";
 import { createCliSubprocessEnv, createCliSubprocessLaunchSpec } from "../../cli/subprocess-launch.js";
 import {
 	appendRotatingLog,
@@ -380,7 +380,7 @@ function matchesCronDeliveryFence(fence: AgentCronDeliveryFence, state: ActiveSe
 // after this window instead of retrying the resurrection loop forever.
 // Sessions persist on disk, and a later supervisor spawns fresh workers on
 // demand, so an unreachable-supervisor worker serves nothing by lingering.
-const WORKER_SUPERVISOR_LOST_EXIT_MS_ENV = "PRIME_AGENT_INTERNAL_WORKER_SUPERVISOR_LOST_EXIT_MS";
+const WORKER_SUPERVISOR_LOST_EXIT_MS_ENV = "AMICUS_INTERNAL_WORKER_SUPERVISOR_LOST_EXIT_MS";
 const DEFAULT_WORKER_SUPERVISOR_LOST_EXIT_MS = 5 * 60_000;
 
 function workerSupervisorLostExitMs(): number {
@@ -401,9 +401,9 @@ const MAX_DEFERRED_SESSION_BYTES = 8 * 1024 * 1024;
 const UPDATE_RESTART_ABORT_BASH_TIMEOUT_MS = 5000;
 const SUPERVISOR_FENCE_POLL_MS = 250;
 const UPDATE_RESTART_MARKER =
-	"<prime_agent_update_interrupted>\n" +
-	"Prime Agent was updated and intentionally interrupted this session. Continue from the saved transcript and restored tool/kernel state. Any running model, tool, bash, or child-agent work may have been partially completed.\n" +
-	"</prime_agent_update_interrupted>";
+	"<amicus_update_interrupted>\n" +
+	"Amicus was updated and intentionally interrupted this session. Continue from the saved transcript and restored tool/kernel state. Any running model, tool, bash, or child-agent work may have been partially completed.\n" +
+	"</amicus_update_interrupted>";
 const RECOVERY_CHECKPOINT_EVENTS: ReadonlySet<string> = new Set([
 	"agent_start",
 	"agent_end",
@@ -744,7 +744,7 @@ export class AgentDaemon {
 
 		this.registerSignalHandlers();
 		this.summarizer.start();
-		this.log(`Prime Agent daemon listening on ${this.socketPath}`);
+		this.log(`Amicus daemon listening on ${this.socketPath}`);
 		// No startup restore: on-disk sessions return only via --resume or the agents view.
 		if (!this.shuttingDown) {
 			this.cronScheduler.start();
@@ -6959,7 +6959,7 @@ export class AgentDaemon {
 			return;
 		}
 		state.runtime.session.sessionManager.appendCustomMessageEntry(
-			"prime-agent.update_restart",
+			"amicus.update_restart",
 			UPDATE_RESTART_MARKER,
 			false,
 			{

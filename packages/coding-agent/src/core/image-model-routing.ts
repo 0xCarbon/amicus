@@ -2,8 +2,8 @@
  * Routing for image-attaching turns on session models without image input.
  */
 
-import type { AgentModelOverride, ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { type Api, clampServiceTier, clampThinkingLevel, type Model, type ServiceTier } from "@earendil-works/pi-ai";
+import type { AgentModelOverride, ThinkingLevel } from "@amicus/agent-core";
+import { type Api, clampServiceTier, clampThinkingLevel, type Model, type ServiceTier } from "@amicus/ai";
 import { formatImageModelRequiredMessage, formatImageModelUnusableMessage } from "./auth-guidance.js";
 import { findExactModelReferenceMatch } from "./model-resolver.js";
 

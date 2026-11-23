@@ -1,4 +1,4 @@
-import type { AgentMessage, ThinkingLevel } from "@earendil-works/pi-agent-core";
+import type { AgentMessage, ThinkingLevel } from "@amicus/agent-core";
 import { describe, expect, it } from "vitest";
 import {
 	type AutoThinkingProbabilities,

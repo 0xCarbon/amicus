@@ -7,9 +7,9 @@ import { ReplKernelManager } from "../src/core/kernel/index.js";
 
 function resolveReplPython(): string | null {
 	const candidates = [
-		process.env.PRIME_AGENT_KERNEL_PYTHON,
-		resolve(__dirname, "..", "..", "..", "prime-agent-runtime", ".venv", "bin", "python"),
-		join(homedir(), ".prime", "agent", "kernel-venv", "bin", "python"),
+		process.env.AMICUS_KERNEL_PYTHON,
+		resolve(__dirname, "..", "..", "..", "amicus-runtime", ".venv", "bin", "python"),
+		join(homedir(), ".amicus", "kernel-venv", "bin", "python"),
 	].filter((p): p is string => Boolean(p));
 	for (const python of candidates) {
 		if (!existsSync(python)) continue;
@@ -27,7 +27,7 @@ describeIf("ReplKernelManager pipe errors (real runtime)", () => {
 	let manager: ReplKernelManager | undefined;
 
 	beforeEach(() => {
-		dir = mkdtempSync(join(tmpdir(), "prime-agent-repl-pipe-"));
+		dir = mkdtempSync(join(tmpdir(), "amicus-repl-pipe-"));
 	});
 
 	afterEach(async () => {

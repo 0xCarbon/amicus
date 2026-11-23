@@ -4,8 +4,8 @@ import { basename, dirname, join, resolve } from "node:path";
 import { lockSync } from "proper-lockfile";
 import { execFileSyncHidden, isProcessAlive } from "../utils/child-process.js";
 
-export const SESSION_LEASES_ENABLED_ENV = "PRIME_AGENT_INTERNAL_SESSION_LEASES";
-export const SESSION_LEASE_OWNER_ID_ENV = "PRIME_AGENT_INTERNAL_SESSION_LEASE_OWNER_ID";
+export const SESSION_LEASES_ENABLED_ENV = "AMICUS_INTERNAL_SESSION_LEASES";
+export const SESSION_LEASE_OWNER_ID_ENV = "AMICUS_INTERNAL_SESSION_LEASE_OWNER_ID";
 
 interface SessionLeaseOwner {
 	version: 1;

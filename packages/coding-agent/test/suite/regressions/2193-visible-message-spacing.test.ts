@@ -1,12 +1,6 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import {
-	fauxAssistantMessage,
-	fauxText,
-	fauxThinking,
-	fauxToolCall,
-	type ToolResultMessage,
-} from "@earendil-works/pi-ai";
-import { type Component, type Container, setKeybindings, type TUI } from "@earendil-works/pi-tui";
+import type { AgentMessage } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxText, fauxThinking, fauxToolCall, type ToolResultMessage } from "@amicus/ai";
+import { type Component, type Container, setKeybindings, type TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { createAgentSessionMessage } from "../../../src/core/agent-messages.js";

@@ -102,7 +102,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
         handle.kill.assert_called_once_with(15)
         handle._notify_background_completion.return_value.close.assert_called_once_with()
         activity = bridge.emit.call_args_list[0].args[0]
-        mime = "application/vnd.prime-agent.bash-activity+json"
+        mime = "application/vnd.amicus.bash-activity+json"
         self.assertTrue(activity[mime]["active"])
         bridge.emit.assert_called_with({mime: {**activity[mime], "active": False}})
 
@@ -112,7 +112,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
         dummies = [os.open(os.devnull, os.O_RDONLY) for _ in range(30)]
         self.addCleanup(lambda: [os.close(fd) for fd in dummies])
         if os.path.exists("/bin/dash"):
-            with mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/dash"}):
+            with mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/dash"}):
                 result = await bash("echo ok")
             self.assertEqual(result.exit_code, 0)
             self.assertIn("ok", result.output)
@@ -190,9 +190,9 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_BASH_COMMAND_PREFIX": "echo prefixed",
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_BASH_COMMAND_PREFIX": "echo prefixed",
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 handle = bash('echo "$NO_COLOR $TERM"')
@@ -217,8 +217,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 handle = bash("echo fg; sleep 30 &")
@@ -246,8 +246,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 handle = bash("sh -c 'trap \"\" TERM; echo ready; sleep 30' &")
@@ -621,7 +621,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.object(
                 shutil, "which", return_value=r"C:\evil\bash.exe"
             ) as which:
-                with self.assertRaisesRegex(RuntimeError, "PRIME_AGENT_BASH_SHELL"):
+                with self.assertRaisesRegex(RuntimeError, "AMICUS_BASH_SHELL"):
                     bash_module._shell()
                 which.assert_not_called()
 
@@ -661,10 +661,10 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
 
     async def test_sentinel_like_output_and_echoed_wrapper_do_not_truncate(self):
         token = "0123456789abcdef" * 4
-        raw_lookalike = "\x1eprime-agent-complete:not-this-invocation\x1f"
+        raw_lookalike = "\x1eamicus-complete:not-this-invocation\x1f"
         command = (
             "set -x\n"
-            "printf '\\036prime-agent-complete:not-this-invocation\\037'\n"
+            "printf '\\036amicus-complete:not-this-invocation\\037'\n"
             "if [ -r /proc/$$/cmdline ]; then cat /proc/$$/cmdline; fi\n"
             "printf '\\nafter-sentinel-lookalike\\n'"
         )
@@ -713,7 +713,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
         self.assertIn("output-before-shell-kill", result.output)
 
     async def test_relative_bash_shell_override_rejected(self):
-        with mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "bash"}):
+        with mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "bash"}):
             with self.assertRaises(ValueError):
                 bash("echo hi")
 
@@ -726,9 +726,9 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
-                    "PRIME_AGENT_BASH_SHELL": "/bin/sh",
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_BASH_SHELL": "/bin/sh",
                 },
             ):
                 with mock.patch.object(bash_module, "_IS_POSIX", False):
@@ -765,7 +765,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             proc.resume = mock.Mock(side_effect=lambda: order.append("resume") or True)
             return proc
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", spawn):
                 with mock.patch.object(bash_module, "_record_journal", journal):
@@ -797,7 +797,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             journal_calls.append((pid, active))
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job") as spawn:
                 with mock.patch.object(bash_module, "_record_journal", journal):
@@ -822,7 +822,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             spawned[0].kill()
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(
                 bash_module._winjob, "spawn_in_job", _win_spawn(spawned, resume=False)
@@ -857,7 +857,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             spawned[0].kill()
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", _win_spawn(spawned)):
                 with mock.patch.object(bash_module, "_record_journal", journal):
@@ -888,7 +888,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
         def spawn(job, argv, cwd, env):
             raise OSError("spawn failed")
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", spawn):
                 with mock.patch.object(bash_module, "_record_journal", journal):
@@ -927,7 +927,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             order.append(("taskkill", spawned[0].close.called))
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", spawn):
                 with mock.patch.object(bash_module._winjob, "create_job", return_value=777):
@@ -959,7 +959,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             assert release.wait(timeout=10)
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", spawn):
                 with mock.patch.object(bash_module._winjob, "create_job", return_value=778):
@@ -1049,7 +1049,7 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             assert tk_release.wait(timeout=10)
             return True
 
-        self.enterContext(mock.patch.dict(os.environ, {"PRIME_AGENT_BASH_SHELL": "/bin/sh"}))
+        self.enterContext(mock.patch.dict(os.environ, {"AMICUS_BASH_SHELL": "/bin/sh"}))
         loop = asyncio.get_running_loop()
         with mock.patch.object(bash_module, "_IS_POSIX", False):
             with mock.patch.object(bash_module._winjob, "spawn_in_job", spawn):
@@ -1202,8 +1202,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 handle = bash("sleep 30")
@@ -1244,8 +1244,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": tmp,  # a directory: open fails
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": tmp,  # a directory: open fails
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 with mock.patch.object(bash_module.subprocess, "Popen", capturing_popen):
@@ -1263,8 +1263,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": "notanint",
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": "notanint",
                 },
             ):
                 with self.assertRaises(RuntimeError):
@@ -1276,8 +1276,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 with mock.patch.object(bash_module, "_process_start_id", return_value=None):
@@ -1296,8 +1296,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 with mock.patch.object(bash_module.os, "write", short_write):
@@ -1315,8 +1315,8 @@ class BashTest(unittest.IsolatedAsyncioTestCase):
             with mock.patch.dict(
                 os.environ,
                 {
-                    "PRIME_AGENT_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
-                    "PRIME_AGENT_KERNEL_OWNER_PID": str(os.getpid()),
+                    "AMICUS_INTERNAL_ORPHAN_PROCESS_JOURNAL": journal,
+                    "AMICUS_KERNEL_OWNER_PID": str(os.getpid()),
                 },
             ):
                 with mock.patch.object(bash_module.os, "write", partial_write):

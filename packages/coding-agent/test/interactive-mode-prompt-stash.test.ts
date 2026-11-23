@@ -1,5 +1,5 @@
-import type { ImageContent } from "@earendil-works/pi-ai";
-import { Container } from "@earendil-works/pi-tui";
+import type { ImageContent } from "@amicus/ai";
+import { Container } from "@amicus/tui";
 import { describe, expect, it, type Mock, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";
 import { InteractiveMode } from "../src/modes/interactive/interactive-mode.js";

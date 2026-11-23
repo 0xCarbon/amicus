@@ -1,4 +1,4 @@
-import { type Component, type Focusable, getKeybindings, truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
+import { type Component, type Focusable, getKeybindings, truncateToWidth, visibleWidth } from "@amicus/tui";
 import { getResolvedThemeColors, theme } from "../theme/theme.js";
 import { MenuSearchInput } from "./menu-panel.js";
 import { isOnboardingExitKey } from "./onboarding-exit.js";

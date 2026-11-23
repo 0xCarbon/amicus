@@ -1,7 +1,7 @@
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { UserMessage } from "@earendil-works/pi-ai";
+import type { UserMessage } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { readSessionHeader } from "../src/core/session-editor/fork.js";
 import { type SessionEntry, type SessionHeader, serializeSessionFile } from "../src/core/session-manager.js";

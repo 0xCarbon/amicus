@@ -2,14 +2,14 @@ import { existsSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { basename, join } from "node:path";
 import { setTimeout as sleep } from "node:timers/promises";
-import { Agent, type StreamFn } from "@earendil-works/pi-agent-core";
+import { Agent, type StreamFn } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	type Context,
 	createAssistantMessageEventStream,
 	fauxAssistantMessage,
 	type Usage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { AgentSession } from "../src/core/agent-session.js";
 import { AuthStorage } from "../src/core/auth-storage.js";

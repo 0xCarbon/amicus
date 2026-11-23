@@ -28,8 +28,8 @@ const installer = resolve(__dirname, "../../../install.sh");
 const assets = [
 	"package.json",
 	"install.sh",
-	"prime-agent-runtime/pyproject.toml",
-	"prime-agent-runtime/src/rlm/repl.py",
+	"amicus-runtime/pyproject.toml",
+	"amicus-runtime/src/rlm/repl.py",
 	"theme/prime.json",
 	"export-html/template.html",
 	"photon_rs_bg.wasm",
@@ -37,7 +37,7 @@ const assets = [
 // Fixtures follow the installer's own selection so the suite also runs on musl
 // and non-AVX2 hosts, where that is no longer `${process.platform}-${process.arch}`.
 const platform = hostNativePlatform();
-const testArchive = process.env.PRIME_AGENT_TEST_ARCHIVE;
+const testArchive = process.env.AMICUS_TEST_ARCHIVE;
 const feed = new Map<string, Buffer>();
 let beforeArchiveResponse: (() => void) | undefined;
 let redirectToHttp = false;
@@ -86,7 +86,7 @@ printf 'Error relocating %s: __cxa_pure_virtual: symbol not found\\n' "$0" >&2
 exit 1
 `;
 	writeFileSync(
-		join(source, "prime-agent"),
+		join(source, "amicus"),
 		options.libstdcxx
 			? missingLibstdcxx
 			: options.broken
@@ -96,7 +96,7 @@ exit 1
 		{ mode: 0o755 },
 	);
 	if (options.link) symlinkSync("/tmp", join(source, "outside"));
-	const filename = `prime-agent-${version}-${platform}.tar.gz`;
+	const filename = `amicus-${version}-${platform}.tar.gz`;
 	const archive = join(root, filename);
 	execFileSync("tar", ["-czf", archive, "-C", source, "."]);
 	const bytes = readFileSync(archive);
@@ -108,8 +108,8 @@ exit 1
 		Buffer.from(
 			JSON.stringify({
 				version,
-				package: "prime-agent",
-				tarball: `https://github.com/canesin/prime-agent/releases/download/v${version}/prime-agent-${version}.tgz`,
+				package: "amicus",
+				tarball: `https://github.com/0xCarbon/amicus/releases/download/v${version}/amicus-${version}.tgz`,
 				binaries: [{ platform, file: filename, sha256: digest }],
 			}),
 		),
@@ -118,7 +118,7 @@ exit 1
 }
 
 function publishNodePackage(version: string) {
-	const filename = `prime-agent-${version}.tgz`;
+	const filename = `amicus-${version}.tgz`;
 	const bytes = Buffer.from(`node package ${version}\n`);
 	const digest = createHash("sha256").update(bytes).digest("hex");
 	feed.set(`/releases/v${version}/${filename}`, bytes);
@@ -139,12 +139,12 @@ async function run(executable: string, args: string[], extra: NodeJS.ProcessEnv 
 			PATH: "/usr/bin:/bin",
 			XDG_DATA_HOME: join(home, "data"),
 			SHELL: "/bin/sh",
-			PRIME_AGENT_INSTALL_METHOD: "binary",
-			PRIME_AGENT_INSTALLER_NONINTERACTIVE: "1",
-			PRIME_AGENT_INSTALLER_PLAIN: "1",
-			PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
-			PRIME_AGENT_DOWNLOAD_BASE_URL: base,
-			PRIME_AGENT_CODING_AGENT_DIR: join(home, "agent"),
+			AMICUS_INSTALL_METHOD: "binary",
+			AMICUS_INSTALLER_NONINTERACTIVE: "1",
+			AMICUS_INSTALLER_PLAIN: "1",
+			AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
+			AMICUS_DOWNLOAD_BASE_URL: base,
+			AMICUS_CODING_AGENT_DIR: join(home, "agent"),
 			DO_NOT_TRACK: "1",
 			CURL_CA_BUNDLE: certificate,
 			NODE_EXTRA_CA_CERTS: certificate,
@@ -166,11 +166,11 @@ async function run(executable: string, args: string[], extra: NodeJS.ProcessEnv 
 }
 
 function command() {
-	return join(home, "data/prime-agent/bin/prime-agent");
+	return join(home, "data/amicus/bin/amicus");
 }
 
 function installationRoot() {
-	return join(home, "data/prime-agent");
+	return join(home, "data/amicus");
 }
 
 function releaseDirectories() {
@@ -187,11 +187,11 @@ function nodeFallbackHarness() {
 		readFileSync(installer, "utf8").replace(
 			/\nmain "\$@"\s*$/,
 			() => `
-prime_agent_install_node() {
- mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules/prime-agent/dist/bundle"
- printf '%s\\n' "$1" > "$HOME/.local/lib/node_modules/prime-agent/dist/bundle/cli.js"
- if [ ! -L "$HOME/.local/bin/prime-agent" ]; then
-  ln -s ../lib/node_modules/prime-agent/dist/bundle/cli.js "$HOME/.local/bin/prime-agent"
+amicus_install_node() {
+ mkdir -p "$HOME/.local/bin" "$HOME/.local/lib/node_modules/amicus/dist/bundle"
+ printf '%s\\n' "$1" > "$HOME/.local/lib/node_modules/amicus/dist/bundle/cli.js"
+ if [ ! -L "$HOME/.local/bin/amicus" ]; then
+  ln -s ../lib/node_modules/amicus/dist/bundle/cli.js "$HOME/.local/bin/amicus"
  fi
  printf 'node-route:%s\\n' "$1"
 }
@@ -213,7 +213,7 @@ function createLsofShim() {
 }
 
 function daemonSocket() {
-	return join(root, `prime-agent-${process.getuid?.() ?? "user"}`, "daemon.sock");
+	return join(root, `amicus-${process.getuid?.() ?? "user"}`, "daemon.sock");
 }
 
 async function daemonExecutable() {
@@ -283,7 +283,7 @@ describe.skipIf(process.platform === "win32")("managed compiled installer", () =
 		insecureRequestCount = 0;
 		vi.stubEnv("PI_OFFLINE", "");
 		vi.stubEnv("PI_SKIP_VERSION_CHECK", "");
-		vi.stubEnv("PRIME_AGENT_DOWNLOAD_BASE_URL", "");
+		vi.stubEnv("AMICUS_DOWNLOAD_BASE_URL", "");
 	});
 	afterEach(async () => {
 		vi.unstubAllEnvs();
@@ -321,8 +321,8 @@ describe.skipIf(process.platform === "win32")("managed compiled installer", () =
 
 	it.each(["binary", "node"])("rejects an HTTP download base in %s mode", async (method) => {
 		const result = await install("1.0.0", {
-			PRIME_AGENT_DOWNLOAD_BASE_URL: httpBase,
-			PRIME_AGENT_INSTALL_METHOD: method,
+			AMICUS_DOWNLOAD_BASE_URL: httpBase,
+			AMICUS_INSTALL_METHOD: method,
 		});
 		expect(result.code).not.toBe(0);
 		expect(result.output).toContain("downloads require an HTTPS base URL");
@@ -331,8 +331,8 @@ describe.skipIf(process.platform === "win32")("managed compiled installer", () =
 
 	it("does not let the test opt-in enable HTTP for a non-loopback origin", async () => {
 		const result = await install("1.0.0", {
-			PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
-			PRIME_AGENT_DOWNLOAD_BASE_URL: "http://example.invalid",
+			AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
+			AMICUS_DOWNLOAD_BASE_URL: "http://example.invalid",
 		});
 		expect(result.code).not.toBe(0);
 		expect(result.output).toContain("downloads require an HTTPS base URL");
@@ -355,14 +355,14 @@ describe.skipIf(process.platform === "win32")("managed compiled installer", () =
 			readFileSync(installer, "utf8").replace(
 				/\nmain "\$@"\s*$/,
 				() => `
-prime_agent_validate_download_base_url
-download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_agent_package-$1.tgz" "$HOME/$prime_agent_package-$1.tgz"
+amicus_validate_download_base_url
+download_amicus_package "$1" "$amicus_base_url/releases/v$1/$amicus_package-$1.tgz" "$HOME/$amicus_package-$1.tgz"
 `,
 			),
 		);
 		const result = await install("1.0.0", {}, harness);
 		expect(result.code, result.output).toBe(0);
-		expect(readFileSync(join(home, "prime-agent-1.0.0.tgz"), "utf8")).toBe("node package 1.0.0\n");
+		expect(readFileSync(join(home, "amicus-1.0.0.tgz"), "utf8")).toBe("node package 1.0.0\n");
 	});
 
 	it("rejects an HTTPS-to-HTTP redirect for the Node package route", async () => {
@@ -374,31 +374,31 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			readFileSync(installer, "utf8").replace(
 				/\nmain "\$@"\s*$/,
 				() => `
-prime_agent_validate_download_base_url
-download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_agent_package-$1.tgz" "$HOME/$prime_agent_package-$1.tgz"
+amicus_validate_download_base_url
+download_amicus_package "$1" "$amicus_base_url/releases/v$1/$amicus_package-$1.tgz" "$HOME/$amicus_package-$1.tgz"
 `,
 			),
 		);
 		const result = await install("1.0.0", {}, harness);
 		expect(result.code).not.toBe(0);
 		expect(insecureRequestCount).toBe(0);
-		expect(existsSync(join(home, "prime-agent-1.0.0.tgz"))).toBe(false);
+		expect(existsSync(join(home, "amicus-1.0.0.tgz"))).toBe(false);
 	});
 
 	it("defaults to a verified executable without Node, preserves user data, and retains the previous release", async () => {
 		publish("1.0.0");
 		publish("1.0.1");
-		mkdirSync(join(home, ".prime/agent"), { recursive: true });
-		writeFileSync(join(home, ".prime/agent/auth.json"), "keep credentials");
-		const first = await install("1.0.0", { PRIME_AGENT_INSTALL_METHOD: "auto" });
+		mkdirSync(join(home, ".amicus"), { recursive: true });
+		writeFileSync(join(home, ".amicus/auth.json"), "keep credentials");
+		const first = await install("1.0.0", { AMICUS_INSTALL_METHOD: "auto" });
 		expect(first.code, first.output).toBe(0);
-		expect(execFileSync(join(home, ".local/bin/prime-agent"), ["--version"], { encoding: "utf8" })).toBe("1.0.0\n");
+		expect(execFileSync(join(home, ".local/bin/amicus"), ["--version"], { encoding: "utf8" })).toBe("1.0.0\n");
 		const previous = readlinkSync(command());
 		const second = await install("1.0.1");
 		expect(second.code, second.output).toBe(0);
 		expect(readlinkSync(join(dirname(command()), "previous"))).toBe(previous);
-		expect(readFileSync(join(home, ".prime/agent/auth.json"), "utf8")).toBe("keep credentials");
-		expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+		expect(readFileSync(join(home, ".amicus/auth.json"), "utf8")).toBe("keep credentials");
+		expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 	});
 
 	it.each(["checksum", "missing", "broken", "link", "duplicate"])(
@@ -423,7 +423,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			expect(result.code, result.output).not.toBe(0);
 			expect(readlinkSync(command())).toBe(target);
 			expect(execFileSync(command(), ["--version"], { encoding: "utf8" })).toBe("1.0.0\n");
-			expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+			expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 		},
 	);
 
@@ -438,8 +438,8 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		publish("1.0.1");
 		const update = await plan();
 		expect(update.targetVersion).toBe("1.0.1");
-		expect(update.command?.args).toContain(`PRIME_AGENT_EXPECTED_CURRENT=${readlinkSync(command())}`);
-		expect(update.command?.args).toContainEqual(expect.stringMatching(/^PRIME_AGENT_EXPECTED_SHA256=[a-f0-9]{64}$/));
+		expect(update.command?.args).toContain(`AMICUS_EXPECTED_CURRENT=${readlinkSync(command())}`);
+		expect(update.command?.args).toContainEqual(expect.stringMatching(/^AMICUS_EXPECTED_SHA256=[a-f0-9]{64}$/));
 		const result = await install("1.0.1");
 		expect(result.code, result.output).toBe(0);
 		const current = readlinkSync(command());
@@ -457,9 +457,9 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 	it.each([
 		{ damage: "missing asset", file: "theme/prime.json" },
 		{ damage: "missing installer", file: "install.sh" },
-		{ damage: "missing executable", file: "prime-agent" },
+		{ damage: "missing executable", file: "amicus" },
 		{ damage: "missing metadata", file: "package.json" },
-		{ damage: "broken executable", file: "prime-agent" },
+		{ damage: "broken executable", file: "amicus" },
 	])("repairs a $damage while preserving the healthy previous release", async ({ damage, file }) => {
 		for (const rollback of [true, false]) {
 			publish("1.0.0");
@@ -476,7 +476,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 				rollback,
 				executable: retained,
 			});
-			expect(plan.command?.args).toContain(`PRIME_AGENT_EXPECTED_CURRENT=${readlinkSync(command())}`);
+			expect(plan.command?.args).toContain(`AMICUS_EXPECTED_CURRENT=${readlinkSync(command())}`);
 			if (rollback) feed.clear();
 			const result = await run(plan.command!.command, plan.command!.args);
 			expect(result.code, result.output).toBe(0);
@@ -490,7 +490,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 	it.each(["no rollback handler", "no damaged-release recovery"])(
 		"uses published-installer repair when the retained installer has %s",
 		async (capability) => {
-			let oldInstaller = readFileSync(installer, "utf8").replace("# prime-agent-native-recovery-v1\n", "");
+			let oldInstaller = readFileSync(installer, "utf8").replace("# amicus-native-recovery-v1\n", "");
 			if (capability === "no rollback handler")
 				oldInstaller = oldInstaller.replace(/\tif \[ "\$\{1:-\}" = --rollback \]; then[\s\S]*?\tfi\n/, "");
 			publish("1.0.0", { installer: oldInstaller });
@@ -503,7 +503,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			rmSync(join(dirname(realpathSync(command())), "install.sh"));
 			for (const rollback of [true, false])
 				await expect(getNativeUpdatePlan({ force: true, rollback, executable: retained })).rejects.toThrow(
-					"https://app.primeintellect.ai/prime-agent/install.sh",
+					"https://app.primeintellect.ai/amicus/install.sh",
 				);
 			expect(readlinkSync(command())).toBe(current);
 			expect(readlinkSync(join(dirname(command()), "previous"))).toBe(previous);
@@ -547,7 +547,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		const shim = mkdtempSync(join(root, "interrupt-rollback-"));
 		writeFileSync(
 			join(shim, "mv"),
-			'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\ncase "$destination" in "$INTERRUPT_BIN/prime-agent"|"$INTERRUPT_BIN/previous") if [ ! -f "$0.sent" ]; then touch "$0.sent"; kill -"$INTERRUPT_SIGNAL" "$PPID"; fi ;; esac\n',
+			'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\ncase "$destination" in "$INTERRUPT_BIN/amicus"|"$INTERRUPT_BIN/previous") if [ ! -f "$0.sent" ]; then touch "$0.sent"; kill -"$INTERRUPT_SIGNAL" "$PPID"; fi ;; esac\n',
 			{ mode: 0o755 },
 		);
 		const result = await install("--rollback", {
@@ -562,10 +562,10 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			expect(readlinkSync(previous)).toBe(restored);
 			expect(existsSync(resolve(dirname(command()), replaced))).toBe(true);
 			expect((await install("--rollback")).code).not.toBe(0);
-			rmSync(join(home, "data/prime-agent/.install-lock"), { recursive: true });
+			rmSync(join(home, "data/amicus/.install-lock"), { recursive: true });
 		} else {
 			expect(readlinkSync(previous)).toBe(replaced);
-			expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+			expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 		}
 		feed.clear();
 		const plan = await getNativeUpdatePlan({ force: false, rollback: true, executable: realpathSync(command()) });
@@ -581,7 +581,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			publish("1.0.0");
 			expect((await install("1.0.0")).code).toBe(0);
 			const current = readlinkSync(command());
-			const artifact = { platform, file: `prime-agent-1.0.1-${platform}.tar.gz`, sha256: "a".repeat(64) };
+			const artifact = { platform, file: `amicus-1.0.1-${platform}.tar.gz`, sha256: "a".repeat(64) };
 			if (failure === "checksum") artifact.sha256 = "bad";
 			if (failure === "path") artifact.file = "../outside.tar.gz";
 			feed.set(
@@ -589,8 +589,8 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 				Buffer.from(
 					JSON.stringify({
 						version: "1.0.1",
-						package: "prime-agent",
-						tarball: "https://github.com/canesin/prime-agent/releases/download/v1.0.1/prime-agent-1.0.1.tgz",
+						package: "amicus",
+						tarball: "https://github.com/0xCarbon/amicus/releases/download/v1.0.1/amicus-1.0.1.tgz",
 						binaries: failure === "missing" ? [] : failure === "duplicate" ? [artifact, artifact] : [artifact],
 					}),
 				),
@@ -621,8 +621,8 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 			const result = await install(
 				failure === "rollback" ? "--rollback" : "1.0.1",
 				failure === "stale"
-					? { PRIME_AGENT_EXPECTED_CURRENT: "an older release" }
-					: { PRIME_AGENT_EXPECTED_SHA256: "0".repeat(64) },
+					? { AMICUS_EXPECTED_CURRENT: "an older release" }
+					: { AMICUS_EXPECTED_SHA256: "0".repeat(64) },
 			);
 			expect(result.code, result.output).not.toBe(0);
 			expect(readlinkSync(command())).toBe(current);
@@ -655,7 +655,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		if (failure === "checksum marker") writeFileSync(join(previousDir, ".archive-sha256"), `${"b".repeat(64)}\n`);
 		if (failure === "package version") writeFileSync(join(previousDir, "package.json"), '{"version":"9.9.9"}\n');
 		if (failure === "executable version")
-			writeFileSync(join(previousDir, "prime-agent"), "#!/bin/sh\nprintf '9.9.9\\n'\n", { mode: 0o755 });
+			writeFileSync(join(previousDir, "amicus"), "#!/bin/sh\nprintf '9.9.9\\n'\n", { mode: 0o755 });
 		if (failure === "source symlink") {
 			const source = join(root, "outside-install-source");
 			writeFileSync(source, "https://example.com\n");
@@ -676,7 +676,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		}
 		const result = await install(
 			"--rollback",
-			failure === "changed previous" ? { PRIME_AGENT_EXPECTED_PREVIOUS: "an older release" } : {},
+			failure === "changed previous" ? { AMICUS_EXPECTED_PREVIOUS: "an older release" } : {},
 		);
 		expect(result.code, result.output).not.toBe(0);
 		expect(readlinkSync(command())).toBe(current);
@@ -688,22 +688,22 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		publish("1.0.0", { broken: true });
 		publish("1.0.1", { broken: true });
 		const harness = nodeFallbackHarness();
-		const first = await install("1.0.0", { PRIME_AGENT_INSTALL_METHOD: "auto" }, harness);
+		const first = await install("1.0.0", { AMICUS_INSTALL_METHOD: "auto" }, harness);
 		expect(first.code, first.output).toBe(0);
 		expect(first.output).toContain("node-route:1.0.0");
-		const publicCommand = join(home, ".local/bin/prime-agent");
+		const publicCommand = join(home, ".local/bin/amicus");
 		const npmLink = readlinkSync(publicCommand);
-		const second = await install(version, { PRIME_AGENT_INSTALL_METHOD: "auto" }, harness);
+		const second = await install(version, { AMICUS_INSTALL_METHOD: "auto" }, harness);
 		expect(second.code, second.output).toBe(0);
 		expect(second.output).toContain(`node-route:${version}`);
 		expect(readlinkSync(publicCommand)).toBe(npmLink);
 		expect(readFileSync(publicCommand, "utf8")).toBe(`${version}\n`);
 		expect(existsSync(command())).toBe(false);
-		expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+		expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 
 		// A runnable archive still cannot take over the npm-owned public command.
 		publish("1.0.2");
-		const compiled = await install("1.0.2", { PRIME_AGENT_INSTALL_METHOD: "auto" }, harness);
+		const compiled = await install("1.0.2", { AMICUS_INSTALL_METHOD: "auto" }, harness);
 		expect(compiled.code, compiled.output).not.toBe(0);
 		expect(compiled.output).toContain("refusing to replace existing command");
 		expect(compiled.output).not.toContain("node-route:");
@@ -717,16 +717,16 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		async (method) => {
 			publish("1.0.0", { libstdcxx: true });
 			const harness = nodeFallbackHarness();
-			const result = await install("1.0.0", { PRIME_AGENT_INSTALL_METHOD: method }, harness);
+			const result = await install("1.0.0", { AMICUS_INSTALL_METHOD: method }, harness);
 			expect(result.code, result.output).not.toBe(0);
 			expect(result.output).toContain("needs the libstdc++ runtime library");
 			expect(result.output).toContain("apk add --no-cache libstdc++");
-			expect(result.output).toContain("PRIME_AGENT_INSTALL_METHOD=node");
+			expect(result.output).toContain("AMICUS_INSTALL_METHOD=node");
 			// Sixty relocation errors and the false "cannot run" claim stay out of the terminal.
 			expect(result.output).not.toContain("Error relocating");
 			expect(result.output).not.toContain("cannot run");
 			expect(result.output).not.toContain("node-route:");
-			expect(existsSync(join(home, ".local/bin/prime-agent"))).toBe(false);
+			expect(existsSync(join(home, ".local/bin/amicus"))).toBe(false);
 			expect(existsSync(installationRoot())).toBe(false);
 		},
 	);
@@ -745,14 +745,14 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		publish("1.0.2", { broken: true });
 		const later = await install("1.0.2");
 		expect(later.code, later.output).not.toBe(0);
-		expect(readFileSync(join(installationRoot(), ".managed"), "utf8")).toBe("prime-agent-native-v1\n");
+		expect(readFileSync(join(installationRoot(), ".managed"), "utf8")).toBe("amicus-native-v1\n");
 		expect(execFileSync(command(), ["--version"], { encoding: "utf8" })).toBe("1.0.1\n");
 	});
 
 	it("refuses to replace an unrelated public command", async () => {
 		publish("1.0.0");
 		mkdirSync(join(home, ".local/bin"), { recursive: true });
-		writeFileSync(join(home, ".local/bin/prime-agent"), "owned by another installer");
+		writeFileSync(join(home, ".local/bin/amicus"), "owned by another installer");
 		const result = await install("1.0.0");
 		expect(result.code).not.toBe(0);
 		expect(result.output).toContain("refusing to replace existing command");
@@ -761,7 +761,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 
 	it.each(["../outside", "/tmp/outside", ".", ".."])("rejects a command name containing a path: %s", async (name) => {
 		publish("1.0.0");
-		const result = await install("1.0.0", { PRIME_AGENT_CMD: name });
+		const result = await install("1.0.0", { AMICUS_CMD: name });
 		expect(result.code).not.toBe(0);
 		expect(result.output).toContain("command name must be a basename");
 		expect(existsSync(command())).toBe(false);
@@ -772,7 +772,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		publish("1.0.0");
 		expect((await install("1.0.0")).code).toBe(0);
 		const current = readlinkSync(command());
-		const publicCommand = join(home, ".local/bin/prime-agent");
+		const publicCommand = join(home, ".local/bin/amicus");
 		publish("1.0.1");
 		beforeArchiveResponse = () => {
 			rmSync(publicCommand);
@@ -785,14 +785,14 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		expect(readlinkSync(command())).toBe(current);
 	});
 
-	it.each(["", "../releases/an-earlier-install/prime-agent"])(
+	it.each(["", "../releases/an-earlier-install/amicus"])(
 		"rejects a stale migration expectation (%s)",
 		async (expected) => {
 			publish("1.0.1");
 			publish("1.0.0");
 			expect((await install("1.0.1")).code).toBe(0);
 			const active = readlinkSync(command());
-			const result = await install("1.0.0", { PRIME_AGENT_EXPECTED_CURRENT: expected });
+			const result = await install("1.0.0", { AMICUS_EXPECTED_CURRENT: expected });
 			expect(result.code, result.output).not.toBe(0);
 			expect(readlinkSync(command())).toBe(active);
 		},
@@ -802,7 +802,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		publish("1.0.0");
 		expect((await install("1.0.0")).code).toBe(0);
 		const current = readlinkSync(command());
-		const publicCommand = join(home, ".local/bin/prime-agent");
+		const publicCommand = join(home, ".local/bin/amicus");
 		rmSync(publicCommand);
 		const shim = join(root, "link-shim");
 		mkdirSync(shim);
@@ -831,7 +831,7 @@ download_prime_agent_package "$1" "$prime_agent_base_url/releases/v$1/$prime_age
 		["after", "ln", "KILL"],
 	])("keeps fresh installation retryable when %s %s receives %s", async (point, operation, signal) => {
 		publish("1.0.0");
-		const publicCommand = join(home, ".local/bin/prime-agent");
+		const publicCommand = join(home, ".local/bin/amicus");
 		const shim = mkdtempSync(join(root, "fresh-activation-"));
 		writeFileSync(
 			join(shim, operation),
@@ -848,13 +848,12 @@ if [ "$destination" = "$INTERRUPT_COMMAND" ] && [ "$INTERRUPT_POINT" = after ]; 
 `,
 			{ mode: 0o755 },
 		);
-		mkdirSync(join(home, ".prime/agent"), { recursive: true });
-		const userData = join(home, ".prime/agent/auth.json");
+		mkdirSync(join(home, ".amicus"), { recursive: true });
+		const userData = join(home, ".amicus/auth.json");
 		writeFileSync(userData, "keep credentials");
 		const result = await install("1.0.0", {
 			PATH: `${shim}:/usr/bin:/bin`,
-			INTERRUPT_COMMAND:
-				operation === "mv" ? join(realpathSync(home), "data/prime-agent/bin/prime-agent") : publicCommand,
+			INTERRUPT_COMMAND: operation === "mv" ? join(realpathSync(home), "data/amicus/bin/amicus") : publicCommand,
 			INTERRUPT_POINT: point,
 			INTERRUPT_SIGNAL: signal,
 		});
@@ -864,7 +863,7 @@ if [ "$destination" = "$INTERRUPT_COMMAND" ] && [ "$INTERRUPT_POINT" = after ]; 
 			expect(execFileSync(publicCommand, ["--version"], { encoding: "utf8" })).toBe("1.0.0\n");
 		}
 		expect(readFileSync(userData, "utf8")).toBe("keep credentials");
-		const lock = join(home, "data/prime-agent/.install-lock");
+		const lock = join(home, "data/amicus/.install-lock");
 		expect(existsSync(lock)).toBe(signal === "KILL");
 		// SIGKILL cannot run cleanup; recover the lock after the installer has exited.
 		if (signal === "KILL") rmSync(lock, { recursive: true });
@@ -898,7 +897,7 @@ if [ "$destination" = "$INTERRUPT_COMMAND" ] && [ "$INTERRUPT_POINT" = after ]; 
 		const shim = mkdtempSync(join(root, "interrupt-activation-"));
 		writeFileSync(
 			join(shim, "mv"),
-			'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\ncase "$destination" in "$INTERRUPT_BIN/prime-agent"|"$INTERRUPT_BIN/previous") if [ ! -f "$0.sent" ]; then touch "$0.sent"; kill -"$INTERRUPT_SIGNAL" "$PPID"; fi ;; esac\n',
+			'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\ncase "$destination" in "$INTERRUPT_BIN/amicus"|"$INTERRUPT_BIN/previous") if [ ! -f "$0.sent" ]; then touch "$0.sent"; kill -"$INTERRUPT_SIGNAL" "$PPID"; fi ;; esac\n',
 			{ mode: 0o755 },
 		);
 		const result = await install("1.0.2", {
@@ -910,7 +909,7 @@ if [ "$destination" = "$INTERRUPT_COMMAND" ] && [ "$INTERRUPT_POINT" = after ]; 
 		expect(readlinkSync(join(dirname(command()), "previous"))).toBe(replaced);
 		expect(readlinkSync(command())).not.toBe(retained);
 		expect(execFileSync(command(), ["--version"], { encoding: "utf8" })).toBe("1.0.2\n");
-		expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+		expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 		expect(existsSync(join(installationRoot(), ".activation-state"))).toBe(false);
 	});
 
@@ -925,7 +924,7 @@ if [ "$destination" = "$INTERRUPT_COMMAND" ] && [ "$INTERRUPT_POINT" = after ]; 
 			const shim = mkdtempSync(join(root, "kill-activation-"));
 			writeFileSync(
 				join(shim, "mv"),
-				'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\nif [ "$destination" = "$INTERRUPT_BIN/prime-agent" ]; then kill -KILL "$PPID"; fi\n',
+				'#!/bin/sh\n/bin/mv "$@" || exit $?\nfor destination in "$@"; do :; done\nif [ "$destination" = "$INTERRUPT_BIN/amicus" ]; then kill -KILL "$PPID"; fi\n',
 				{ mode: 0o755 },
 			);
 			const killed = await install("1.0.2", {
@@ -1062,17 +1061,15 @@ exec /bin/${operation} "$@"
 		const unknownRelease = join(installationRoot(), "releases/user-files");
 		mkdirSync(unknownRelease);
 		writeFileSync(join(unknownRelease, "keep"), "user data");
-		expect((await install("1.0.2", { ...environment, LIVE_EXECUTABLE: join(liveRelease, "prime-agent") })).code).toBe(
-			0,
-		);
+		expect((await install("1.0.2", { ...environment, LIVE_EXECUTABLE: join(liveRelease, "amicus") })).code).toBe(0);
 		expect(existsSync(liveRelease)).toBe(true);
 		expect(releaseDirectories()).toHaveLength(4);
 		expect(
 			(
 				await install("1.0.3", {
 					...environment,
-					LIVE_EXECUTABLE: join(liveRelease, "prime-agent"),
-					UNCERTAIN_EXECUTABLE: join(uncertainRelease, "prime-agent"),
+					LIVE_EXECUTABLE: join(liveRelease, "amicus"),
+					UNCERTAIN_EXECUTABLE: join(uncertainRelease, "amicus"),
 				})
 			).code,
 		).toBe(0);
@@ -1089,7 +1086,7 @@ exec /bin/${operation} "$@"
 		publish("1.0.0");
 		const first = await install("1.0.0");
 		expect(first.code, first.output).toBe(0);
-		const lock = join(home, "data/prime-agent/.install-lock");
+		const lock = join(home, "data/amicus/.install-lock");
 		mkdirSync(lock);
 		writeFileSync(join(lock, "pid"), `${process.pid}\n`);
 		const result = await install("1.0.0");
@@ -1104,23 +1101,23 @@ exec /bin/${operation} "$@"
 			harness,
 			readFileSync(installer, "utf8").replace(
 				/\nmain "\$@"\s*$/,
-				() => '\nprime_agent_install_traps\nprime_agent_native_prepare_root\nkill -HUP "$$"\n',
+				() => '\namicus_install_traps\namicus_native_prepare_root\nkill -HUP "$$"\n',
 			),
 		);
 		const result = await install("", {}, harness);
 		expect(result.code, result.output).toBe(129);
-		expect(existsSync(join(home, "data/prime-agent/.install-lock"))).toBe(false);
+		expect(existsSync(join(home, "data/amicus/.install-lock"))).toBe(false);
 	});
 
 	it("reports a slow first run as a timeout and installs it within a larger budget", async () => {
 		publish("1.0.0", { slow: 5 });
-		const impatient = await install("1.0.0", { PRIME_AGENT_PROBE_TIMEOUT_SECONDS: "2" });
+		const impatient = await install("1.0.0", { AMICUS_PROBE_TIMEOUT_SECONDS: "2" });
 		expect(impatient.code, impatient.output).not.toBe(0);
 		expect(impatient.output).toContain("probe timed out after 2 seconds");
 		expect(impatient.output).toContain("did not answer within 2 seconds");
 		expect(impatient.output).not.toContain("cannot run on this machine");
 		expect(existsSync(command())).toBe(false);
-		const patient = await install("1.0.0", { PRIME_AGENT_PROBE_TIMEOUT_SECONDS: "60" });
+		const patient = await install("1.0.0", { AMICUS_PROBE_TIMEOUT_SECONDS: "60" });
 		expect(patient.code, patient.output).toBe(0);
 		expect(existsSync(command())).toBe(true);
 	}, 90000);
@@ -1133,8 +1130,8 @@ exec /bin/${operation} "$@"
 				/\nmain "\$@"\s*$/,
 				() =>
 					'\nfor value in 010 08 09 000 600 601 ""; do\n' +
-					'\tPRIME_AGENT_PROBE_TIMEOUT_SECONDS="$value"\n' +
-					"\tnative_probe_timeout=$(prime_agent_native_probe_timeout)\n" +
+					'\tAMICUS_PROBE_TIMEOUT_SECONDS="$value"\n' +
+					"\tnative_probe_timeout=$(amicus_native_probe_timeout)\n" +
 					"\tnative_probe_deadline=$(($(date +%s) + native_probe_timeout))\n" +
 					"\tprintf '%s\\n' \"$native_probe_timeout\"\n" +
 					"done\n",
@@ -1149,16 +1146,16 @@ exec /bin/${operation} "$@"
 		publish("1.0.0", { slow: 5 });
 		// "09" previously aborted the deadline arithmetic under set -eu; as a
 		// decimal 9-second budget it must cover a 5-second first run.
-		const result = await install("1.0.0", { PRIME_AGENT_PROBE_TIMEOUT_SECONDS: "09" });
+		const result = await install("1.0.0", { AMICUS_PROBE_TIMEOUT_SECONDS: "09" });
 		expect(result.code, result.output).toBe(0);
 		expect(result.output).not.toContain("probe timed out");
 		expect(existsSync(command())).toBe(true);
 	}, 90000);
 
 	it("reports the supported native platform without installation or release discovery", async () => {
-		const result = await install("--native-platform", { PRIME_AGENT_DOWNLOAD_BASE_URL: "http://127.0.0.1:1" });
+		const result = await install("--native-platform", { AMICUS_DOWNLOAD_BASE_URL: "http://127.0.0.1:1" });
 		expect(result).toEqual({ code: 0, output: platform });
-		expect(existsSync(join(home, "data/prime-agent"))).toBe(false);
+		expect(existsSync(join(home, "data/amicus"))).toBe(false);
 	});
 
 	// The installer downloads the archive for the platform it selects, so an archive
@@ -1168,7 +1165,7 @@ exec /bin/${operation} "$@"
 		async () => {
 			const archive = testArchive!;
 			const name = basename(archive);
-			const version = name.slice("prime-agent-".length, -`-${platform}.tar.gz`.length);
+			const version = name.slice("amicus-".length, -`-${platform}.tar.gz`.length);
 			const manifestPath = /-beta(?:\.|$)/.test(version) ? "/beta.json" : "/latest.json";
 			feed.set(`/releases/v${version}/${name}`, readFileSync(archive));
 			feed.set(`/releases/v${version}/SHA256SUMS`, readFileSync(join(dirname(archive), "SHA256SUMS")));
@@ -1183,8 +1180,8 @@ exec /bin/${operation} "$@"
 				Buffer.from(
 					JSON.stringify({
 						version,
-						package: "prime-agent",
-						tarball: `https://github.com/canesin/prime-agent/releases/download/v${version}/prime-agent-${version}.tgz`,
+						package: "amicus",
+						tarball: `https://github.com/0xCarbon/amicus/releases/download/v${version}/amicus-${version}.tgz`,
 						binaries: [
 							{ platform, file: name, sha256: createHash("sha256").update(readFileSync(archive)).digest("hex") },
 						],
@@ -1195,7 +1192,7 @@ exec /bin/${operation} "$@"
 			expect(reinstalled.code, reinstalled.output).toBe(0);
 			expect(reinstalled.output).not.toContain("Warning:");
 			expect(readlinkSync(command())).not.toBe(originalTarget);
-			expect(readlinkSync(command())).toMatch(/\.[A-Za-z0-9]{6}\/prime-agent$/);
+			expect(readlinkSync(command())).toMatch(/\.[A-Za-z0-9]{6}\/amicus$/);
 			const repaired = await run(command(), ["update"]);
 			expect(repaired.code, repaired.output).toBe(0);
 			expect(repaired.output).toContain("already up to date");
@@ -1205,7 +1202,7 @@ exec /bin/${operation} "$@"
 			const metadata = JSON.parse(readFileSync(join(source, "package.json"), "utf8")) as { version: string };
 			metadata.version = "99.0.0";
 			writeFileSync(join(source, "package.json"), JSON.stringify(metadata));
-			const nextFile = `prime-agent-99.0.0-${platform}.tar.gz`;
+			const nextFile = `amicus-99.0.0-${platform}.tar.gz`;
 			const nextArchive = join(root, nextFile);
 			execFileSync("tar", ["-czf", nextArchive, "-C", source, "."]);
 			const bytes = readFileSync(nextArchive);
@@ -1215,8 +1212,8 @@ exec /bin/${operation} "$@"
 			const nextManifest = Buffer.from(
 				JSON.stringify({
 					version: "v99.0.0",
-					package: "prime-agent",
-					tarball: "https://github.com/canesin/prime-agent/releases/download/v99.0.0/prime-agent-99.0.0.tgz",
+					package: "amicus",
+					tarball: "https://github.com/0xCarbon/amicus/releases/download/v99.0.0/amicus-99.0.0.tgz",
 					binaries: [{ platform, file: nextFile, sha256 }],
 				}),
 			);
@@ -1298,7 +1295,7 @@ describe.skipIf(process.platform === "win32")("installer platform selection", ()
 				FAKE_ARCH: host.arch,
 				FAKE_GLIBC: host.glibc ?? "",
 				FAKE_LDD: host.ldd ?? "ldd: missing file arguments",
-				PRIME_AGENT_NATIVE_SYSROOT_FOR_TESTS: host.root,
+				AMICUS_NATIVE_SYSROOT_FOR_TESTS: host.root,
 			},
 		});
 	}
@@ -1308,7 +1305,7 @@ describe.skipIf(process.platform === "win32")("installer platform selection", ()
 		harness = join(sandbox, "detect.sh");
 		writeFileSync(
 			harness,
-			readFileSync(installer, "utf8").replace(/\nmain "\$@"\s*$/, () => "\nprime_agent_native_platform\n"),
+			readFileSync(installer, "utf8").replace(/\nmain "\$@"\s*$/, () => "\namicus_native_platform\n"),
 		);
 		shims = join(sandbox, "shims");
 		mkdirSync(shims);
@@ -1389,11 +1386,11 @@ describe.skipIf(process.platform === "win32")("installer platform selection", ()
 			readFileSync(installer, "utf8").replace(
 				/\nmain "\$@"\s*$/,
 				() =>
-					'\nnative_root=/tmp\nprime_agent_native_parse_target "$1"\nprintf \'%s %s\\n\' "$native_parsed_version" "$native_parsed_platform"\n',
+					'\nnative_root=/tmp\namicus_native_parse_target "$1"\nprintf \'%s %s\\n\' "$native_parsed_version" "$native_parsed_platform"\n',
 			),
 		);
 		const digest = "a".repeat(64);
-		const parsed = execFileSync("sh", [parser, `../releases/1.2.3-beta.4-${target}-${digest}/prime-agent`], {
+		const parsed = execFileSync("sh", [parser, `../releases/1.2.3-beta.4-${target}-${digest}/amicus`], {
 			encoding: "utf8",
 		});
 		expect(parsed).toBe(`1.2.3-beta.4 ${target}\n`);

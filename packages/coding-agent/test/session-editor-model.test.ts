@@ -1,4 +1,4 @@
-import type { AssistantMessage, ToolResultMessage, UserMessage } from "@earendil-works/pi-ai";
+import type { AssistantMessage, ToolResultMessage, UserMessage } from "@amicus/ai";
 import { describe, expect, it } from "vitest";
 import { SessionEditModel } from "../src/core/session-editor/model.js";
 import { parseSessionFileContents, type SessionEntry, type SessionHeader } from "../src/core/session-manager.js";
@@ -280,6 +280,6 @@ describe("session edit model", () => {
 		const lines = instance.serialize().trimEnd().split("\n");
 		expect(lines).toHaveLength(5);
 		expect(JSON.parse(lines[0]!)).toMatchObject({ type: "session", id: header.id });
-		expect(instance.renderDocument()).toContain("prime-agent session editor");
+		expect(instance.renderDocument()).toContain("amicus session editor");
 	});
 });

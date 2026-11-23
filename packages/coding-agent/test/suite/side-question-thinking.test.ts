@@ -1,4 +1,4 @@
-import { fauxAssistantMessage, type ModelThinkingLevel, type SimpleStreamOptions } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, type ModelThinkingLevel, type SimpleStreamOptions } from "@amicus/ai";
 import { describe, expect, it } from "vitest";
 import { type SideQuestionEvent, type SideQuestionRun, startSideQuestion } from "../../src/core/side-question.js";
 import { createHarness, getMessageText } from "./harness.js";

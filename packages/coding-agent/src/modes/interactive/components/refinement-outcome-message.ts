@@ -1,4 +1,4 @@
-import { Clickable, type Component, Spacer, Text } from "@earendil-works/pi-tui";
+import { Clickable, type Component, Spacer, Text } from "@amicus/tui";
 import type { RefinementOutcomeMessage } from "../../../core/messages.js";
 import type { AppliedRefinementEdit, HarnessEntry } from "../../../core/refinement/refinement.js";
 import { generateDiffString } from "../../../core/tools/edit-diff.js";

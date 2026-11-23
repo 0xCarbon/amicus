@@ -24,20 +24,20 @@ def _write_inputs(tmp_path: Path) -> None:
         "pr": 2306,
         "head_sha": "c" * 40,
         "base_sha": "b" * 40,
-        "repository": "PrimeIntellect-ai/prime-agent",
+        "repository": "0xCarbon/amicus",
         "run_id": 7,
     }
     sources = {
         "base": {
             "tarballs_url": "https://example.invalid/base.zip",
             "commit": "b" * 40,
-            "checksums": {"prime-agent-0.0.0-benchmark.tgz": "0" * 64},
+            "checksums": {"amicus-0.0.0-benchmark.tgz": "0" * 64},
             "token": "tok",
         },
         "head": {
             "tarballs_url": "https://example.invalid/head.zip",
             "commit": "c" * 40,
-            "checksums": {"prime-agent-0.0.0-benchmark.tgz": "1" * 64},
+            "checksums": {"amicus-0.0.0-benchmark.tgz": "1" * 64},
             "token": "tok",
         },
     }

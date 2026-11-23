@@ -10,7 +10,7 @@ body:
     id: package
     attributes:
       label: Affected area
-      description: Which part of Prime Agent is affected?
+      description: Which part of Amicus is affected?
       multiple: true
       options:
         - Agent core
@@ -35,7 +35,7 @@ body:
       label: Steps to reproduce
       description: Provide the smallest reliable sequence that reproduces the problem.
       placeholder: |
-        1. Run `prime-agent ...`
+        1. Run `amicus ...`
         2. ...
         3. Observe ...
     validations:
@@ -50,8 +50,8 @@ body:
   - type: input
     id: version
     attributes:
-      label: Prime Agent version
-      description: Include the output of `prime-agent --version`, or the commit SHA when running from source.
+      label: Amicus version
+      description: Include the output of `amicus --version`, or the commit SHA when running from source.
       placeholder: "e.g. 0.9.1 or 81ae3cb"
     validations:
       required: true
@@ -59,7 +59,7 @@ body:
     id: install_method
     attributes:
       label: Installation method
-      description: How was this Prime Agent version installed?
+      description: How was this Amicus version installed?
       options:
         - Stable release installer
         - Beta release installer

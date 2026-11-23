@@ -1,6 +1,6 @@
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { AgentContinueError, type AgentEvent, type AgentTool, type ThinkingLevel } from "@earendil-works/pi-agent-core";
+import { AgentContinueError, type AgentEvent, type AgentTool, type ThinkingLevel } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	fauxAssistantMessage,
@@ -8,7 +8,7 @@ import {
 	fauxToolCall,
 	type Model,
 	type ServiceTier,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AgentCronJobStore } from "../../src/core/cron-jobs.js";

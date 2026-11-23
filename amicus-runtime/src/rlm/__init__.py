@@ -1,4 +1,4 @@
-"""Tiny rlm-compatible kernel shim for Prime Agent."""
+"""Tiny rlm-compatible kernel shim for Amicus."""
 
 from __future__ import annotations
 
@@ -134,7 +134,7 @@ def _parse_host_reply(request_type: str, reply: dict[str, Any]) -> dict[str, Any
 
 
 async def host_request(request_type: str, payload: dict[str, Any] | None = None) -> dict[str, Any]:
-    """Send a typed request to the Prime Agent host and await its reply.
+    """Send a typed request to the Amicus host and await its reply.
 
     This is the kernel side of the generic host bridge: Python skills call
     ``await host_request("<type>", {...})`` and the TypeScript host dispatches
@@ -166,7 +166,7 @@ async def spawn(
     model: str | None = None,
     thinking: str | None = None,
 ) -> RLMSpawnHandle:
-    """Spawn a recursive Prime Agent child and return once its task is admitted.
+    """Spawn a recursive Amicus child and return once its task is admitted.
 
     ``name`` is required and must be unique among siblings.
     ``model`` selects a child with an exact ``provider/model`` selector.

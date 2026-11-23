@@ -49,9 +49,9 @@ function spawnFrontend(
 		env: {
 			...process.env,
 			...environment,
-			PRIME_AGENT_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "1",
-			PRIME_AGENT_TEST_OWNED_PID_PATH: pidPath,
-			...(keepAlive ? { PRIME_AGENT_TEST_KEEP_ALIVE: "1" } : {}),
+			AMICUS_INTERNAL_LEGACY_OWNED_WORKER_FRONTEND: "1",
+			AMICUS_TEST_OWNED_PID_PATH: pidPath,
+			...(keepAlive ? { AMICUS_TEST_KEEP_ALIVE: "1" } : {}),
 			TSX_TSCONFIG_PATH: resolve(__dirname, "../../../tsconfig.json"),
 		},
 		stdio: ["pipe", "pipe", "pipe"],
@@ -175,7 +175,7 @@ describe("owned session worker processes", () => {
 				args,
 				pidPath,
 				tty === false,
-				tty === undefined ? {} : { PRIME_AGENT_TEST_STDIN_TTY: tty ? "1" : "0" },
+				tty === undefined ? {} : { AMICUS_TEST_STDIN_TTY: tty ? "1" : "0" },
 			);
 			if (stdin !== undefined) frontend.stdin?.write(stdin);
 			const workerPid = await waitForWorkerPid(pidPath);
@@ -203,7 +203,7 @@ describe("owned session worker processes", () => {
 
 	it("correlates overlapping anonymous RPC commands without exposing internal ids", async () => {
 		const { frontend, workerPid, stdout } = await spawnRpcFrontend(undefined, {
-			PRIME_AGENT_TEST_REVERSE_RPC_RESPONSES: "1",
+			AMICUS_TEST_REVERSE_RPC_RESPONSES: "1",
 		});
 		frontend.stdin?.end(
 			`${JSON.stringify({ type: "get_state", marker: "first" })}\n${JSON.stringify({ type: "get_state", marker: "second" })}\n`,
@@ -220,7 +220,7 @@ describe("owned session worker processes", () => {
 
 	it("drops malformed worker output instead of corrupting public RPC JSONL", async () => {
 		const { frontend, workerPid, stdout } = await spawnRpcFrontend(undefined, {
-			PRIME_AGENT_TEST_INVALID_RPC_OUTPUT: "1",
+			AMICUS_TEST_INVALID_RPC_OUTPUT: "1",
 		});
 		frontend.stdin?.end(`${JSON.stringify({ id: "request-1", type: "get_state" })}\n`);
 		const exit = await waitForExit(frontend);
@@ -235,7 +235,7 @@ describe("owned session worker processes", () => {
 
 	it("does not fabricate a recovery response for response-less acknowledgements", async () => {
 		const { frontend, workerPid, pidPath, stdout } = await spawnRpcFrontend(undefined, {
-			PRIME_AGENT_TEST_CRASH_ON_ACK: "1",
+			AMICUS_TEST_CRASH_ON_ACK: "1",
 		});
 		frontend.stdin?.write(`${JSON.stringify({ type: "ack_result", commandId: "command-1" })}\n`);
 		const replacementPid = await waitForReplacementWorkerPid(pidPath, workerPid);
@@ -252,10 +252,10 @@ describe("owned session worker processes", () => {
 	});
 
 	it.each([
-		["crashes mid-command", { PRIME_AGENT_TEST_CRASH_ON_COMMAND: "get_state" }, endWithGetState, "", "request-1"],
+		["crashes mid-command", { AMICUS_TEST_CRASH_ON_COMMAND: "get_state" }, endWithGetState, "", "request-1"],
 		[
 			"exits successfully without responding",
-			{ PRIME_AGENT_TEST_EXIT_ZERO_ON_COMMAND: "get_state" },
+			{ AMICUS_TEST_EXIT_ZERO_ON_COMMAND: "get_state" },
 			endWithGetState,
 			"",
 			"request-1",
@@ -276,7 +276,7 @@ describe("owned session worker processes", () => {
 
 	it("absorbs a bridge write EPIPE and replays buffered follow-ups exactly once", async () => {
 		const { frontend, workerPid, pidPath, stdout } = await spawnRpcFrontend(undefined, {
-			PRIME_AGENT_TEST_CLOSE_STDIN_ON_COMMAND: "close_stdin",
+			AMICUS_TEST_CLOSE_STDIN_ON_COMMAND: "close_stdin",
 		});
 		// The worker acks close_stdin and closes its stdin read end (marked
 		// via the .deaf file): the next bridge write EPIPEs and the frontend
@@ -309,7 +309,7 @@ describe("owned session worker processes", () => {
 
 	it("fails buffered follow-ups when recovery cannot replay them", async () => {
 		const { frontend, workerPid, pidPath, stdout } = await spawnRpcFrontend(undefined, {
-			PRIME_AGENT_TEST_CLOSE_STDIN_ON_COMMAND: "close_stdin",
+			AMICUS_TEST_CLOSE_STDIN_ON_COMMAND: "close_stdin",
 		});
 		// Same deaf worker, but the client ends stdin with the follow-up in
 		// flight: it must be failed, not silently dropped.

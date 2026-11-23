@@ -4,8 +4,8 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { createMcpOAuthProvider } from "@earendil-works/pi-ai/mcp";
-import { registerOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
+import { createMcpOAuthProvider } from "@amicus/ai/mcp";
+import { registerOAuthProvider, resetOAuthProviders } from "@amicus/ai/oauth";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type AuthCredential, AuthStorage } from "../src/core/auth-storage.js";
 import { type McpConnectionRecord, McpConnectionStore } from "../src/core/mcp/connection-store.js";

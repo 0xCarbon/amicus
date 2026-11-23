@@ -1,4 +1,4 @@
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { GoalState } from "../../../src/core/goals.js";
 import { createHarness, getAssistantTexts, getUserTexts, type Harness } from "../harness.js";

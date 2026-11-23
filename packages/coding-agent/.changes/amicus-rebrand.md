@@ -1,0 +1,3 @@
+- Changed the product name to Amicus: the CLI is `amicus`, the repository is 0xCarbon/amicus, and the daemon uses `amicus.daemon` / `amicus.sock`, so restart any running daemon after updating.
+- Changed the user config directory to `~/.amicus`; an existing `~/.prime/agent` moves there on first start. Project directories now use `<project>/.amicus` and are not moved automatically.
+- Changed `PRIME_AGENT_*` environment variables to `AMICUS_*` with no fallback.

@@ -11,11 +11,11 @@
  * `{ skip: true }` suppresses the refinement round entirely.
  *
  * Usage:
- *   prime-agent -e examples/extensions/custom-refinement.ts
+ *   amicus -e examples/extensions/custom-refinement.ts
  */
 
-import { complete } from "@earendil-works/pi-ai";
-import type { ExtensionAPI, RefinementProposal } from "@earendil-works/pi-coding-agent";
+import { complete } from "@amicus/ai";
+import type { ExtensionAPI, RefinementProposal } from "@amicus/coding-agent";
 
 export default function (pi: ExtensionAPI) {
 	pi.on("session_before_refine", async (event, ctx) => {

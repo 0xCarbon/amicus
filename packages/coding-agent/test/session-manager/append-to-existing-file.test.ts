@@ -120,7 +120,7 @@ describe("append metadata to an existing session file", () => {
 		);
 		const noticeBefore = rawFile(noticeFile);
 		resetIo();
-		appendCustomMessageToExistingFile(noticeFile, "prime-agent.worker_recovery", "worker interrupted", false, {
+		appendCustomMessageToExistingFile(noticeFile, "amicus.worker_recovery", "worker interrupted", false, {
 			activeSessionId: "active-1",
 		});
 		expect(fsMocks.readFileSync).toHaveBeenCalled(); // the tail window could not resolve the leaf

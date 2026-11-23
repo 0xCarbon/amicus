@@ -37,7 +37,7 @@ describe("DefaultResourceLoader", () => {
 	describe("resource precedence", () => {
 		it("should prefer project resources over user on name collisions", async () => {
 			const userPromptsDir = join(agentDir, "prompts");
-			const projectPromptsDir = join(cwd, ".prime", "agent", "prompts");
+			const projectPromptsDir = join(cwd, ".amicus", "prompts");
 			mkdirSync(userPromptsDir, { recursive: true });
 			mkdirSync(projectPromptsDir, { recursive: true });
 			const userPromptPath = join(userPromptsDir, "commit.md");
@@ -46,7 +46,7 @@ describe("DefaultResourceLoader", () => {
 			writeFileSync(projectPromptPath, "Project prompt");
 
 			const userSkillDir = join(agentDir, "skills", "collision-skill");
-			const projectSkillDir = join(cwd, ".prime", "agent", "skills", "collision-skill");
+			const projectSkillDir = join(cwd, ".amicus", "skills", "collision-skill");
 			mkdirSync(userSkillDir, { recursive: true });
 			mkdirSync(projectSkillDir, { recursive: true });
 			const userSkillPath = join(userSkillDir, "SKILL.md");
@@ -73,9 +73,9 @@ Project skill`,
 			) as { name: string; vars?: Record<string, string> };
 			baseTheme.name = "collision-theme";
 			const userThemePath = join(agentDir, "themes", "collision.json");
-			const projectThemePath = join(cwd, ".prime", "agent", "themes", "collision.json");
+			const projectThemePath = join(cwd, ".amicus", "themes", "collision.json");
 			mkdirSync(join(agentDir, "themes"), { recursive: true });
-			mkdirSync(join(cwd, ".prime", "agent", "themes"), { recursive: true });
+			mkdirSync(join(cwd, ".amicus", "themes"), { recursive: true });
 			writeFileSync(userThemePath, JSON.stringify(baseTheme, null, 2));
 			if (baseTheme.vars) {
 				baseTheme.vars.accent = "#ff00ff";
@@ -109,9 +109,9 @@ Project skill`,
 			);
 
 			mkdirSync(agentDir, { recursive: true });
-			mkdirSync(join(cwd, ".prime", "agent"), { recursive: true });
+			mkdirSync(join(cwd, ".amicus"), { recursive: true });
 			symlinkSync(sharedExtDir, join(agentDir, "extensions"), "dir");
-			symlinkSync(sharedExtDir, join(cwd, ".prime", "agent", "extensions"), "dir");
+			symlinkSync(sharedExtDir, join(cwd, ".amicus", "extensions"), "dir");
 
 			const loader = new DefaultResourceLoader({ cwd, agentDir });
 			await loader.reload();
@@ -122,11 +122,11 @@ Project skill`,
 
 			// mergePaths processes project paths before user paths, so the project
 			// alias is the canonical survivor.
-			expect(extensionsResult.extensions[0].path).toBe(join(cwd, ".prime", "agent", "extensions", "shared.ts"));
+			expect(extensionsResult.extensions[0].path).toBe(join(cwd, ".amicus", "extensions", "shared.ts"));
 		});
 
 		it("should let a project skill override the bundled websearch skill", async () => {
-			const projectSkillDir = join(cwd, ".prime", "agent", "skills", "websearch");
+			const projectSkillDir = join(cwd, ".amicus", "skills", "websearch");
 			mkdirSync(projectSkillDir, { recursive: true });
 			writeFileSync(
 				join(projectSkillDir, "SKILL.md"),
@@ -152,7 +152,7 @@ Project override.`,
 	describe("extension conflict detection", () => {
 		it("should keep both extensions loaded when command names collide", async () => {
 			const userExtDir = join(agentDir, "extensions");
-			const projectExtDir = join(cwd, ".prime", "agent", "extensions");
+			const projectExtDir = join(cwd, ".amicus", "extensions");
 			mkdirSync(userExtDir, { recursive: true });
 			mkdirSync(projectExtDir, { recursive: true });
 
@@ -225,7 +225,7 @@ Project override.`,
 			writeFileSync(
 				join(ext1Dir, "index.ts"),
 				`
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@amicus/coding-agent";
 import { Type } from "typebox";
 export default function(pi: ExtensionAPI) {
   pi.registerTool({
@@ -240,7 +240,7 @@ export default function(pi: ExtensionAPI) {
 			writeFileSync(
 				join(ext2Dir, "index.ts"),
 				`
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@amicus/coding-agent";
 import { Type } from "typebox";
 export default function(pi: ExtensionAPI) {
   pi.registerTool({
@@ -267,7 +267,7 @@ export default function(pi: ExtensionAPI) {
 			writeFileSync(
 				join(globalExtDir, "global.ts"),
 				`
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@amicus/coding-agent";
 import { Type } from "typebox";
 export default function(pi: ExtensionAPI) {
   pi.registerTool({
@@ -286,7 +286,7 @@ export default function(pi: ExtensionAPI) {
 			writeFileSync(
 				explicitExtPath,
 				`
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type { ExtensionAPI } from "@amicus/coding-agent";
 import { Type } from "typebox";
 export default function(pi: ExtensionAPI) {
   pi.registerTool({

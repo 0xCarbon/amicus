@@ -1,5 +1,5 @@
-import type { ClickRegion, Component } from "@earendil-works/pi-tui";
-import { Text, truncateToWidth } from "@earendil-works/pi-tui";
+import type { ClickRegion, Component } from "@amicus/tui";
+import { Text, truncateToWidth } from "@amicus/tui";
 import {
 	ASYNC_BASH_COMPLETION_CUSTOM_TYPE,
 	type AsyncBashCompletionDetails,

@@ -1,7 +1,7 @@
 import { existsSync } from "node:fs";
 import { join } from "node:path";
-import type { AgentTool } from "@earendil-works/pi-agent-core";
-import type { ImageContent, TextContent } from "@earendil-works/pi-ai";
+import type { AgentTool } from "@amicus/agent-core";
+import type { ImageContent, TextContent } from "@amicus/ai";
 import { type Static, Type } from "typebox";
 import { IMAGE_MIME_TYPES } from "../../utils/mime.js";
 import { resolveKernelBashShell } from "../../utils/shell.js";
@@ -24,27 +24,27 @@ import { wrapToolDefinition } from "./tool-definition-wrapper.js";
 
 const RLM_BOOTSTRAP_HEADER_CODE = `
 import asyncio
-import os as _prime_agent_os
+import os as _amicus_os
 
-_prime_agent_os.environ["NO_COLOR"] = "1"
+_amicus_os.environ["NO_COLOR"] = "1"
 `.trim();
 
 const RLM_BOOTSTRAP_RUNTIME_CODE = `
 try:
-    import rlm as _prime_agent_rlm_module
-    rlm = _prime_agent_rlm_module.rlm
-    bash = _prime_agent_rlm_module.bash
+    import rlm as _amicus_rlm_module
+    rlm = _amicus_rlm_module.rlm
+    bash = _amicus_rlm_module.bash
     import rlm.mcp as mcp
-except Exception as _prime_agent_rlm_error:
-    _PRIME_AGENT_RLM_IMPORT_ERROR = str(_prime_agent_rlm_error)
+except Exception as _amicus_rlm_error:
+    _AMICUS_RLM_IMPORT_ERROR = str(_amicus_rlm_error)
 
-    class _PrimeAgentMissingRlm:
+    class _AmicusMissingRlm:
         def _raise_missing(self):
             raise RuntimeError(
-                "prime-agent-runtime is not installed in this kernel. "
-                "Remove ~/.prime/agent/kernel-venv so prime-agent can rebuild it, or set "
-                "PRIME_AGENT_KERNEL_PYTHON to a kernel environment with prime-agent-runtime installed. "
-                f"Import error: {_PRIME_AGENT_RLM_IMPORT_ERROR}"
+                "amicus-runtime is not installed in this kernel. "
+                "Remove ~/.amicus/kernel-venv so amicus can rebuild it, or set "
+                "AMICUS_KERNEL_PYTHON to a kernel environment with amicus-runtime installed. "
+                f"Import error: {_AMICUS_RLM_IMPORT_ERROR}"
             )
 
         async def spawn(self, prompt, **kwargs):
@@ -62,7 +62,7 @@ except Exception as _prime_agent_rlm_error:
         async def delete_subagent(self, target):
             self._raise_missing()
 
-    rlm = _PrimeAgentMissingRlm()
+    rlm = _AmicusMissingRlm()
 
     def bash(command):
         rlm._raise_missing()
@@ -74,7 +74,7 @@ except Exception as _prime_agent_rlm_error:
  * bootstrap cell's stdout for this marker so unavailable skills reach the
  * model instead of failing only on first call.
  */
-export const PYTHON_SKILL_IMPORT_ERROR_REPORT_MARKER = "__PRIME_AGENT_PYTHON_SKILL_IMPORT_ERRORS__";
+export const PYTHON_SKILL_IMPORT_ERROR_REPORT_MARKER = "__AMICUS_PYTHON_SKILL_IMPORT_ERRORS__";
 
 /** Map of skill import name -> import error, parsed from a bootstrap cell's stdout. */
 export type UnavailablePythonSkills = Record<string, string>;
@@ -110,78 +110,78 @@ export function buildRlmBootstrapCode(pythonSkills: readonly PythonSkillRuntimeI
 	return `
 ${baseCode}
 
-import importlib as _prime_agent_importlib
-import inspect as _prime_agent_inspect
-import sys as _prime_agent_sys
-import types as _prime_agent_types
+import importlib as _amicus_importlib
+import inspect as _amicus_inspect
+import sys as _amicus_sys
+import types as _amicus_types
 
-class _PrimeAgentCallableSkillModule(_prime_agent_types.ModuleType):
+class _AmicusCallableSkillModule(_amicus_types.ModuleType):
     async def __call__(self, *args, **kwargs):
         result = self.run(*args, **kwargs)
-        if _prime_agent_inspect.isawaitable(result):
+        if _amicus_inspect.isawaitable(result):
             return await result
         return result
 
-class _PrimeAgentUnavailableSkill:
+class _AmicusUnavailableSkill:
     def __init__(self, name, error):
         self.__name__ = name
-        self._prime_agent_import_error = error
+        self._amicus_import_error = error
         self.__doc__ = f"Python skill {name} is unavailable: {error}"
 
     async def run(self, *args, **kwargs):
         raise RuntimeError(
             f"Python skill {self.__name__} is unavailable in this kernel. "
-            f"Import error: {self._prime_agent_import_error}"
+            f"Import error: {self._amicus_import_error}"
         )
 
     async def __call__(self, *args, **kwargs):
         return await self.run(*args, **kwargs)
 
     def __repr__(self):
-        return f"<unavailable Python skill {self.__name__!r}: {self._prime_agent_import_error}>"
+        return f"<unavailable Python skill {self.__name__!r}: {self._amicus_import_error}>"
 
-def _prime_agent_wrap_skill_module(module):
+def _amicus_wrap_skill_module(module):
     run = getattr(module, "run", None)
     if not callable(run):
         return module
-    if isinstance(module, _PrimeAgentCallableSkillModule):
+    if isinstance(module, _AmicusCallableSkillModule):
         return module
-    wrapped = _PrimeAgentCallableSkillModule(module.__name__)
+    wrapped = _AmicusCallableSkillModule(module.__name__)
     wrapped.__dict__.update(module.__dict__)
     try:
-        wrapped.__signature__ = _prime_agent_inspect.signature(run)
+        wrapped.__signature__ = _amicus_inspect.signature(run)
     except Exception:
         pass
     doc = getattr(run, "__doc__", None)
     if doc:
         wrapped.__doc__ = doc
-    _prime_agent_sys.modules[module.__name__] = wrapped
+    _amicus_sys.modules[module.__name__] = wrapped
     return wrapped
 
-_PRIME_AGENT_SKILL_IMPORT_ERRORS = {}
+_AMICUS_SKILL_IMPORT_ERRORS = {}
 
-for _prime_agent_skill_name in ${JSON.stringify(importNames)}:
+for _amicus_skill_name in ${JSON.stringify(importNames)}:
     try:
-        globals()[_prime_agent_skill_name] = _prime_agent_wrap_skill_module(
-            _prime_agent_importlib.import_module(_prime_agent_skill_name)
+        globals()[_amicus_skill_name] = _amicus_wrap_skill_module(
+            _amicus_importlib.import_module(_amicus_skill_name)
         )
-    except Exception as _prime_agent_skill_error:
+    except Exception as _amicus_skill_error:
         # An exception with an empty message would otherwise be dropped by the
         # host-side parser; fall back to the exception type name.
-        _prime_agent_skill_error_text = (
-            str(_prime_agent_skill_error) or type(_prime_agent_skill_error).__name__
+        _amicus_skill_error_text = (
+            str(_amicus_skill_error) or type(_amicus_skill_error).__name__
         )
-        _PRIME_AGENT_SKILL_IMPORT_ERRORS[_prime_agent_skill_name] = _prime_agent_skill_error_text
-        globals()[_prime_agent_skill_name] = _PrimeAgentUnavailableSkill(
-            _prime_agent_skill_name,
-            _prime_agent_skill_error_text,
+        _AMICUS_SKILL_IMPORT_ERRORS[_amicus_skill_name] = _amicus_skill_error_text
+        globals()[_amicus_skill_name] = _AmicusUnavailableSkill(
+            _amicus_skill_name,
+            _amicus_skill_error_text,
         )
 
-if _PRIME_AGENT_SKILL_IMPORT_ERRORS:
-    import json as _prime_agent_json
+if _AMICUS_SKILL_IMPORT_ERRORS:
+    import json as _amicus_json
     print(
         "${PYTHON_SKILL_IMPORT_ERROR_REPORT_MARKER}"
-        + _prime_agent_json.dumps(_PRIME_AGENT_SKILL_IMPORT_ERRORS)
+        + _amicus_json.dumps(_AMICUS_SKILL_IMPORT_ERRORS)
     )
 `.trim();
 }
@@ -316,7 +316,7 @@ export interface IpythonToolDetails {
 }
 
 export interface IpythonToolOptions {
-	/** Python override. Must have prime-agent-runtime installed. */
+	/** Python override. Must have amicus-runtime installed. */
 	python?: string;
 	env?: Record<string, string>;
 	/** Command prefix prepended to every bash() command. */
@@ -522,8 +522,8 @@ export class IpythonKernelProvisioner {
 				// bash() reads these to pick its shell and command prefix.
 				env: {
 					...this.options?.env,
-					...(shellPath ? { PRIME_AGENT_BASH_SHELL: shellPath } : {}),
-					...(commandPrefix ? { PRIME_AGENT_BASH_COMMAND_PREFIX: commandPrefix } : {}),
+					...(shellPath ? { AMICUS_BASH_SHELL: shellPath } : {}),
+					...(commandPrefix ? { AMICUS_BASH_COMMAND_PREFIX: commandPrefix } : {}),
 				},
 				sessionId: this.options?.sessionId,
 				hostHandlers: this.options?.hostHandlers,

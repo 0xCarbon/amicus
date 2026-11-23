@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { clearLine, createInterface, cursorTo, type Interface } from "node:readline";
 import { setTimeout as delay } from "node:timers/promises";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import chalk from "chalk";
 import { expandTildePath } from "../config.js";
 import type { AgentSessionEvent } from "../core/agent-session.js";
@@ -784,7 +784,7 @@ function parseListArgs(args: string[]): { all: boolean } {
 	return { all };
 }
 
-// The same list RPC as `prime-agent list`, rendered as a one-line-per-agent table.
+// The same list RPC as `amicus list`, rendered as a one-line-per-agent table.
 async function runSessions(client: DaemonClient, args: string[], json: boolean): Promise<void> {
 	const { all } = parseSessionsArgs(args);
 	const response = await client.request({ type: "list", all });
@@ -869,7 +869,7 @@ async function runRename(client: DaemonClient, args: string[], json: boolean): P
 	const activeSessionId = requireActiveSessionId(args);
 	const name = args.slice(1).join(" ").trim();
 	if (!name) {
-		throw new Error("Usage: prime-agent rename <agent> <name>");
+		throw new Error("Usage: amicus rename <agent> <name>");
 	}
 	const response = await client.request({ type: "rename", activeSessionId, name });
 	const data = requireSuccess(response);
@@ -1013,11 +1013,11 @@ function parseSendArgs(args: string[]): ParsedSendArgs {
 	}
 
 	if (explicitMessage !== undefined && messageParts.length > 0) {
-		throw new Error("Usage: prime-agent send [--from <agent>] <agent> [--message <message>|<message>]");
+		throw new Error("Usage: amicus send [--from <agent>] <agent> [--message <message>|<message>]");
 	}
 	const message = (explicitMessage ?? messageParts.join(" ")).trim();
 	if (!targetActiveSessionId || !message) {
-		throw new Error("Usage: prime-agent send [--from <agent>] <agent> [--message <message>|<message>]");
+		throw new Error("Usage: amicus send [--from <agent>] <agent> [--message <message>|<message>]");
 	}
 	return {
 		targetActiveSessionId,
@@ -1071,11 +1071,11 @@ async function runCron(client: DaemonClient, args: string[], json: boolean): Pro
 	if (subcommand === "add" || subcommand === "schedule") {
 		const separator = args.indexOf("--");
 		if (separator < 0) {
-			throw new Error("Usage: prime-agent schedule add <agent> <schedule> -- <message>");
+			throw new Error("Usage: amicus schedule add <agent> <schedule> -- <message>");
 		}
 		const activeSessionId = args[1];
 		if (!activeSessionId) {
-			throw new Error("Usage: prime-agent schedule add <agent> <schedule> -- <message>");
+			throw new Error("Usage: amicus schedule add <agent> <schedule> -- <message>");
 		}
 		const schedule = args.slice(2, separator).join(" ").trim();
 		const message = args
@@ -1083,7 +1083,7 @@ async function runCron(client: DaemonClient, args: string[], json: boolean): Pro
 			.join(" ")
 			.trim();
 		if (!schedule || !message) {
-			throw new Error("Usage: prime-agent schedule add <agent> <schedule> -- <message>");
+			throw new Error("Usage: amicus schedule add <agent> <schedule> -- <message>");
 		}
 		const response = await client.request({ type: "cron_add", activeSessionId, schedule, prompt: message });
 		const data = requireSuccess(response);
@@ -1099,7 +1099,7 @@ async function runCron(client: DaemonClient, args: string[], json: boolean): Pro
 	if (subcommand === "cancel" || subcommand === "delete" || subcommand === "remove") {
 		const jobId = args[1];
 		if (!jobId) {
-			throw new Error("Usage: prime-agent schedule cancel <job-id>");
+			throw new Error("Usage: amicus schedule cancel <job-id>");
 		}
 		const response = await client.request({ type: "cron_cancel", jobId });
 		const data = requireSuccess(response);
@@ -1300,7 +1300,7 @@ const printJsonLine: DaemonClientMessageListener = (value) => {
 class DaemonAttachTerminal {
 	private rl?: Interface;
 	private isStreaming = false;
-	private readonly prompt = chalk.green("prime-agent> ");
+	private readonly prompt = chalk.green("amicus> ");
 
 	constructor(
 		private readonly client: DaemonClient,

@@ -12,14 +12,14 @@ import {
 } from "../src/utils/version-check.js";
 import { clearAmbientRuntimeEnv } from "./ambient-env.js";
 
-const defaultPrimeAgentDownloadBaseUrl = "https://github.com/canesin/prime-agent/releases/latest/download";
+const defaultAmicusDownloadBaseUrl = "https://github.com/0xCarbon/amicus/releases/latest/download";
 
 function manifest(version: string) {
 	const normalized = version.replace(/^v/, "");
 	return {
 		version,
-		package: "prime-agent",
-		tarball: `https://github.com/canesin/prime-agent/releases/download/v${normalized}/prime-agent-${normalized}.tgz`,
+		package: "amicus",
+		tarball: `https://github.com/0xCarbon/amicus/releases/download/v${normalized}/amicus-${normalized}.tgz`,
 	};
 }
 
@@ -54,16 +54,16 @@ describe("version checks", () => {
 		await expect(checkForNewPiVersion("1.2.2")).resolves.toBe("1.2.3");
 	});
 
-	it("uses the Prime Agent release manifest with a Prime Agent user agent", async () => {
+	it("uses the Amicus release manifest with a Amicus user agent", async () => {
 		const fetchMock = vi.fn(async () => Response.json(manifest("v1.2.4")));
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(getLatestPiVersion("1.2.3")).resolves.toBe("1.2.4");
 		expect(fetchMock).toHaveBeenCalledWith(
-			`${defaultPrimeAgentDownloadBaseUrl}/latest.json`,
+			`${defaultAmicusDownloadBaseUrl}/latest.json`,
 			expect.objectContaining({
 				headers: expect.objectContaining({
-					"User-Agent": expect.stringMatching(/^prime-agent\/1\.2\.3 /),
+					"User-Agent": expect.stringMatching(/^amicus\/1\.2\.3 /),
 					accept: "application/json",
 				}),
 			}),
@@ -75,16 +75,16 @@ describe("version checks", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(getLatestPiVersion("1.2.4-beta.123.1.1234567")).resolves.toBe("1.2.4-beta.124.1.abcdef0");
-		expect(fetchMock).toHaveBeenCalledWith(`${defaultPrimeAgentDownloadBaseUrl}/beta.json`, expect.any(Object));
+		expect(fetchMock).toHaveBeenCalledWith(`${defaultAmicusDownloadBaseUrl}/beta.json`, expect.any(Object));
 	});
 
 	it("ignores the legacy release-base override", async () => {
-		process.env.PRIME_AGENT_DOWNLOAD_BASE_URL = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev";
+		process.env.AMICUS_DOWNLOAD_BASE_URL = "https://pub-728493de92a943e2a9b2d17b4719f318.r2.dev";
 		const fetchMock = vi.fn(async () => Response.json(manifest("v1.2.4")));
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(getLatestPiVersion("1.2.3")).resolves.toBe("1.2.4");
-		expect(fetchMock).toHaveBeenCalledWith(`${defaultPrimeAgentDownloadBaseUrl}/latest.json`, expect.any(Object));
+		expect(fetchMock).toHaveBeenCalledWith(`${defaultAmicusDownloadBaseUrl}/latest.json`, expect.any(Object));
 	});
 
 	it("returns the active package and tarball install spec from the release manifest", async () => {
@@ -92,8 +92,8 @@ describe("version checks", () => {
 		vi.stubGlobal("fetch", fetchMock);
 
 		await expect(getLatestPiRelease("1.2.3")).resolves.toEqual({
-			installSpec: "https://github.com/canesin/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz",
-			packageName: "prime-agent",
+			installSpec: "https://github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
+			packageName: "amicus",
 			version: "1.2.4",
 		});
 	});
@@ -102,34 +102,34 @@ describe("version checks", () => {
 		{ ...manifest("v1.2.4"), package: undefined },
 		{ ...manifest("v1.2.4"), tarball: undefined },
 		{ ...manifest("v1.2.4"), version: undefined },
-		{ ...manifest("v1.2.4"), package: "@upstream/prime-agent" },
-		{ ...manifest("v1.2.4"), package: " prime-agent" },
-		{ packageName: "prime-agent", tarball: manifest("v1.2.4").tarball, version: "v1.2.4" },
+		{ ...manifest("v1.2.4"), package: "@upstream/amicus" },
+		{ ...manifest("v1.2.4"), package: " amicus" },
+		{ packageName: "amicus", tarball: manifest("v1.2.4").tarball, version: "v1.2.4" },
 		{ ...manifest("v1.2.4"), version: "latest" },
 		manifest("vv1.2.4"),
 		manifest("v1.2.4-"),
 		manifest("v1.2.4-01"),
 		manifest(" v1.2.4"),
-		{ ...manifest("v1.2.4"), tarball: "releases/download/v1.2.4/prime-agent-1.2.4.tgz" },
+		{ ...manifest("v1.2.4"), tarball: "releases/download/v1.2.4/amicus-1.2.4.tgz" },
 		{
 			...manifest("v1.2.4"),
-			tarball: "https://github.com/PrimeIntellect-ai/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz",
+			tarball: "https://github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
 		},
 		{
 			...manifest("v1.2.4"),
-			tarball: "https://downloads.example.test/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz",
+			tarball: "https://downloads.example.test/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
 		},
 		{
 			...manifest("v1.2.4"),
-			tarball: "http://github.com/canesin/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz",
+			tarball: "http://github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
 		},
 		{
 			...manifest("v1.2.4"),
-			tarball: "https://github.com/canesin/prime-agent/releases/download/v1.2.3/prime-agent-1.2.3.tgz",
+			tarball: "https://github.com/0xCarbon/amicus/releases/download/v1.2.3/amicus-1.2.3.tgz",
 		},
 		{
 			...manifest("v1.2.4"),
-			tarball: "https://user@github.com/canesin/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz",
+			tarball: "https://user@github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
 		},
 		{ ...manifest("v1.2.4"), tarball: `${manifest("v1.2.4").tarball}?replace=1` },
 		{ ...manifest("v1.2.4"), tarball: `${manifest("v1.2.4").tarball}#replace` },
@@ -164,14 +164,14 @@ describe("update channel preference", () => {
 		const fetchMock = vi.fn(async () => Response.json(manifest("v1.2.5-beta.130.1.abcdef0")));
 		vi.stubGlobal("fetch", fetchMock);
 		await expect(getLatestPiVersion("1.2.4", { channel: "nightly" })).resolves.toBe("1.2.5-beta.130.1.abcdef0");
-		expect(fetchMock).toHaveBeenCalledWith(`${defaultPrimeAgentDownloadBaseUrl}/beta.json`, expect.any(Object));
+		expect(fetchMock).toHaveBeenCalledWith(`${defaultAmicusDownloadBaseUrl}/beta.json`, expect.any(Object));
 	});
 
 	it("follows a preferred stable channel from a beta installation", async () => {
 		const fetchMock = vi.fn(async () => Response.json(manifest("v1.2.4")));
 		vi.stubGlobal("fetch", fetchMock);
 		await expect(getLatestPiVersion("1.2.4-beta.123.1.1234567", { channel: "stable" })).resolves.toBe("1.2.4");
-		expect(fetchMock).toHaveBeenCalledWith(`${defaultPrimeAgentDownloadBaseUrl}/latest.json`, expect.any(Object));
+		expect(fetchMock).toHaveBeenCalledWith(`${defaultAmicusDownloadBaseUrl}/latest.json`, expect.any(Object));
 	});
 
 	it("lets a stable installation move onto the current beta build when nightly is preferred", () => {
@@ -222,7 +222,7 @@ describe("update channel preference", () => {
 describe("manifest binary schema compatibility", () => {
 	const artifact = (platform: string, sha256 = "a".repeat(64)) => ({
 		platform,
-		file: `prime-agent-1.2.4-${platform}.tar.gz`,
+		file: `amicus-1.2.4-${platform}.tar.gz`,
 		sha256,
 	});
 
@@ -305,7 +305,7 @@ describe("manifest binary schema compatibility", () => {
 
 		await expect(getLatestPiRelease("1.2.3")).resolves.toEqual({
 			version: "1.2.4",
-			packageName: "prime-agent",
+			packageName: "amicus",
 			installSpec: manifest("v1.2.4").tarball,
 		});
 	});

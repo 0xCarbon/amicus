@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from "node:crypto";
 import { join } from "node:path";
-import type { StreamFn } from "@earendil-works/pi-agent-core";
+import type { StreamFn } from "@amicus/agent-core";
 import { EventLog } from "./event-log.js";
 
 /**
@@ -10,7 +10,7 @@ import { EventLog } from "./event-log.js";
  *
  * Ledger events are written before the effects they describe. Edges are
  * commit-gated: they materialize only when their target request finishes.
- * prime-agent has no prompt rollback (unlike nano-rlm's checkpoint/restore),
+ * amicus has no prompt rollback (unlike nano-rlm's checkpoint/restore),
  * so a failed request simply returns its inbound edges to the session's
  * pending set and they attach to the next committed request in that session.
  * A request whose stream never completes (hard crash, torn tail) stays
@@ -18,7 +18,7 @@ import { EventLog } from "./event-log.js";
  *
  * Divergence from nano-rlm: compaction summary requests claim no pending
  * edges (and no spawn). nano-rlm's single summary request can claim safely;
- * prime-agent's split turns run several racing slices, so pending edges would
+ * amicus's split turns run several racing slices, so pending edges would
  * land on whichever slice started first — a dead end when a different slice
  * commits last. Pending therefore defers past summary slices; a COMPLETED
  * compaction flushes it to its last-committed slice — the same request that
@@ -544,7 +544,7 @@ export function deriveSemanticEdges(ledgers: SemanticEdgeLedgerEvent[][]): { edg
 	return { edges };
 }
 
-const SEMANTIC_INNER_STREAM_FN = Symbol.for("prime-agent.semantic-edges.inner-stream-fn");
+const SEMANTIC_INNER_STREAM_FN = Symbol.for("amicus.semantic-edges.inner-stream-fn");
 
 /** Unwrap a semantic-edge-bound stream function; aux calls outside session history use this. */
 export function unwrapSemanticEdgeStreamFn(streamFn: StreamFn): StreamFn {

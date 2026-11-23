@@ -5,7 +5,7 @@ import {
 	Markdown,
 	type MarkdownTheme,
 	type TableCellSelectionRegion,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import { builtinSlashCommandTakesArgument, parseSlashCommand } from "../../../core/slash-commands.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 import { PromptTokenMask } from "./prompt-highlight.js";

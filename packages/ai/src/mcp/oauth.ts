@@ -528,7 +528,7 @@ async function registerClient(
 ): Promise<ResolvedClient> {
 	validatedHttpsUrl(registrationEndpoint, "Registration endpoint");
 	const body = {
-		client_name: `Prime Agent (${label})`,
+		client_name: `Amicus (${label})`,
 		redirect_uris: ALL_REDIRECT_URIS,
 		grant_types: ["authorization_code", "refresh_token"],
 		response_types: ["code"],

@@ -1,4 +1,4 @@
-import { type LogEntry, setLogSink, stringifyLogEntry } from "@earendil-works/pi-ai";
+import { type LogEntry, setLogSink, stringifyLogEntry } from "@amicus/ai";
 import { appendRotatingLog, getAgentLogPath } from "../config.js";
 
 const AGENT_LOG_MAX_BYTES = 20 * 1024 * 1024;
@@ -16,7 +16,7 @@ export function writeFileLogEntry(entry: LogEntry): void {
 
 /**
  * Route all structured logging (coding-agent and pi-ai) to the shared JSONL
- * log at ~/.prime/agent/logs/agent.jsonl. One master file, filterable by the
+ * log at ~/.amicus/logs/agent.jsonl. One master file, filterable by the
  * pid/context fields; writes are best-effort and size-bounded.
  */
 export function installFileLogSink(fields?: Record<string, unknown>): void {

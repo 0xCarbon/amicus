@@ -1,4 +1,4 @@
-import { fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, fauxToolCall } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createAgentSessionMessage } from "../../../src/core/agent-messages.js";
 import { conversationMessages, createHarness, getMessageText, type Harness } from "../harness.js";

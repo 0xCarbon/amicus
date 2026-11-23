@@ -196,7 +196,7 @@ def shutdown_agent_daemon(socket_path: Path, retry_window_s: float = 0.0) -> Non
         {
             "type": "command",
             "id": "eval-shutdown",
-            "protocol": {"name": "prime-agent.daemon", "version": 7},
+            "protocol": {"name": "amicus.daemon", "version": 7},
             "command": {"type": "shutdown"},
         }
     )
@@ -221,10 +221,10 @@ def shutdown_agent_daemon(socket_path: Path, retry_window_s: float = 0.0) -> Non
 def agent_env(agent_home: Path, sessions_dir: str) -> dict:
     """A clean, isolated environment for the agent subprocess.
 
-    The eval agent must be an independent root session: every PRIME_AGENT_INTERNAL_*
+    The eval agent must be an independent root session: every AMICUS_INTERNAL_*
     variable an embedding session might leak is stripped (a child inheriting
     them would try to attach to the parent's worker), the agent runs under
-    its own PRIME_AGENT_CODING_AGENT_DIR / PI_CODING_AGENT_DIR (the workspace
+    its own AMICUS_CODING_AGENT_DIR / PI_CODING_AGENT_DIR (the workspace
     launcher's env prefix derives from the package config name) so it never
     touches a production agent dir, and the credential file is copied in so
     model auth works without sharing any state.
@@ -234,26 +234,26 @@ def agent_env(agent_home: Path, sessions_dir: str) -> dict:
     ledger on the env override, so the scorer can compute the ledger path
     deterministically.
     """
-    env = {key: value for key, value in os.environ.items() if not key.startswith("PRIME_AGENT_INTERNAL_")}
+    env = {key: value for key, value in os.environ.items() if not key.startswith("AMICUS_INTERNAL_")}
     for key in (
-        "PRIME_AGENT_BASH_SHELL",
-        "PRIME_AGENT_BASH_COMMAND_PREFIX",
+        "AMICUS_BASH_SHELL",
+        "AMICUS_BASH_COMMAND_PREFIX",
         # Depth overrides from an embedding RLM session would start the
         # eval parent at the wrong depth or block spawning shard children.
         "RLM_DEPTH",
         "RLM_MAX_DEPTH",
     ):
         env.pop(key, None)
-    source_agent_dir = Path(env.get("PRIME_AGENT_CODING_AGENT_DIR") or Path.home() / ".prime" / "agent")
+    source_agent_dir = Path(env.get("AMICUS_CODING_AGENT_DIR") or Path.home() / ".amicus")
     source_auth = source_agent_dir / "auth.json"
     if source_auth.is_file():
         agent_home.mkdir(parents=True, exist_ok=True)
         shutil.copy2(source_auth, agent_home / "auth.json")
-    env["PRIME_AGENT_CODING_AGENT_DIR"] = str(agent_home)
+    env["AMICUS_CODING_AGENT_DIR"] = str(agent_home)
     env["PI_CODING_AGENT_DIR"] = str(agent_home)
-    env["PRIME_AGENT_SESSION_DIR"] = sessions_dir
+    env["AMICUS_SESSION_DIR"] = sessions_dir
     env["PI_SESSION_DIR"] = sessions_dir
-    env["PRIME_AGENT_CODING_AGENT_SESSION_DIR"] = sessions_dir
+    env["AMICUS_CODING_AGENT_SESSION_DIR"] = sessions_dir
     env["PI_CODING_AGENT_SESSION_DIR"] = sessions_dir
     return env
 
@@ -326,7 +326,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--fixture", required=True, help="Fixture directory (contains fixture.json)")
     parser.add_argument("--model", required=True, help="Model selector under test, provider/model-id")
     parser.add_argument("--timeout", type=int, default=1800, help="Agent run timeout in seconds")
-    parser.add_argument("--agent-bin", default="prime-agent", help="Agent binary to invoke")
+    parser.add_argument("--agent-bin", default="amicus", help="Agent binary to invoke")
     args = parser.parse_args(argv)
 
     if sys.platform == "win32":

@@ -5,11 +5,11 @@ import { join, resolve } from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { ReplKernelManager } from "../src/core/kernel/index.js";
 
-const runtimePython = resolve("../../prime-agent-runtime/.venv/bin/python");
-const fallbackPython = join(homedir(), ".prime", "agent", "kernel-venv", "bin", "python");
+const runtimePython = resolve("../../amicus-runtime/.venv/bin/python");
+const fallbackPython = join(homedir(), ".amicus", "kernel-venv", "bin", "python");
 
 function resolveKernelPython(): string | null {
-	for (const python of [process.env.PRIME_AGENT_KERNEL_PYTHON, runtimePython, fallbackPython]) {
+	for (const python of [process.env.AMICUS_KERNEL_PYTHON, runtimePython, fallbackPython]) {
 		if (!python || !existsSync(python)) continue;
 		const check = spawnSync(python, ["-c", "import rlm.repl, mcp, rlm"], { encoding: "utf8" });
 		if (check.status === 0) return python;
@@ -62,7 +62,7 @@ describeIfKernel("real REPL kernel MCP shutdown", { tags: ["kernel-heavy"] }, ()
 	let pidFile = "";
 
 	beforeAll(() => {
-		dir = mkdtempSync(join(tmpdir(), "prime-agent-repl-mcp-shutdown-"));
+		dir = mkdtempSync(join(tmpdir(), "amicus-repl-mcp-shutdown-"));
 		fixture = join(dir, "stdio_server.py");
 		pidFile = join(dir, "stdio.pid");
 		writeFileSync(fixture, MCP_SERVER);
@@ -75,7 +75,7 @@ describeIfKernel("real REPL kernel MCP shutdown", { tags: ["kernel-heavy"] }, ()
 	it("closes a stdio MCP child on graceful shutdown", async () => {
 		let manager: ReplKernelManager | undefined = new ReplKernelManager({
 			python: python as string,
-			cwd: resolve("../../prime-agent-runtime"),
+			cwd: resolve("../../amicus-runtime"),
 			hostHandlers: {
 				"mcp.config": async () => ({
 					type: "stdio",

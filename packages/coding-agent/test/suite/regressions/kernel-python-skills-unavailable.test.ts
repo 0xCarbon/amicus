@@ -1,4 +1,4 @@
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { describe, expect, it } from "vitest";
 import { PYTHON_SKILLS_UNAVAILABLE_CUSTOM_TYPE } from "../../../src/core/messages.js";
 import { createHarness, getMessageText } from "../harness.js";

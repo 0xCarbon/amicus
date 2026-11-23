@@ -1,5 +1,5 @@
 {
-	"name": "@earendil-works/pi-tui",
+	"name": "@amicus/tui",
 	"version": "0.9.8",
 	"description": "Terminal User Interface library with differential rendering for efficient text-based applications",
 	"type": "module",
@@ -28,7 +28,7 @@
 	"license": "MIT",
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/PrimeIntellect-ai/prime-agent.git",
+		"url": "git+https://github.com/0xCarbon/amicus.git",
 		"directory": "packages/tui"
 	},
 	"engines": {

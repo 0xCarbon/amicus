@@ -106,7 +106,7 @@ describe("herdrAgentStateExtension", () => {
 		"HERDR_PANE_ID",
 		"HERDR_PI_IDLE_DEBOUNCE_MS",
 		"HERDR_PI_RETRY_GRACE_MS",
-		"PRIME_AGENT_CODING_AGENT_DIR",
+		"AMICUS_CODING_AGENT_DIR",
 	];
 
 	for (const key of envKeys) {
@@ -123,7 +123,7 @@ describe("herdrAgentStateExtension", () => {
 		process.env.HERDR_ENV = "1";
 		process.env.HERDR_SOCKET_PATH = socketPath;
 		process.env.HERDR_PANE_ID = "w1:p1";
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = tempDir;
+		process.env.AMICUS_CODING_AGENT_DIR = tempDir;
 		process.env.HERDR_PI_IDLE_DEBOUNCE_MS = "10";
 		for (const [key, value] of Object.entries(env)) process.env[key] = value;
 		return started;
@@ -155,7 +155,7 @@ describe("herdrAgentStateExtension", () => {
 		expect(requests[0]).toMatchObject({
 			method: "pane.report_agent",
 			params: {
-				agent: "prime-agent",
+				agent: "amicus",
 				pane_id: "w1:p1",
 				state: "idle",
 				agent_session_path: "/tmp/session.jsonl",
@@ -172,7 +172,7 @@ describe("herdrAgentStateExtension", () => {
 
 		await handlers.get("session_shutdown")?.[0]?.({ type: "session_shutdown", reason: "quit" }, ctx);
 		await waitForRequests(4);
-		expect(requests[3]).toMatchObject({ method: "pane.release_agent", params: { agent: "prime-agent" } });
+		expect(requests[3]).toMatchObject({ method: "pane.release_agent", params: { agent: "amicus" } });
 	});
 
 	it("reports working when the session starts mid-turn (reload)", async () => {

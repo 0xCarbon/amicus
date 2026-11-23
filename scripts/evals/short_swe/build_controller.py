@@ -16,15 +16,15 @@ from prime_sandboxes import APIClient, CreateSandboxRequest, SandboxClient
 
 ROOT = Path(__file__).resolve().parent
 REMOTE = "/opt/behavioral-build"
-OWNER_LABEL = "prime-agent-behavioral-v1"
+OWNER_LABEL = "amicus-behavioral-v1"
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 REPO_RE = re.compile(r"^[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$")
 VERSION = "0.0.0-benchmark"
 EXPECTED = {
-    f"prime-agent-{VERSION}.tgz",
-    f"prime-agent-ai-{VERSION}.tgz",
-    f"prime-agent-core-{VERSION}.tgz",
-    f"prime-agent-tui-{VERSION}.tgz",
+    f"amicus-{VERSION}.tgz",
+    f"amicus-ai-{VERSION}.tgz",
+    f"amicus-core-{VERSION}.tgz",
+    f"amicus-tui-{VERSION}.tgz",
 }
 MAX_ARTIFACT_BYTES = 20_000_000
 BUILD_SANDBOX_TIMEOUT_MINUTES = 120

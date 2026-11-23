@@ -1,4 +1,4 @@
-import type { Model } from "@earendil-works/pi-ai";
+import type { Model } from "@amicus/ai";
 
 /** Leave space for provider framing and tokenization differences. Text is budgeted in UTF-8 bytes. */
 export function summaryBudget(

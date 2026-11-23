@@ -731,8 +731,8 @@ class ScorerTests(unittest.TestCase):
 # --- stub agent for end-to-end runner tests ---------------------------------
 #
 # The stub is a stand-in for the real CLI: it receives the same launch
-# arguments the runner would give prime-agent, reads the isolated agent
-# home from PRIME_AGENT_CODING_AGENT_DIR, and writes the exact artifact
+# arguments the runner would give amicus, reads the isolated agent
+# home from AMICUS_CODING_AGENT_DIR, and writes the exact artifact
 # set a correct fan-out leaves behind (ledger, parent transcript, child
 # session dirs, combined index, json-mode stdout events).
 
@@ -759,7 +759,7 @@ argv = sys.argv[1:]
 # --mode json --daemon-socket SOCK --cwd REPO --session-dir SESSIONS --model M -- PROMPT
 repo = Path(argv[5])
 sessions_dir = Path(os.path.realpath(argv[7]))
-agent_home = Path(os.environ["PRIME_AGENT_CODING_AGENT_DIR"])
+agent_home = Path(os.environ["AMICUS_CODING_AGENT_DIR"])
 parent_file = sessions_dir / (PARENT_ID + ".jsonl")
 
 index_lines = [f"- {shard_file}: {answer}" for shard_file, answer in ANSWERS.items()]
@@ -1019,16 +1019,16 @@ class RunnerTests(unittest.TestCase):
         # RLM depth overrides from an embedding session must not leak into
         # the eval agent: the eval parent must be an independent root.
         env = dict(os.environ)
-        env.update({"RLM_DEPTH": "2", "RLM_MAX_DEPTH": "2", "PRIME_AGENT_INTERNAL_TOKEN": "x"})
+        env.update({"RLM_DEPTH": "2", "RLM_MAX_DEPTH": "2", "AMICUS_INTERNAL_TOKEN": "x"})
         workdir = Path(tempfile.mkdtemp(prefix="swarm-fanout-env-"))
         try:
             with unittest.mock.patch.dict(os.environ, env, clear=True):
                 result = runner.agent_env(workdir / "agent-home", str(workdir / "sessions"))
             self.assertNotIn("RLM_DEPTH", result)
             self.assertNotIn("RLM_MAX_DEPTH", result)
-            self.assertNotIn("PRIME_AGENT_INTERNAL_TOKEN", result)
-            self.assertEqual(result["PRIME_AGENT_SESSION_DIR"], str(workdir / "sessions"))
-            self.assertEqual(result["PRIME_AGENT_CODING_AGENT_DIR"], str(workdir / "agent-home"))
+            self.assertNotIn("AMICUS_INTERNAL_TOKEN", result)
+            self.assertEqual(result["AMICUS_SESSION_DIR"], str(workdir / "sessions"))
+            self.assertEqual(result["AMICUS_CODING_AGENT_DIR"], str(workdir / "agent-home"))
         finally:
             shutil.rmtree(workdir, ignore_errors=True)
 

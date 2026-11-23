@@ -22,11 +22,11 @@ describe("compiled update instructions", () => {
 					copyFileSync(resolve(__dirname, "../src", file), join(virtual, file));
 				const managed = join(root, "managed");
 				mkdirSync(join(managed, "bin"), { recursive: true });
-				writeFileSync(join(managed, ".managed"), "prime-agent-native-v1\n");
+				writeFileSync(join(managed, ".managed"), "amicus-native-v1\n");
 				let executable = "";
 				for (const [version, link] of [
 					["1.0.0", "previous"],
-					["1.0.1", "prime-agent"],
+					["1.0.1", "amicus"],
 				]) {
 					const digest = "a".repeat(64);
 					const name = `${version}-linux-x64-${digest}`;
@@ -38,9 +38,9 @@ describe("compiled update instructions", () => {
 					writeFileSync(join(release, "package.json"), JSON.stringify({ version }));
 					writeFileSync(join(release, ".archive-sha256"), digest);
 					writeFileSync(join(release, ".install-source"), "https://example.invalid");
-					symlinkSync(`../releases/${name}/prime-agent`, join(managed, "bin", link));
-					if (link === "prime-agent") {
-						executable = join(release, "prime-agent");
+					symlinkSync(`../releases/${name}/amicus`, join(managed, "bin", link));
+					if (link === "amicus") {
+						executable = join(release, "amicus");
 						if (state === "missing metadata") rmSync(join(release, ".archive-sha256"));
 						if (state === "missing asset") rmSync(join(release, "theme/prime.json"));
 					}
@@ -52,7 +52,7 @@ describe("compiled update instructions", () => {
 					`import { getUpdateInstruction, isBunBinary } from './$bunfs/config.js';
 if (!isBunBinary) throw new Error('fixture must use compiled path detection');
 Object.defineProperty(process, 'execPath', { value: process.argv[2] });
-console.log(getUpdateInstruction('prime-agent'));
+console.log(getUpdateInstruction('amicus'));
 `,
 				);
 				const output = execFileSync(
@@ -66,8 +66,8 @@ console.log(getUpdateInstruction('prime-agent'));
 				);
 				expect(output.trim()).toBe(
 					state === "unmanaged"
-						? "Download from: https://github.com/canesin/prime-agent/releases/latest"
-						: "Run: prime-agent update",
+						? "Download from: https://github.com/0xCarbon/amicus/releases/latest"
+						: "Run: amicus update",
 				);
 			} finally {
 				rmSync(root, { recursive: true, force: true });

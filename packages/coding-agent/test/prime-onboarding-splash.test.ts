@@ -1,12 +1,12 @@
-import { setKeybindings } from "@earendil-works/pi-tui";
+import { setKeybindings } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";
 import { PrimeOnboardingSplashComponent } from "../src/modes/interactive/components/prime-onboarding-splash.js";
 import { initTheme } from "../src/modes/interactive/theme/theme.js";
-import { PRIME_COMPACT_BUTTERFLY_LOGO } from "../src/themes/prime-logo.js";
+import { AMICUS_COMPACT_LOGO } from "../src/themes/amicus-logo.js";
 
-const logoLines = PRIME_COMPACT_BUTTERFLY_LOGO.split("\n");
+const logoLines = AMICUS_COMPACT_LOGO.split("\n");
 const firstLogoLine = logoLines[0]?.trim() ?? "";
 
 describe("PrimeOnboardingSplashComponent", () => {
@@ -40,7 +40,7 @@ describe("PrimeOnboardingSplashComponent", () => {
 		const output = rendered.join("\n");
 
 		expect(output).toContain(firstLogoLine);
-		expect(output).toContain("Welcome to PRIME Agent");
+		expect(output).toContain("Welcome to Amicus");
 		expect(output).toContain("> Log in with Prime Intellect");
 		// Signing in is the only route forward.
 		expect(output).not.toContain("Continue later");
@@ -53,7 +53,7 @@ describe("PrimeOnboardingSplashComponent", () => {
 		}
 
 		const lastLogoRow = rendered.findIndex((line) => line.includes(logoLines[logoLines.length - 1]?.trim() ?? ""));
-		const brandRow = rendered.findIndex((line) => line.includes("Welcome to PRIME Agent"));
+		const brandRow = rendered.findIndex((line) => line.includes("Welcome to Amicus"));
 		const actionRow = rendered.findIndex((line) => line.includes("Log in with Prime Intellect"));
 		expect(brandRow).toBeGreaterThan(lastLogoRow);
 		expect(actionRow).toBeGreaterThan(brandRow);
@@ -67,7 +67,7 @@ describe("PrimeOnboardingSplashComponent", () => {
 		expect(output).not.toContain("Enter");
 		expect(output).not.toContain("Esc");
 
-		const brandLine = rendered.find((line) => line.includes("Welcome to PRIME Agent"));
+		const brandLine = rendered.find((line) => line.includes("Welcome to Amicus"));
 		const actionLine = rendered.find((line) => line.includes("Log in with Prime Intellect"));
 		// One shared left edge for the welcome line and the action.
 		expect(brandLine?.indexOf("Welcome")).toBe(actionLine?.indexOf(">"));
@@ -102,7 +102,7 @@ describe("PrimeOnboardingSplashComponent", () => {
 		component.setPanel(undefined);
 		const output = stripAnsi(component.render(100).join("\n"));
 
-		expect(output).toContain("Welcome to PRIME Agent");
+		expect(output).toContain("Welcome to Amicus");
 		expect(output).not.toContain("Log in with Prime Intellect");
 		expect(output).not.toContain("monitor dozens of experiments");
 	});
@@ -125,6 +125,6 @@ describe("PrimeOnboardingSplashComponent", () => {
 
 		expect(renderRequests).toBe(3);
 		expect(secondRender).not.toBe(firstRender);
-		expect(secondRender).toContain("Welcome to PRIME Agent");
+		expect(secondRender).toContain("Welcome to Amicus");
 	});
 });

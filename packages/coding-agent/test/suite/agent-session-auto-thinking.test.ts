@@ -1,4 +1,4 @@
-import { fauxAssistantMessage, type ModelThinkingLevel, type SimpleStreamOptions } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage, type ModelThinkingLevel, type SimpleStreamOptions } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AUTO_THINKING_API_KEY_ENV } from "../../src/core/auto-thinking.js";
 import { createHarness } from "./harness.js";

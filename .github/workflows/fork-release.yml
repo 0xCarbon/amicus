@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   release:
-    if: github.repository == 'canesin/prime-agent'
+    if: github.repository == '0xCarbon/amicus'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -87,7 +87,7 @@ jobs:
           gh release create "v${VERSION}" \
             --repo "$GITHUB_REPOSITORY" \
             --target "$GITHUB_SHA" \
-            --title "Prime Agent fork v${VERSION}" \
+            --title "Amicus fork v${VERSION}" \
             --notes "Automated canesin fork release from ${GITHUB_SHA}." \
             ${{ steps.latest.outputs.flag }} \
             packages/coding-agent/release/fork/artifacts/*

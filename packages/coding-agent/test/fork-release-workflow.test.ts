@@ -40,7 +40,7 @@ describe("canesin fork release workflow", () => {
 			group: "release-canesin-fork",
 			queue: "max",
 		});
-		expect(workflow.jobs.release.if).toBe("github.repository == 'canesin/prime-agent'");
+		expect(workflow.jobs.release.if).toBe("github.repository == '0xCarbon/amicus'");
 		expect(workflow.permissions).toEqual({ contents: "write" });
 	});
 

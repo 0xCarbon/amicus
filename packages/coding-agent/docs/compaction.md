@@ -1,6 +1,6 @@
 # Compaction & Branch Summarization
 
-LLMs have limited context windows. When conversations grow too long, Prime Agent uses compaction to summarize older content while preserving recent work. This page covers both auto-compaction and branch summarization.
+LLMs have limited context windows. When conversations grow too long, Amicus uses compaction to summarize older content while preserving recent work. This page covers both auto-compaction and branch summarization.
 
 **Source files:**
 - [`compaction.ts`](../src/core/compaction/compaction.ts) - Auto-compaction logic
@@ -9,11 +9,11 @@ LLMs have limited context windows. When conversations grow too long, Prime Agent
 - [`session-manager.ts`](../src/core/session-manager.ts) - Entry types (`CompactionEntry`, `BranchSummaryEntry`)
 - [`extensions/types.ts`](../src/core/extensions/types.ts) - Extension event types
 
-For TypeScript definitions in your project, inspect `node_modules/@earendil-works/pi-coding-agent/dist/`.
+For TypeScript definitions in your project, inspect `node_modules/@amicus/coding-agent/dist/`.
 
 ## Overview
 
-Prime Agent has two summarization mechanisms:
+Amicus has two summarization mechanisms:
 
 | Mechanism | Trigger | Purpose |
 |-----------|---------|---------|
@@ -32,9 +32,9 @@ Auto-compaction triggers when:
 contextTokens > contextWindow - reserveTokens
 ```
 
-By default, `reserveTokens` is 16384 tokens (configurable in `~/.prime/agent/settings.json` or `<project-dir>/.prime/agent/settings.json`). This leaves room for the LLM's response. A reserve that is at least the selected model's entire window falls back to one fifth of that window. Smaller reserves retain their configured threshold, including deliberately early compaction.
+By default, `reserveTokens` is 16384 tokens (configurable in `~/.amicus/settings.json` or `<project-dir>/.amicus/settings.json`). This leaves room for the LLM's response. A reserve that is at least the selected model's entire window falls back to one fifth of that window. Smaller reserves retain their configured threshold, including deliberately early compaction.
 
-Before a new turn, Prime Agent also estimates the effective transcript size. This catches switching or resuming with a smaller context model even when the last usage report predates compaction. This overflow guard reserves at most one fifth of the window, so a configured early-compaction threshold does not reject an otherwise fitting transcript. Automatic compaction still respects `enabled: false`. Recent history retention is capped at one quarter of the selected model's window, and the summary output budget is capped by the model's output limit and one fifth of its window.
+Before a new turn, Amicus also estimates the effective transcript size. This catches switching or resuming with a smaller context model even when the last usage report predates compaction. This overflow guard reserves at most one fifth of the window, so a configured early-compaction threshold does not reject an otherwise fitting transcript. Automatic compaction still respects `enabled: false`. Recent history retention is capped at one quarter of the selected model's window, and the summary output budget is capped by the model's output limit and one fifth of its window.
 
 You can also trigger manually with `/compact [instructions]`, where optional instructions focus the summary — for example `/compact focus on the auth refactor, remember the exact migration command`. The instructions are passed to the summarization prompt with high priority, persisted on the `CompactionEntry`, and shown on the `[compaction]` message in the TUI.
 
@@ -78,7 +78,7 @@ What the LLM sees:
     prompt   from cmp          messages from firstKeptEntryId
 ```
 
-On repeated compactions, the summarized span starts at the previous compaction's kept boundary (`firstKeptEntryId`), not at the compaction entry itself, falling back to the entry after the previous compaction if that kept entry cannot be found in the path. This preserves messages that survived the earlier compaction by including them in the next summarization pass as well. Prime Agent also recalculates `tokensBefore` from the rebuilt session context before writing the new `CompactionEntry`, so the token count reflects the actual pre-compaction context being replaced.
+On repeated compactions, the summarized span starts at the previous compaction's kept boundary (`firstKeptEntryId`), not at the compaction entry itself, falling back to the entry after the previous compaction if that kept entry cannot be found in the path. This preserves messages that survived the earlier compaction by including them in the next summarization pass as well. Amicus also recalculates `tokensBefore` from the rebuilt session context before writing the new `CompactionEntry`, so the token count reflects the actual pre-compaction context being replaced.
 
 ### Historical Context
 
@@ -117,7 +117,7 @@ Split turn (one huge turn exceeds budget):
   turnPrefixMessages = [usr, ass, tool, ass, tool, tool]
 ```
 
-For split turns, Prime Agent generates two summaries and merges them:
+For split turns, Amicus generates two summaries and merges them:
 1. **History summary**: Previous context (if any)
 2. **Turn prefix summary**: The early part of the split turn
 
@@ -164,7 +164,7 @@ See [`prepareCompaction()` and `compact()`](../src/core/compaction/compaction.ts
 
 ### When It Triggers
 
-When you use `/tree` to navigate to a different branch, Prime Agent offers to summarize the work you're leaving. This injects context from the left branch into the new branch.
+When you use `/tree` to navigate to a different branch, Amicus offers to summarize the work you're leaving. This injects context from the left branch into the new branch.
 
 ### How It Works
 
@@ -193,7 +193,7 @@ After navigation with summary:
 
 ### Cumulative File Tracking
 
-Both compaction and branch summarization track files cumulatively. When generating a summary, Prime Agent extracts file operations from:
+Both compaction and branch summarization track files cumulatively. When generating a summary, Amicus extracts file operations from:
 - Tool calls in the messages being summarized
 - Previous compaction or branch summary `details` (if any)
 
@@ -328,7 +328,7 @@ pi.on("session_before_compact", async (event, ctx) => {
 To generate a summary with your own model, convert messages to text using `serializeConversation`:
 
 ```typescript
-import { convertToLlm, serializeConversation } from "@earendil-works/pi-coding-agent";
+import { convertToLlm, serializeConversation } from "@amicus/coding-agent";
 
 pi.on("session_before_compact", async (event, ctx) => {
   const { preparation } = event;
@@ -392,7 +392,7 @@ See `SessionBeforeTreeEvent` and `TreePreparation` in the types file.
 
 ## Settings
 
-Configure compaction in `~/.prime/agent/settings.json` or `<project-dir>/.prime/agent/settings.json`:
+Configure compaction in `~/.amicus/settings.json` or `<project-dir>/.amicus/settings.json`:
 
 ```json
 {

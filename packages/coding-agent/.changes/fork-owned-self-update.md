@@ -1,1 +1,1 @@
-- Changed fork builds to discover and install updates only from canesin/prime-agent releases.
+- Changed fork builds to discover and install updates only from 0xCarbon/amicus releases.

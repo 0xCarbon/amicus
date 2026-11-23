@@ -34,10 +34,10 @@ function isForegroundMigration(): boolean {
 	if (args.includes("--mode")) return false;
 	if (
 		args.includes("--internal-update-restart-coordinator") ||
-		process.env.PRIME_AGENT_INTERNAL_DAEMON_WORKER ||
-		process.env.PRIME_AGENT_INTERNAL_DAEMON_CATALOG ||
-		process.env.PRIME_AGENT_INTERNAL_OWNED_WORKER ||
-		process.env.PRIME_AGENT_INTERACTIVE_SELF_UPDATE ||
+		process.env.AMICUS_INTERNAL_DAEMON_WORKER ||
+		process.env.AMICUS_INTERNAL_DAEMON_CATALOG ||
+		process.env.AMICUS_INTERNAL_OWNED_WORKER ||
+		process.env.AMICUS_INTERACTIVE_SELF_UPDATE ||
 		process.env.PI_STARTUP_BENCHMARK
 	)
 		return false;
@@ -62,10 +62,10 @@ function recordNow(path: string): void {
 
 function reportProbeFailure(message: string): void {
 	const diagnosticFile = join(packageDir, "dist/.native-migration-diagnostic");
-	if (process.env.PRIME_AGENT_MIGRATE_RETRY !== "1" && wasRecordedRecently(diagnosticFile)) return;
+	if (process.env.AMICUS_MIGRATE_RETRY !== "1" && wasRecordedRecently(diagnosticFile)) return;
 	recordNow(diagnosticFile);
 	console.error(
-		`prime-agent: ${message} Reinstall prime-agent, or set PRIME_AGENT_INSTALL_METHOD=node to keep using Node without migration.`,
+		`amicus: ${message} Reinstall amicus, or set AMICUS_INSTALL_METHOD=node to keep using Node without migration.`,
 	);
 }
 
@@ -138,7 +138,7 @@ function runInstaller(command: string, version: string, environment: NodeJS.Proc
 
 async function migrationTarget(): Promise<string | undefined> {
 	if (process.platform !== "darwin" && process.platform !== "linux") return undefined;
-	if (process.env.PRIME_AGENT_INSTALL_METHOD === "node") return undefined;
+	if (process.env.AMICUS_INSTALL_METHOD === "node") return undefined;
 	// Only the public release package in a conventional global npm prefix owns this command.
 	const packageParent = dirname(packageDir);
 	const modules = basename(packageParent).startsWith("@") ? dirname(packageParent) : packageParent;
@@ -159,8 +159,7 @@ async function migrationTarget(): Promise<string | undefined> {
 	const commandTarget = commandIdentity.isSymbolicLink() ? readlinkSync(publicCommand) : undefined;
 	const entryIdentity = statSync(entrypoint);
 	const root =
-		process.env.PRIME_AGENT_INSTALL_DIR ||
-		join(process.env.XDG_DATA_HOME || join(homedir(), ".local/share"), "prime-agent");
+		process.env.AMICUS_INSTALL_DIR || join(process.env.XDG_DATA_HOME || join(homedir(), ".local/share"), "amicus");
 	let native = readNativeInstallation(root);
 	const ownsPackageLink = realpathSync(publicCommand) === realpathSync(entrypoint);
 	if (!ownsPackageLink && (!native || realpathSync(publicCommand) !== native.executable)) return undefined;
@@ -181,23 +180,23 @@ async function migrationTarget(): Promise<string | undefined> {
 	}
 	if (needsInstall) {
 		const retryFile = join(packageDir, "dist/.native-migration-attempt");
-		if (process.env.PRIME_AGENT_MIGRATE_RETRY !== "1" && wasRecordedRecently(retryFile)) return undefined;
+		if (process.env.AMICUS_MIGRATE_RETRY !== "1" && wasRecordedRecently(retryFile)) return undefined;
 		// Confirm the npm package is writable before downloading; read-only prefixes stay on Node.
 		writeFileSync(retryFile, String(Date.now()));
 		const release = JSON.parse(readFileSync(join(packageDir, "dist/native-release.json"), "utf8")) as {
 			baseUrl: string;
 		};
-		console.error(`prime-agent: migrating ${metadata.version} from npm to the compiled application...`);
+		console.error(`amicus: migrating ${metadata.version} from npm to the compiled application...`);
 		const result = await runInstaller(join(packageDir, "dist/install.sh"), metadata.version, {
 			...process.env,
-			PRIME_AGENT_INSTALL_METHOD: "binary",
-			PRIME_AGENT_INSTALL_DIR: root,
-			PRIME_AGENT_EXPECTED_CURRENT: native ? relative(join(native.root, "bin"), native.executable) : "",
-			PRIME_AGENT_DOWNLOAD_BASE_URL: release.baseUrl,
-			PRIME_AGENT_INSTALL_LINK: "0",
-			PRIME_AGENT_INSTALLER_NONINTERACTIVE: "1",
-			PRIME_AGENT_INSTALLER_PLAIN: "1",
-			PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
+			AMICUS_INSTALL_METHOD: "binary",
+			AMICUS_INSTALL_DIR: root,
+			AMICUS_EXPECTED_CURRENT: native ? relative(join(native.root, "bin"), native.executable) : "",
+			AMICUS_DOWNLOAD_BASE_URL: release.baseUrl,
+			AMICUS_INSTALL_LINK: "0",
+			AMICUS_INSTALLER_NONINTERACTIVE: "1",
+			AMICUS_INSTALLER_PLAIN: "1",
+			AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
 		});
 		if (result.parentSignal) {
 			rmSync(retryFile, { force: true });
@@ -208,7 +207,7 @@ async function migrationTarget(): Promise<string | undefined> {
 			recordNow(retryFile);
 			const detail = result.error ? ` (${result.error.message})` : "";
 			console.error(
-				`prime-agent: compiled migration deferred${detail}; continuing with the installed Node application. Retry with PRIME_AGENT_MIGRATE_RETRY=1.`,
+				`amicus: compiled migration deferred${detail}; continuing with the installed Node application. Retry with AMICUS_MIGRATE_RETRY=1.`,
 			);
 			return undefined;
 		}
@@ -244,7 +243,7 @@ async function migrationTarget(): Promise<string | undefined> {
 	}
 	if (!ownsPackageLink) return native.launcher;
 	// Capture the link, then create exclusively so a concurrent npm install cannot be overwritten.
-	const staging = mkdtempSync(join(dirname(publicCommand), ".prime-agent-link-"));
+	const staging = mkdtempSync(join(dirname(publicCommand), ".amicus-link-"));
 	const captured = join(staging, "command");
 	let needsRestore = false;
 	let capturedOwned = false;
@@ -283,7 +282,7 @@ async function migrationTarget(): Promise<string | undefined> {
 			}
 		}
 		if (needsRestore)
-			console.error(`prime-agent: command handoff deferred; the displaced command is preserved at ${captured}`);
+			console.error(`amicus: command handoff deferred; the displaced command is preserved at ${captured}`);
 		else rmSync(staging, { recursive: true, force: true });
 	}
 }

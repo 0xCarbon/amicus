@@ -1,7 +1,7 @@
 import { appendFileSync, linkSync, mkdirSync, mkdtempSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { setKeybindings } from "@earendil-works/pi-tui";
+import { setKeybindings } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { parseIncidentLogLine } from "../src/cli/incident.js";
@@ -31,7 +31,7 @@ vi.mock("../src/utils/tools-manager.js", async (importOriginal) => {
 	return { ...actual, ensureTool: vi.fn(async () => undefined) };
 });
 
-const DAEMON_SOCKET = "/tmp/prime-agent-501/daemon.sock";
+const DAEMON_SOCKET = "/tmp/amicus-501/daemon.sock";
 function logLine(fields: Record<string, unknown>): string {
 	return JSON.stringify({ level: "warn", ...fields });
 }
@@ -42,7 +42,7 @@ function supervisorStartLine(base: number, minutesAgoValue: number, generation =
 	return logLine({
 		ts: tsAgo(base, minutesAgoValue * 60_000),
 		component: "coding-agent.daemon-supervisor",
-		msg: `Prime Agent daemon supervisor ${generation} listening on ${DAEMON_SOCKET}`,
+		msg: `Amicus daemon supervisor ${generation} listening on ${DAEMON_SOCKET}`,
 		socketPath: DAEMON_SOCKET,
 		pid: 15026,
 	});
@@ -101,7 +101,7 @@ function newView(persistentState: AgentsViewPersistentState = { savedCatalogLoad
 /** The incident notice lines renderContent produces (startup notices stay unset). */
 function renderedIncidentLines(view: AgentsViewMode): string[] {
 	const lines = invoke("renderContent", view, 120, 40) as string[];
-	return lines.map(stripAnsi).filter((line) => line.includes("prime-agent incident"));
+	return lines.map(stripAnsi).filter((line) => line.includes("amicus incident"));
 }
 beforeAll(() => {
 	setKeybindings(new KeybindingsManager());
@@ -126,8 +126,8 @@ describe("incident notice derivation", () => {
 		const base = Date.now();
 		// Several daemon sockets, each with its own stall: the per-subject
 		// cluster lookup must never leak or mis-anchor across subjects.
-		const otherSocket = "/tmp/prime-agent-501/daemon-other.sock";
-		const spacedSocket = "/tmp/prime-agent-501/daemon-spaced.sock";
+		const otherSocket = "/tmp/amicus-501/daemon-other.sock";
+		const spacedSocket = "/tmp/amicus-501/daemon-spaced.sock";
 		const spacedTimeouts = [200, 190, 180, 30, 29].map((minutes) => commandTimeoutLine(base, minutes, spacedSocket));
 		const entries = fixtureEntries([
 			commandTimeoutLine(base, 30, DAEMON_SOCKET),
@@ -190,7 +190,7 @@ describe("agents view incident notices", () => {
 			expect(lines[0]).toContain(
 				`worker 5b1d3aeb91ee crashed at ${formatIncidentNoticeTime(base - 120_000, Date.now())}`,
 			);
-			expect(lines[0]).toContain("prime-agent incident for the timeline");
+			expect(lines[0]).toContain("amicus incident for the timeline");
 			expect(lines[0].startsWith(" \u26a0")).toBe(true);
 		} finally {
 			stopThemeWatcher();

@@ -1,4 +1,4 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import type {
 	AssistantMessage,
 	ImageContent,
@@ -7,7 +7,7 @@ import type {
 	ThinkingContent,
 	ToolCall,
 	UserMessage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { deepEqual } from "../../utils/deep-equal.js";
 import {
 	type BashExecutionMessage,
@@ -25,7 +25,7 @@ import {
 } from "../session-manager.js";
 
 /**
- * Text document format for `prime-agent session edit`.
+ * Text document format for `amicus session edit`.
  *
  * The document is a lossless, line-oriented view of a session JSONL file. Every
  * block maps to one session entry; every section inside a block maps to one
@@ -101,7 +101,7 @@ export function renderSessionDocument(options: RenderSessionDocumentOptions): st
 
 function renderDocumentPreamble(options: RenderSessionDocumentOptions): string[] {
 	const { header, entries } = options;
-	const lines = ["# prime-agent session editor", "#", `# session   ${header.id}`];
+	const lines = ["# amicus session editor", "#", `# session   ${header.id}`];
 	if (options.filePath) {
 		lines.push(`# file      ${options.filePath}`);
 	}

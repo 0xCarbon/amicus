@@ -1,4 +1,4 @@
-import { registerSessionResourceCleanup } from "@earendil-works/pi-ai";
+import { registerSessionResourceCleanup } from "@amicus/ai";
 import type { KernelBootstrapProgressHandler, KernelPythonSkill } from "./bootstrap.js";
 import type { RestoreResult, SnapshotResult } from "./state-snapshot.js";
 
@@ -83,16 +83,16 @@ export interface ExecuteOptions {
 }
 
 /** MIME tag the `edit` skill emits diff payloads under. */
-export const DIFF_DISPLAY_MIME = "application/vnd.prime-agent.diff+json";
+export const DIFF_DISPLAY_MIME = "application/vnd.amicus.diff+json";
 
 /** MIME tag the `attach-image` skill emits media payloads under. */
-export const ATTACHMENT_DISPLAY_MIME = "application/vnd.prime-agent.attachment+json";
+export const ATTACHMENT_DISPLAY_MIME = "application/vnd.amicus.attachment+json";
 
 /** MIME tag the `agent-message` skill emits after sending a message. */
-export const AGENT_MESSAGE_DISPLAY_MIME = "application/vnd.prime-agent.agent-message+json";
+export const AGENT_MESSAGE_DISPLAY_MIME = "application/vnd.amicus.agent-message+json";
 
 /** Internal lifetime notices, consumed before user display rendering. */
-export const BASH_ACTIVITY_DISPLAY_MIME = "application/vnd.prime-agent.bash-activity+json";
+export const BASH_ACTIVITY_DISPLAY_MIME = "application/vnd.amicus.bash-activity+json";
 
 /**
  * Hard ceiling on a single attachment's base64 payload, a defensive guard

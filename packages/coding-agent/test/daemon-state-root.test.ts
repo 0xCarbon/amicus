@@ -10,7 +10,7 @@ import {
 } from "../src/modes/daemon/daemon-state-root.js";
 import { acquireDaemonSupervisorOwnership } from "../src/modes/daemon/daemon-supervisor-ownership.js";
 
-const registryDirEnv = "PRIME_AGENT_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
+const registryDirEnv = "AMICUS_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
 const previousRegistryDirEnv = process.env[registryDirEnv];
 const cleanupDirs: string[] = [];
 const releaseOwnerships: Array<() => Promise<void>> = [];
@@ -116,19 +116,19 @@ describe.runIf(process.platform !== "win32")("daemon state root scoping", () => 
 	});
 
 	it("follows the environment instead of a value captured at import time", () => {
-		const previousAgentDir = process.env.PRIME_AGENT_CODING_AGENT_DIR;
+		const previousAgentDir = process.env.AMICUS_CODING_AGENT_DIR;
 		const base = mkdtempSync(join(tmpdir(), "state-root-env-"));
 		cleanupDirs.push(base);
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = join(base, "agent");
+		process.env.AMICUS_CODING_AGENT_DIR = join(base, "agent");
 		try {
 			const root = currentDaemonStateRoot();
 			expect(root.agentDir).toBe(join(base, "agent"));
 			expect(root.socketDir).toBe(defaultDaemonSocketDir());
 		} finally {
 			if (previousAgentDir === undefined) {
-				delete process.env.PRIME_AGENT_CODING_AGENT_DIR;
+				delete process.env.AMICUS_CODING_AGENT_DIR;
 			} else {
-				process.env.PRIME_AGENT_CODING_AGENT_DIR = previousAgentDir;
+				process.env.AMICUS_CODING_AGENT_DIR = previousAgentDir;
 			}
 		}
 	});

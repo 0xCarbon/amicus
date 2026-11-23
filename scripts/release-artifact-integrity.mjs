@@ -15,7 +15,7 @@ export function readReleaseBinary(artifactsDir, platform) {
 	if (entries?.length !== 1) throw new Error(`Expected one ${platform} binary in ${manifestFile}`);
 	const entry = entries[0];
 	if (!/^v\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$/.test(manifest.version)) throw new Error("Invalid manifest version");
-	if (entry.file !== `prime-agent-${manifest.version.slice(1)}-${platform}.tar.gz`)
+	if (entry.file !== `amicus-${manifest.version.slice(1)}-${platform}.tar.gz`)
 		throw new Error("Unexpected archive filename");
 	for (const field of ["sha256", "executableSha256"])
 		if (!/^[a-f0-9]{64}$/.test(entry[field])) throw new Error(`Missing or invalid ${field}`);

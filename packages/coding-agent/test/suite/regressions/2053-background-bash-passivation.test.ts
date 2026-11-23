@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
 import { resolve } from "node:path";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { AgentSession } from "../../../src/core/agent-session.js";
 import {
@@ -14,7 +14,7 @@ import { canEvictWorker, canPassivateSession } from "../../../src/core/session-a
 import { IpythonKernelProvisioner } from "../../../src/core/tools/ipython.js";
 import { createHarness, type Harness } from "../harness.js";
 
-const runtimeDir = resolve(__dirname, "../../../../../prime-agent-runtime");
+const runtimeDir = resolve(__dirname, "../../../../../amicus-runtime");
 const python = resolve(runtimeDir, ".venv/bin/python");
 const describeRuntime = existsSync(python) ? describe : describe.skip;
 

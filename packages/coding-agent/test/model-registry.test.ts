@@ -1,9 +1,9 @@
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Api, Model, OpenAICompletionsCompat } from "@earendil-works/pi-ai";
-import { getApiProvider, getModels } from "@earendil-works/pi-ai";
-import { getOAuthProvider, registerOAuthProvider } from "@earendil-works/pi-ai/oauth";
+import type { Api, Model, OpenAICompletionsCompat } from "@amicus/ai";
+import { getApiProvider, getModels } from "@amicus/ai";
+import { getOAuthProvider, registerOAuthProvider } from "@amicus/ai/oauth";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { AuthStorage } from "../src/core/auth-storage.js";
 import { getBundledModels } from "../src/core/bundled-model-catalog.js";
@@ -108,7 +108,7 @@ describe("ModelRegistry", () => {
 			}
 		});
 
-		test("prime inference requests include selected Prime Agent team header", async () => {
+		test("prime inference requests include selected Amicus team header", async () => {
 			const primeAuthStorage = AuthStorage.inMemory({
 				"prime-inference": {
 					type: "api_key",
@@ -995,7 +995,7 @@ describe("ModelRegistry", () => {
 			"missing credentials",
 			"active credentials",
 			"rotated credentials",
-		] as const)("recovers stale Prime Agent private-model access but invalidates it after %s", async (change) => {
+		] as const)("recovers stale Amicus private-model access but invalidates it after %s", async (change) => {
 			vi.stubEnv("PRIME_API_KEY", "");
 			vi.stubEnv("PRIME_TEAM_ID", "");
 			vi.stubEnv("PI_OFFLINE", "0");

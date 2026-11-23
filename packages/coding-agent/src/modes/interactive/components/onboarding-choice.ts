@@ -1,10 +1,4 @@
-import {
-	type Component,
-	getKeybindings,
-	truncateToWidth,
-	visibleWidth,
-	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
+import { type Component, getKeybindings, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@amicus/tui";
 import { getResolvedThemeColors, theme } from "../theme/theme.js";
 import { isOnboardingExitKey } from "./onboarding-exit.js";
 import { onboardingHighlightBackground } from "./onboarding-highlight.js";

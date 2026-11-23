@@ -1,4 +1,4 @@
-import type { Message, Model } from "@earendil-works/pi-ai";
+import type { Message, Model } from "@amicus/ai";
 import { describe, expect, it } from "vitest";
 import {
 	type CompactionPreparation,

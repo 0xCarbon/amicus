@@ -5,7 +5,7 @@ import { createServer, type Server } from "node:http";
 import { join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import { promisify } from "node:util";
-import { type AssistantMessage, fauxAssistantMessage, type LogEntry } from "@earendil-works/pi-ai";
+import { type AssistantMessage, fauxAssistantMessage, type LogEntry } from "@amicus/ai";
 import { EventStreamCodec } from "@smithy/core/event-streams";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 import type { AgentSessionEvent } from "../../../src/core/agent-session.js";
@@ -18,7 +18,7 @@ import { createHarness, getAssistantTexts, type Harness } from "../harness.js";
 
 const run = promisify(execFile);
 const packageDir = fileURLToPath(new URL("../../../", import.meta.url));
-const installedCli = process.env.PRIME_AGENT_TEST_BUNDLED_CLI;
+const installedCli = process.env.AMICUS_TEST_BUNDLED_CLI;
 const cliPath = installedCli ? resolve(installedCli) : join(packageDir, "dist/bundle/cli.js");
 const codec = new EventStreamCodec(
 	(bytes) => new TextDecoder().decode(bytes),
@@ -154,7 +154,7 @@ describe("ENG-6006 bundled Bedrock provider", () => {
 			`import { registerHooks } from "node:module";
 registerHooks({
 	resolve(specifier, context, nextResolve) {
-		if (specifier.includes("amazon-bedrock") || specifier === "@earendil-works/pi-ai/bedrock-provider" || specifier === "@aws-sdk/client-bedrock-runtime") {
+		if (specifier.includes("amazon-bedrock") || specifier === "@amicus/ai/bedrock-provider" || specifier === "@aws-sdk/client-bedrock-runtime") {
 			throw new Error("Bedrock loaded before a request");
 		}
 		return nextResolve(specifier, context);
@@ -164,7 +164,7 @@ registerHooks({
 		const { stdout, stderr } = await run(process.execPath, ["--import", hookPath, cliPath, "--offline", "--help"], {
 			cwd: harness.tempDir,
 			timeout: 20_000,
-			env: { PATH: process.env.PATH, HOME: harness.tempDir, PRIME_AGENT_CODING_AGENT_DIR: harness.tempDir },
+			env: { PATH: process.env.PATH, HOME: harness.tempDir, AMICUS_CODING_AGENT_DIR: harness.tempDir },
 		});
 		expect(stdout + stderr).toContain("Usage:");
 	});
@@ -239,7 +239,7 @@ registerHooks({
 				env: {
 					PATH: process.env.PATH,
 					HOME: harness.tempDir,
-					PRIME_AGENT_CODING_AGENT_DIR: harness.tempDir,
+					AMICUS_CODING_AGENT_DIR: harness.tempDir,
 					PI_OFFLINE: "1",
 					DO_NOT_TRACK: "1",
 					AWS_EC2_METADATA_DISABLED: "true",

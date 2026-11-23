@@ -1,6 +1,6 @@
 import { existsSync } from "node:fs";
-import type { AgentContext, AgentTool } from "@earendil-works/pi-agent-core";
-import { Agent } from "@earendil-works/pi-agent-core";
+import type { AgentContext, AgentTool } from "@amicus/agent-core";
+import { Agent } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	fauxAssistantMessage,
@@ -9,7 +9,7 @@ import {
 	registerApiProvider,
 	type Usage,
 	unregisterApiProviders,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { AgentSession } from "../../src/core/agent-session.js";

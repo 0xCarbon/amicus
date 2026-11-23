@@ -3,7 +3,7 @@
  *
  * Reports agent lifecycle state (working/idle/blocked) to the Herdr terminal
  * workspace manager via its Unix socket. This is the in-tree equivalent of
- * the extension that `herdr integration install pi` writes, so Prime Agent
+ * the extension that `herdr integration install pi` writes, so Amicus
  * works inside Herdr panes out of the box without a manual install step.
  *
  * Unlike the file-based integration (re-evaluated per session load by jiti),
@@ -143,7 +143,7 @@ function herdrAgentStateExtensionImpl(pi: ExtensionAPI, getLoadedExtensionPaths:
 	}
 
 	const source = "herdr:pi";
-	const agentLabel = "prime-agent";
+	const agentLabel = "amicus";
 	const idleDebounceMs = parseDurationEnv("HERDR_PI_IDLE_DEBOUNCE_MS", 250);
 	const retryGraceMs = parseDurationEnv("HERDR_PI_RETRY_GRACE_MS", 2500);
 

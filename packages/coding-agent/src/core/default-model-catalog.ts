@@ -1,5 +1,5 @@
 import { join } from "node:path";
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 import { getAgentDir, getCatalogCacheDir, getModelCacheDir } from "../config.js";
 import { CatalogCache } from "./model-catalog-cache.js";
 

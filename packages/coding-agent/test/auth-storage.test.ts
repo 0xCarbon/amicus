@@ -1,8 +1,8 @@
 import { existsSync, lstatSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { type AssistantMessage, fauxAssistantMessage } from "@earendil-works/pi-ai";
-import { registerOAuthProvider } from "@earendil-works/pi-ai/oauth";
+import { type AssistantMessage, fauxAssistantMessage } from "@amicus/ai";
+import { registerOAuthProvider } from "@amicus/ai/oauth";
 import lockfile from "proper-lockfile";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import type { AgentSessionRuntime } from "../src/core/agent-session-runtime.js";

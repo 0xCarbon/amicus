@@ -60,7 +60,7 @@ function externalJob(input: { id: string; prompt: string; sessionId: string; ses
 }
 
 function makeTempDir(tempDirs: string[]): string {
-	const dir = mkdtempSync(join(tmpdir(), "prime-agent-cron-snapshot-"));
+	const dir = mkdtempSync(join(tmpdir(), "amicus-cron-snapshot-"));
 	tempDirs.push(dir);
 	return dir;
 }

@@ -1,11 +1,5 @@
-import {
-	type Component,
-	getKeybindings,
-	truncateToWidth,
-	visibleWidth,
-	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
-import { PRIME_COMPACT_BUTTERFLY_LOGO } from "../../../themes/prime-logo.js";
+import { type Component, getKeybindings, truncateToWidth, visibleWidth, wrapTextWithAnsi } from "@amicus/tui";
+import { AMICUS_COMPACT_LOGO } from "../../../themes/amicus-logo.js";
 import { getResolvedThemeColors, type ThemeColor, theme } from "../theme/theme.js";
 import { isOnboardingExitKey } from "./onboarding-exit.js";
 import { onboardingHighlightBackground } from "./onboarding-highlight.js";
@@ -21,7 +15,7 @@ interface PrimeOnboardingSplashOptions {
 	immediate?: boolean;
 }
 
-const LOGO_LINES = PRIME_COMPACT_BUTTERFLY_LOGO.split("\n");
+const LOGO_LINES = AMICUS_COMPACT_LOGO.split("\n");
 const LOGO_WIDTH = LOGO_LINES.reduce((max, line) => Math.max(max, visibleWidth(line)), 0);
 const ANIMATION_INTERVAL_MS = 120;
 /** Matches BrandSplashHeader so the mark keeps its place when the block unmounts. */
@@ -207,11 +201,7 @@ export class PrimeOnboardingSplashComponent implements Component {
 	}
 
 	private renderBrandLine(): string {
-		return (
-			theme.fg("text", "Welcome to ") +
-			theme.bold(theme.fg("text", "PRIME")) +
-			theme.italic(theme.fg("text", " Agent"))
-		);
+		return theme.fg("text", "Welcome to ") + theme.bold(theme.fg("text", "Amicus"));
 	}
 
 	/** Signing in is the only way forward, so the block offers a single action. */

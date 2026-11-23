@@ -1,4 +1,4 @@
-import { visibleWidth } from "@earendil-works/pi-tui";
+import { visibleWidth } from "@amicus/tui";
 import { type ThemeColor, theme } from "../theme/theme.js";
 
 const ARG_TOKEN_PATTERN = /@"[^"\n]*"|@(?:\\[^\s\x1b]|[^\s\x1b|])+|--[A-Za-z0-9][A-Za-z0-9-]*/g;

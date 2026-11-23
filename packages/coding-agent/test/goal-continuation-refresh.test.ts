@@ -1,4 +1,4 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import { describe, expect, it } from "vitest";
 import { AgentSession } from "../src/core/agent-session.js";
 import { createGoalContextMessage, type GoalContextKind, type GoalState } from "../src/core/goals.js";

@@ -33,15 +33,15 @@ describe.skipIf(process.platform === "win32")("native executable probe deadlines
 			const lockedProbePids = join(root, "locked-probe-pids");
 			const bin = join(managed, "bin");
 			mkdirSync(bin, { recursive: true });
-			writeFileSync(join(managed, ".managed"), "prime-agent-native-v1\n");
+			writeFileSync(join(managed, ".managed"), "amicus-native-v1\n");
 			const targets = ["1.0.0", "1.0.1"].map((version) => {
 				const digest = "a".repeat(64);
 				const name = `${version}-${process.platform}-${process.arch}-${digest}`;
 				const release = join(managed, "releases", name);
 				for (const asset of [
 					"install.sh",
-					"prime-agent-runtime/pyproject.toml",
-					"prime-agent-runtime/src/rlm/repl.py",
+					"amicus-runtime/pyproject.toml",
+					"amicus-runtime/src/rlm/repl.py",
 					"theme/prime.json",
 					"export-html/template.html",
 					"photon_rs_bg.wasm",
@@ -53,7 +53,7 @@ describe.skipIf(process.platform === "win32")("native executable probe deadlines
 				writeFileSync(join(release, ".archive-sha256"), `${digest}\n`);
 				writeFileSync(join(release, ".install-source"), "https://example.invalid\n");
 				writeFileSync(
-					join(release, "prime-agent"),
+					join(release, "amicus"),
 					`#!/bin/sh
 if [ "$1" = "$BLOCK_ARGUMENT" ] && [ "${version}" = "1.0.0" ]; then
  printf '%s\\n' "$$" >> "$PROBE_PIDS"
@@ -65,9 +65,9 @@ printf '%s\\n' '${version}'
 `,
 					{ mode: 0o755 },
 				);
-				return `../releases/${name}/prime-agent`;
+				return `../releases/${name}/amicus`;
 			});
-			symlinkSync(targets[1], join(bin, "prime-agent"));
+			symlinkSync(targets[1], join(bin, "amicus"));
 			symlinkSync(targets[0], join(bin, "previous"));
 			const journal = join(managed, ".activation-state");
 			if (operation === "recovery") writeFileSync(journal, `${targets[1]}\n${targets[0]}\n`);
@@ -79,8 +79,8 @@ printf '%s\\n' '${version}'
 						...process.env,
 						HOME: root,
 						PATH: "/usr/bin:/bin",
-						PRIME_AGENT_INSTALL_DIR: managed,
-						PRIME_AGENT_PROBE_TIMEOUT_SECONDS: String(PROBE_TIMEOUT_SECONDS),
+						AMICUS_INSTALL_DIR: managed,
+						AMICUS_PROBE_TIMEOUT_SECONDS: String(PROBE_TIMEOUT_SECONDS),
 						BLOCK_ARGUMENT: argument,
 						PROBE_PIDS: probePids,
 						LOCKED_PROBE_PIDS: lockedProbePids,
@@ -106,7 +106,7 @@ printf '%s\\n' '${version}'
 				expect(output).toContain(`probe timed out after ${PROBE_TIMEOUT_SECONDS} seconds`);
 				// The blocked probe records the lock itself, so the assertion never races the deadline.
 				expect(readFileSync(lockedProbePids, "utf8")).toBe(readFileSync(probePids, "utf8"));
-				expect(readlinkSync(join(bin, "prime-agent"))).toBe(targets[1]);
+				expect(readlinkSync(join(bin, "amicus"))).toBe(targets[1]);
 				expect(readlinkSync(join(bin, "previous"))).toBe(targets[0]);
 				expect(existsSync(join(managed, ".install-lock"))).toBe(false);
 				expect(existsSync(journal)).toBe(operation === "recovery");

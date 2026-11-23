@@ -229,12 +229,12 @@ const errorCases: Array<[string, string[], string]> = [
 	[
 		"--export was removed",
 		["--export", "session.jsonl"],
-		'--export was removed. Use "prime-agent session export <file> [output]".',
+		'--export was removed. Use "amicus session export <file> [output]".',
 	],
 	[
 		"--list-models was removed",
 		["--list-models", "sonnet"],
-		'--list-models was removed. Use "prime-agent model list [search]".',
+		'--list-models was removed. Use "amicus model list [search]".',
 	],
 	[
 		"invalid thinking level",

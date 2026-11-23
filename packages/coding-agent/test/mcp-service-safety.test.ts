@@ -22,7 +22,7 @@
 import { mkdtempSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { getOAuthProvider, resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
+import { getOAuthProvider, resetOAuthProviders } from "@amicus/ai/oauth";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { createAgentSessionServices } from "../src/core/agent-session-services.js";
 import { AuthStorage } from "../src/core/auth-storage.js";

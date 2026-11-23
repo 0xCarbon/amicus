@@ -4,7 +4,7 @@ import {
 	type Model,
 	type ModelThinkingLevel,
 	modelsAreEqual,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import {
 	type Component,
 	Container,
@@ -16,7 +16,7 @@ import {
 	type TUI,
 	truncateToWidth,
 	visibleWidth,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import type { ModelRegistry } from "../../../core/model-registry.js";
 import { PRIME_INFERENCE_PROVIDER_ID } from "../../../core/prime-inference-auth.js";
 import { theme } from "../theme/theme.js";

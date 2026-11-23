@@ -8,7 +8,7 @@ import {
 	TUI,
 	truncateToWidth,
 	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 import chalk from "chalk";
 import { KeybindingsManager } from "../../core/keybindings.js";
 import {
@@ -491,7 +491,7 @@ export class SessionEditorMode implements Component, Focusable {
 					? undefined
 					: chalk.dim(`/${this.searchQuery}`);
 		const parts = [
-			chalk.bold("Prime Agent session editor"),
+			chalk.bold("Amicus session editor"),
 			chalk.dim(this.model.sessionId.slice(-12)),
 			`${position} entries`,
 			state,

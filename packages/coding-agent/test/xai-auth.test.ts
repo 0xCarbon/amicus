@@ -1,4 +1,4 @@
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { AuthStorage, type OAuthCredential } from "../src/core/auth-storage.js";
 import { ModelRegistry } from "../src/core/model-registry.js";

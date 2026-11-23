@@ -39,12 +39,12 @@ describe("buildBatchShimInvocation", () => {
 			"/v:off",
 			"/s",
 			"/c",
-			'""%PRIME_AGENT_BATCH_testtoken_0%" "%PRIME_AGENT_BATCH_testtoken_1%" "%PRIME_AGENT_BATCH_testtoken_2%" "%PRIME_AGENT_BATCH_testtoken_3%" "%PRIME_AGENT_BATCH_testtoken_4%""',
+			'""%AMICUS_BATCH_testtoken_0%" "%AMICUS_BATCH_testtoken_1%" "%AMICUS_BATCH_testtoken_2%" "%AMICUS_BATCH_testtoken_3%" "%AMICUS_BATCH_testtoken_4%""',
 		]);
 		expect(invocation.args.join(" ")).not.toContain("Tools & More");
 		expect(invocation.args.join(" ")).not.toContain("%PATH%");
-		expect(invocation.env.PRIME_AGENT_BATCH_testtoken_0).toBe("C:\\Tools & More\\uv.cmd");
-		expect(invocation.env.PRIME_AGENT_BATCH_testtoken_2).toBe("%PATH%");
+		expect(invocation.env.AMICUS_BATCH_testtoken_0).toBe("C:\\Tools & More\\uv.cmd");
+		expect(invocation.env.AMICUS_BATCH_testtoken_2).toBe("%PATH%");
 	});
 
 	it.each(['a"b', "line\nbreak", "line\rbreak", "null\0byte"])("rejects unsafe command or argument %j", (value) => {
@@ -157,21 +157,21 @@ describe("Windows kernel subprocesses", () => {
 	});
 
 	it("forces UTF-8 for the hidden background Python bootstrap without changing the parent environment", async () => {
-		process.env.PRIME_AGENT_KERNEL_PYTHON = join(tempDir, "python.exe");
-		await expect(ensureKernelPython()).rejects.toThrow("PRIME_AGENT_KERNEL_PYTHON");
+		process.env.AMICUS_KERNEL_PYTHON = join(tempDir, "python.exe");
+		await expect(ensureKernelPython()).rejects.toThrow("AMICUS_KERNEL_PYTHON");
 		expect(spawn.mock.calls[0]?.[2]).toMatchObject({ windowsHide: true, stdio: "ignore", env: { PYTHONUTF8: "1" } });
 		expect(process.env.PYTHONUTF8).toBe("0");
 	});
 
 	it.each(["cmd", "bat"])("rejects a .%s Python override instead of accepting an unowned child", async (extension) => {
-		process.env.PRIME_AGENT_KERNEL_PYTHON = join(tempDir, `Python & tools!.${extension}`);
+		process.env.AMICUS_KERNEL_PYTHON = join(tempDir, `Python & tools!.${extension}`);
 		await expect(ensureKernelPython()).rejects.toThrow("must point directly to a Python executable");
 		expect(spawn).not.toHaveBeenCalled();
 	});
 
 	it("finds a uv.cmd shim through PATHEXT and launches it hidden", async () => {
-		delete process.env.PRIME_AGENT_KERNEL_PYTHON;
-		process.env.PRIME_AGENT_KERNEL_VENV = join(tempDir, "venv");
+		delete process.env.AMICUS_KERNEL_PYTHON;
+		process.env.AMICUS_KERNEL_VENV = join(tempDir, "venv");
 		process.env.PATH = tempDir;
 		process.env.PATHEXT = ".CMD";
 		const uv = join(tempDir, "uv.cmd");
@@ -197,7 +197,7 @@ describe("Windows kernel subprocesses", () => {
 			expect(call?.[2]).toMatchObject({
 				windowsHide: true,
 				stdio: ["pipe", "pipe", "pipe"],
-				env: { PYTHONUTF8: "1", PRIME_AGENT_KERNEL_OWNER_PID: String(process.pid) },
+				env: { PYTHONUTF8: "1", AMICUS_KERNEL_OWNER_PID: String(process.pid) },
 			});
 			expect(call?.[2]?.windowsVerbatimArguments).toBeUndefined();
 		} finally {
@@ -208,8 +208,8 @@ describe("Windows kernel subprocesses", () => {
 	it("preserves the configured Python encoding and direct launch outside Windows", async () => {
 		Object.defineProperty(process, "platform", { value: "linux" });
 		const python = join(tempDir, "python.cmd");
-		process.env.PRIME_AGENT_KERNEL_PYTHON = python;
-		await expect(ensureKernelPython()).rejects.toThrow("PRIME_AGENT_KERNEL_PYTHON");
+		process.env.AMICUS_KERNEL_PYTHON = python;
+		await expect(ensureKernelPython()).rejects.toThrow("AMICUS_KERNEL_PYTHON");
 		expect(spawn.mock.calls[0]?.[0]).toBe(python);
 		expect(spawn.mock.calls[0]?.[2]?.env?.PYTHONUTF8).toBe("0");
 	});

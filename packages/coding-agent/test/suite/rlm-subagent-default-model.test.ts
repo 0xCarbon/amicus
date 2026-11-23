@@ -1,4 +1,4 @@
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { describe, expect, it, vi } from "vitest";
 import { createHarness } from "./harness.js";
 

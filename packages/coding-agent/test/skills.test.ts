@@ -181,7 +181,7 @@ describe("skills", () => {
 		});
 
 		it("warns when two Python skills share an import name", () => {
-			const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-skills-"));
+			const tempDir = mkdtempSync(join(tmpdir(), "amicus-skills-"));
 			try {
 				writePythonSkill(tempDir, "web-search");
 				writePythonSkill(tempDir, "web_search");

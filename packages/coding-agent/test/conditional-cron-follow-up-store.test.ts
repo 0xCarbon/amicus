@@ -15,7 +15,7 @@ describe("conditional cron follow-up persistence", () => {
 	});
 
 	it("persists follow-up delivery only for a fenced cron job", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-conditional-follow-up-store-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-conditional-follow-up-store-"));
 		tempDirs.push(tempDir);
 		const store = new AgentCronJobStore(join(tempDir, "jobs.json"));
 		const job = await store.create({
@@ -63,7 +63,7 @@ describe("conditional cron follow-up persistence", () => {
 	});
 
 	it("rejects an oversized follow-up receipt in an external delivery fence", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-conditional-follow-up-store-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-conditional-follow-up-store-"));
 		tempDirs.push(tempDir);
 		const store = new AgentCronJobStore(join(tempDir, "jobs.json"));
 

@@ -4,8 +4,8 @@
  * resume it. BUG B: an assistant-text-turn threshold stop reads as "task finished", so an
  * active goal queues its continuation as a session input before compaction.
  */
-import type { AgentMessage, ShouldStopAfterTurnContext } from "@earendil-works/pi-agent-core";
-import { type AssistantMessage, fauxAssistantMessage, type ToolResultMessage, type Usage } from "@earendil-works/pi-ai";
+import type { AgentMessage, ShouldStopAfterTurnContext } from "@amicus/agent-core";
+import { type AssistantMessage, fauxAssistantMessage, type ToolResultMessage, type Usage } from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { type AgentSession, CompactionSkippedError } from "../../src/core/agent-session.js";

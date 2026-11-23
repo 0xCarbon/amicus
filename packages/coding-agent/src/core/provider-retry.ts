@@ -1,4 +1,4 @@
-import type { AssistantMessage } from "@earendil-works/pi-ai";
+import type { AssistantMessage } from "@amicus/ai";
 import { sleep } from "../utils/sleep.js";
 import type { SettingsManager } from "./settings-manager.js";
 

@@ -33,11 +33,11 @@ class ReleasePreparationTests(unittest.TestCase):
                     calls.append((user, command, cwd, options))
                     if command == ["git", "rev-parse", "HEAD"]:
                         return "a" * 40
-                    if "scripts/pack-prime-agent-release.mjs" in command:
+                    if "scripts/pack-amicus-release.mjs" in command:
                         for name in ("agent", "ai", "core", "tui"):
                             (artifacts / f"{name}.tgz").write_bytes(name.encode())
                     if any(arg.endswith("assemble-release-archives.mjs") for arg in command):
-                        (artifacts / f"prime-agent-{worker.VERSION}-linux-x64.tar.gz").write_bytes(b"native")
+                        (artifacts / f"amicus-{worker.VERSION}-linux-x64.tar.gz").write_bytes(b"native")
                         (artifacts / "SHA256SUMS").write_text("native-only inventory\n")
                     return "fixture"
 
@@ -112,14 +112,14 @@ class ReleasePreparationTests(unittest.TestCase):
         ):
             worker.install(SimpleNamespace(), Side(sha="a" * 40), 0)
         env = run.call_args.kwargs["extra_env"]
-        self.assertEqual(env["PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS"], "1")
-        self.assertEqual(env["PRIME_AGENT_DOWNLOAD_BASE_URL"], worker.ORIGIN)
-        self.assertNotIn("PRIME_AGENT_INSTALL_METHOD", env)
+        self.assertEqual(env["AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS"], "1")
+        self.assertEqual(env["AMICUS_DOWNLOAD_BASE_URL"], worker.ORIGIN)
+        self.assertNotIn("AMICUS_INSTALL_METHOD", env)
 
     def test_rejects_node_fallback_when_measuring_a_compiled_release(self):
         with tempfile.TemporaryDirectory() as directory:
             home = Path(directory)
-            command = home / ".local/bin/prime-agent"
+            command = home / ".local/bin/amicus"
             command.parent.mkdir(parents=True)
             command.write_bytes(b"#!/usr/bin/env node\n")
             side = Side(sha="a" * 40, runtime={"artifact_format": "npm-tarballs+linux-x64-native"})

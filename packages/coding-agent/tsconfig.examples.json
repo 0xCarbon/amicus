@@ -3,9 +3,9 @@
 	"compilerOptions": {
 		"noEmit": true,
 		"paths": {
-			"@earendil-works/pi-coding-agent": ["./src/index.ts"],
-			"@earendil-works/pi-tui": ["../tui/src/index.ts"],
-			"@earendil-works/pi-ai": ["../ai/src/index.ts"],
+			"@amicus/coding-agent": ["./src/index.ts"],
+			"@amicus/tui": ["../tui/src/index.ts"],
+			"@amicus/ai": ["../ai/src/index.ts"],
 			"typebox": ["../../node_modules/typebox"]
 		},
 		"skipLibCheck": true

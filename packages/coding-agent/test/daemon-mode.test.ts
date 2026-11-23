@@ -16,8 +16,8 @@ import type { Socket } from "node:net";
 import { tmpdir } from "node:os";
 import { basename, join, resolve } from "node:path";
 import { PassThrough } from "node:stream";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import type { Api, Model } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../src/config.js";
 import { AGENT_FAMILY_REACH_ERROR, type AgentSessionMessageController } from "../src/core/agent-messages.js";
@@ -62,7 +62,7 @@ import { seedSupervisorRoster } from "./fixtures/roster-seed.js";
 
 describe("daemon mode helpers", () => {
 	it("persists a real child completion for passive discovery, roster, and listing", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-real-completion-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-real-completion-"));
 		try {
 			const sessionDir = join(tempDir, "sessions");
 			const parentManager = SessionManager.create(tempDir, sessionDir);
@@ -207,7 +207,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects a guarded cron job when its session fence drifts during admission", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-guarded-cron-admission-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-guarded-cron-admission-"));
 		try {
 			const sessionDir = join(tempDir, "sessions");
 			const manager = SessionManager.create(tempDir, sessionDir);
@@ -297,7 +297,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects a guarded cron job before the busy queue path when its idle profile drifts", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-guarded-cron-busy-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-guarded-cron-busy-"));
 		try {
 			const sessionDir = join(tempDir, "sessions");
 			const manager = SessionManager.create(tempDir, sessionDir);
@@ -390,7 +390,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("terminalizes a pre-provider goal receipt when conditional recovery is exhausted", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-guarded-cron-exhausted-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-guarded-cron-exhausted-"));
 		try {
 			const sessionDir = join(tempDir, "sessions");
 			const manager = SessionManager.create(tempDir, sessionDir);
@@ -515,8 +515,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("closes the exact parent-scoped daemon runtime when a retained subagent is deleted", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -580,7 +580,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("cancels child jobs when deletion joins an in-flight passivation close", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-delete-passivation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-delete-passivation-race-"));
 		let releaseDispose!: () => void;
 		const disposeGate = new Promise<void>((resolve) => {
 			releaseDispose = resolve;
@@ -629,7 +629,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("keeps a child live when its durable deletion boundary cannot be read", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-delete-registry-failure-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-delete-registry-failure-"));
 		try {
 			const sessionDir = join(tempDir, "sessions");
 			const parentManager = SessionManager.create(tempDir, sessionDir);
@@ -684,8 +684,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("routes nonresident agent-message targets through the supervisor wake path", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-worker-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-worker-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -730,8 +730,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("reports queued status when a direct accept races into the queue", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -786,8 +786,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects an agent message when pause wins core admission", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -851,8 +851,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rate limits agent messages per sender and target pair", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -941,8 +941,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("pause clears queued agent messages concurrently across sessions", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -994,8 +994,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("refunds agent message rate limit tokens when delivery fails", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1052,7 +1052,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("resolves a reopened child's persisted header parent relative to its session file", () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-header-family-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-header-family-"));
 		try {
 			const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 				defaultSessionConfig: { agentDir: tempDir, cwd: tempDir },
@@ -1101,8 +1101,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("limits agent send and observation to the nuclear family", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-family-reach.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-family-reach.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1195,7 +1195,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("resolves a duplicate session name to the only family-reachable agent", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-family-name-resolution.sock", {
+		const daemon = new AgentDaemon("/tmp/amicus-family-name-resolution.sock", {
 			defaultSessionConfig: { agentDir: "/tmp", cwd: "/tmp" },
 			createRuntime: vi.fn(),
 		});
@@ -1231,8 +1231,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects agent messages when direct delivery preflight fails", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1283,8 +1283,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rate limits CLI agent messages by stable daemon identity", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1333,8 +1333,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("delivers session closure while a client is snapshotting and backpressured", () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1368,8 +1368,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("catches up on drain only after events are skipped behind a backpressured write", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1451,8 +1451,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("automatically retries every pending catch-up after snapshot creation rejects", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -1519,8 +1519,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("does not attach a non-chunked client until its snapshot is ready", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 			createRuntime: vi.fn(),
 		});
 		const state = makeState("active");
@@ -1559,8 +1559,8 @@ describe("daemon mode helpers", () => {
 	it.each(["inline-detached", "chunked-detached", "chunked-failed"])(
 		"releases a catch-up reservation: %s",
 		async (outcome) => {
-			const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-				defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+			const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+				defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 				createRuntime: vi.fn(),
 			});
 			const state = makeState("active");
@@ -1628,7 +1628,7 @@ describe("daemon mode helpers", () => {
 	);
 
 	it("marks a chunked attach as snapshotting before deferred streaming", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-snapshot-order-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-snapshot-order-"));
 		try {
 			const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 				defaultSessionConfig: { agentDir: tempDir, cwd: tempDir },
@@ -1695,7 +1695,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("falls back to a full replacement when snapshot cache creation fails", async () => {
-		const root = mkdtempSync(join(tmpdir(), "prime-agent-daemon-replacement-fallback-"));
+		const root = mkdtempSync(join(tmpdir(), "amicus-daemon-replacement-fallback-"));
 		try {
 			const invalidAgentDir = join(root, "not-a-directory");
 			writeFileSync(invalidAgentDir, "file");
@@ -1753,8 +1753,8 @@ describe("daemon mode helpers", () => {
 	it.each(["resolved", "rejected"] as const)(
 		"does not send a replacement snapshot after the session closes while preparation is %s",
 		async (outcome) => {
-			const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-				defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp" },
+			const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+				defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp" },
 				createRuntime: async () => {
 					throw new Error("unexpected runtime creation");
 				},
@@ -1840,7 +1840,7 @@ describe("daemon mode helpers", () => {
 	);
 
 	it("registers passive descendants' scheduled jobs when their root becomes resident", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passive-descendant-jobs-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passive-descendant-jobs-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const childSessionId = basename(fixture.childArtifactDir);
@@ -1911,7 +1911,7 @@ describe("daemon mode helpers", () => {
 		})}\n`;
 
 	it("memoizes the passive topology walk until a topology input changes", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passive-memo-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passive-memo-"));
 		try {
 			const { fixture, internals } = makePassiveMemoHarness(tempDir);
 			await internals.createRuntime({ type: "create", sessionPath: fixture.parentSessionFile });
@@ -1938,7 +1938,7 @@ describe("daemon mode helpers", () => {
 	it.each(["display", "legacy"] as const)(
 		"retries a transient %s metadata read failure without a stat change",
 		async (source) => {
-			const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passive-read-retry-"));
+			const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passive-read-retry-"));
 			const readFile = fsPromises.readFile;
 			let readSpy: ReturnType<typeof vi.spyOn> | undefined;
 			try {
@@ -2006,7 +2006,7 @@ describe("daemon mode helpers", () => {
 	);
 
 	it("reports failed passive children as errors without creating child runtimes", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-list-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-list-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			// Simulate children written before rlmDepth was added to the extensible header.
@@ -2125,7 +2125,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("lists passive descendants under a nonresident saved root", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-nonresident-root-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-nonresident-root-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const parentManager = SessionManager.open(fixture.parentSessionFile);
@@ -2169,7 +2169,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("prefers the per-child display file over the legacy registry for passive metadata", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-display-over-registry-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-display-over-registry-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			// A post-consolidation write: the display file is fresher than the
@@ -2208,7 +2208,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("falls back to the legacy registry for a pre-ledger child without a display file", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-legacy-metadata-fallback-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-legacy-metadata-fallback-"));
 		try {
 			// The fixture writes registries exactly as the pre-consolidation daemon
 			// did and no display files: the pure migration state.
@@ -2252,7 +2252,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("ignores a crashed registry tail and protects a nested cycle back to the root", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-corrupt-registry-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-corrupt-registry-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const parentRegistry = join(fixture.parentArtifactDir, "rlm-subagents.jsonl");
@@ -2303,7 +2303,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("recomputes snapshot children when the runtime session changes during the passive walk", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-snapshot-replacement-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-snapshot-replacement-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2339,7 +2339,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("hydrates a passive child on agent message and delivers to it", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-message-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-message-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2376,7 +2376,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("does not match a renamed passive child by its stale registry name", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-renamed-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-renamed-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const siblingId = "child-2";
@@ -2430,7 +2430,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rehydrates completed children without rewriting their persisted completion", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-idempotent-rlm-hydration-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-idempotent-rlm-hydration-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2460,7 +2460,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("prefers the persisted header depth when a legacy registry entry lacks one", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-legacy-header-depth-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-legacy-header-depth-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const childLines = readFileSync(fixture.childSessionFile, "utf8").split("\n");
@@ -2498,7 +2498,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects direct messages to nested passive grandchildren without hydrating them", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-nested-message-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-nested-message-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2535,7 +2535,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("waits for an explicit open reservation before hydrating a passive child", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-reservation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-reservation-race-"));
 		let releaseOpen!: () => void;
 		const openGate = new Promise<void>((resolveGate) => {
 			releaseOpen = resolveGate;
@@ -2606,7 +2606,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects passive hydration while an update restart is fenced", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-update-hydration-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-update-hydration-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2627,7 +2627,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("coalesces a gated hydration with concurrent messaging and an explicit open", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-race-"));
 		let releaseHydration!: () => void;
 		const hydrationGate = new Promise<void>((resolveGate) => {
 			releaseHydration = resolveGate;
@@ -2676,7 +2676,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("keeps a parent resident while one of its passive descendants is hydrating", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-hydration-passivation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-hydration-passivation-race-"));
 		let releaseHydration!: () => void;
 		const hydrationGate = new Promise<void>((resolve) => {
 			releaseHydration = resolve;
@@ -2733,7 +2733,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("retries hydration when the target child starts passivating after the initial wait", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-child-hydration-passivation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-child-hydration-passivation-race-"));
 		let releasePassivation!: () => void;
 		const passivationGate = new Promise<void>((resolve) => {
 			releasePassivation = resolve;
@@ -2799,7 +2799,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("keeps a child resident while an attach snapshot is in flight", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-attach-passivation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-attach-passivation-race-"));
 		let releaseSnapshot!: () => void;
 		const snapshotGate = new Promise<void>((resolve) => {
 			releaseSnapshot = resolve;
@@ -2846,7 +2846,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("does not passivate a child that starts streaming during the fence snapshot", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passivation-stream-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passivation-stream-race-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -2881,7 +2881,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("keeps ownership of a resident child until passivation succeeds", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passivation-close-failure-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passivation-close-failure-"));
 		let releaseAbort!: () => void;
 		const abortGate = new Promise<void>((resolve) => {
 			releaseAbort = resolve;
@@ -2963,7 +2963,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("limits each worker sweep and leaves non-leaf children resident", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-passivation-cap.sock", {
+		const daemon = new AgentDaemon("/tmp/amicus-passivation-cap.sock", {
 			defaultSessionConfig: { agentDir: "/tmp", cwd: "/tmp" },
 			createRuntime: vi.fn(),
 		});
@@ -3011,7 +3011,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("passivates an idle leaf and makes list, attach, and message use the normal passive wake path", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passivate-child-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passivate-child-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3074,7 +3074,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("waits for passivation before rehydrating and delivering a racing a2a message", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-passivation-race-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-passivation-race-"));
 		let releaseDispose!: () => void;
 		const disposeGate = new Promise<void>((resolve) => {
 			releaseDispose = resolve;
@@ -3135,7 +3135,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("atomically fences RLM child cancellation on the authoritative roster token", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-conditional-rlm-cancel-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-conditional-rlm-cancel-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3189,7 +3189,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects a pre-recovery roster token after an event-sequence ABA", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-rlm-roster-recovery-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-rlm-roster-recovery-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3225,7 +3225,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("advances the roster token across passive hydration and passivation", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-rlm-roster-residency-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-rlm-roster-residency-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3267,7 +3267,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("refuses to delete a busy hydrated child and deletes it after it becomes idle", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-hydrated-rlm-delete-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-hydrated-rlm-delete-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3320,7 +3320,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("deletes a passive child without hydrating it and treats unknown children benignly", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-lazy-rlm-delete-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-lazy-rlm-delete-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3398,7 +3398,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("removes a deleted child's nested artifact dir but keeps its transcript and display tombstone", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-artifact-cleanup-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-artifact-cleanup-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			writeFileSync(join(fixture.childArtifactDir, "kernel-state.dill"), "payload");
@@ -3434,7 +3434,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("persists daemon sessions locally without trace uploads despite legacy sharing settings", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-local-session-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-local-session-"));
 		const originalAgentDir = process.env[ENV_AGENT_DIR];
 		process.env[ENV_AGENT_DIR] = tempDir;
 		const fetchSpy = vi.spyOn(globalThis, "fetch").mockResolvedValue(new Response("{}", { status: 200 }));
@@ -3444,7 +3444,7 @@ describe("daemon mode helpers", () => {
 			writeFileSync(join(tempDir, "settings.json"), JSON.stringify({ agentTraces: { enabled: true } }));
 			writeFileSync(
 				join(tempDir, "auth.json"),
-				JSON.stringify({ "prime-agent-traces": { type: "api_key", key: "legacy-trace-key" } }),
+				JSON.stringify({ "amicus-traces": { type: "api_key", key: "legacy-trace-key" } }),
 			);
 			const daemon = new AgentDaemon(join(tempDir, "daemon.sock"), {
 				defaultSessionConfig: { agentDir: tempDir, cwd: tempDir, sessionDir: join(tempDir, "sessions") },
@@ -3510,7 +3510,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("reconciles a stale display status on a tombstoned ledger edge (idempotent delete)", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-delete-reconcile-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-delete-reconcile-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3556,7 +3556,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("preserves the local transcript when deletion joins an in-flight passivation close", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-delete-passivation-flush-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-delete-passivation-flush-"));
 		const originalAgentDir = process.env[ENV_AGENT_DIR];
 		process.env[ENV_AGENT_DIR] = tempDir;
 		let releaseDispose!: () => void;
@@ -3607,7 +3607,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("sweeps the artifact dir even when child teardown throws", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-artifact-teardown-throw-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-artifact-teardown-throw-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3638,7 +3638,7 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("cancels scheduled jobs when deleting a pre-ledger legacy child without hydrating it", async () => {
-		const tempDir = mkdtempSync(join(tmpdir(), "prime-agent-daemon-legacy-delete-jobs-"));
+		const tempDir = mkdtempSync(join(tmpdir(), "amicus-daemon-legacy-delete-jobs-"));
 		try {
 			const fixture = makePersistedRlmDaemonFixture(tempDir);
 			const internals = fixture.daemon as unknown as {
@@ -3677,8 +3677,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("does not change a profile when provider work starts after the caller snapshot", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3709,8 +3709,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("changes an exact idle profile once with session-only persistence", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3739,8 +3739,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("acknowledges an exact target profile after a lost response without writing twice", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3766,8 +3766,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("repairs the single legacy model-first intermediate profile", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3792,8 +3792,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("serializes concurrent conditional profile changes for one session", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3829,8 +3829,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("rejects a conditional profile change after a concurrent kill wins the lifecycle fence", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3876,8 +3876,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("waits to close a session until its conditional profile transition commits", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},
@@ -3919,8 +3919,8 @@ describe("daemon mode helpers", () => {
 	});
 
 	it("serializes a legacy thinking mutation behind a conditional profile change", async () => {
-		const daemon = new AgentDaemon("/tmp/prime-agent-test.sock", {
-			defaultSessionConfig: { agentDir: "/tmp/prime-agent-test-agent", cwd: "/tmp/project" },
+		const daemon = new AgentDaemon("/tmp/amicus-test.sock", {
+			defaultSessionConfig: { agentDir: "/tmp/amicus-test-agent", cwd: "/tmp/project" },
 			createRuntime: async () => {
 				throw new Error("unexpected runtime creation");
 			},

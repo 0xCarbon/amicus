@@ -36,18 +36,18 @@ export function assembleBinaryArchives({ binaryDir, artifactsDir, version, requi
 	for (const platform of targets) {
 		const source = join(binaryDir, platform);
 		validateBinaryAssets(source);
-		const binary = join(source, "prime-agent");
+		const binary = join(source, "amicus");
 		if (!statSync(binary).isFile() || !(statSync(binary).mode & 0o111))
 			throw new Error(`Missing executable: ${binary}`);
-		const staging = mkdtempSync(join(tmpdir(), "prime-agent-archive-"));
+		const staging = mkdtempSync(join(tmpdir(), "amicus-archive-"));
 		try {
-			for (const name of ["prime-agent", ...binaryAssets])
+			for (const name of ["amicus", ...binaryAssets])
 				cpSync(join(source, name), join(staging, name), { recursive: true });
 			setBinaryVersion(staging, version);
-			chmodSync(join(staging, "prime-agent"), 0o755);
-			const file = `prime-agent-${version}-${platform}.tar.gz`;
+			chmodSync(join(staging, "amicus"), 0o755);
+			const file = `amicus-${version}-${platform}.tar.gz`;
 			const output = join(artifactsDir, file);
-			execFileSync("tar", ["-czf", output, "-C", staging, "prime-agent", ...binaryAssets], {
+			execFileSync("tar", ["-czf", output, "-C", staging, "amicus", ...binaryAssets], {
 				env: { ...process.env, COPYFILE_DISABLE: "1" },
 			});
 			archives.push({

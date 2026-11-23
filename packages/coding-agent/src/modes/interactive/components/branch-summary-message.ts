@@ -1,4 +1,4 @@
-import { Box, Clickable, Markdown, type MarkdownTheme, Spacer, Text } from "@earendil-works/pi-tui";
+import { Box, Clickable, Markdown, type MarkdownTheme, Spacer, Text } from "@amicus/tui";
 import type { BranchSummaryMessage } from "../../../core/messages.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 import { expandCollapseHint } from "./keybinding-hints.js";

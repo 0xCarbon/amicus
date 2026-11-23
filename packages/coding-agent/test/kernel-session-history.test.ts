@@ -3,17 +3,17 @@ import { existsSync, mkdtempSync, rmSync } from "node:fs";
 import { homedir, tmpdir } from "node:os";
 import { join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { expect, it } from "vitest";
 import { createSessionHistoryHandlers } from "../src/core/session-history.js";
 import { SessionManager } from "../src/core/session-manager.js";
 import { IpythonKernelProvisioner } from "../src/core/tools/ipython.js";
 
-const runtimeSource = fileURLToPath(new URL("../../../prime-agent-runtime/src", import.meta.url));
+const runtimeSource = fileURLToPath(new URL("../../../amicus-runtime/src", import.meta.url));
 const python = [
-	process.env.PRIME_AGENT_KERNEL_PYTHON,
+	process.env.AMICUS_KERNEL_PYTHON,
 	join(runtimeSource, "..", ".venv", "bin", "python"),
-	join(homedir(), ".prime", "agent", "kernel-venv", "bin", "python"),
+	join(homedir(), ".amicus", "kernel-venv", "bin", "python"),
 ].find(
 	(candidate) =>
 		candidate &&

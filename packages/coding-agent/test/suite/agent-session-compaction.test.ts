@@ -1,7 +1,7 @@
 import { appendFileSync, mkdirSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentMessage, ShouldStopAfterTurnContext } from "@earendil-works/pi-agent-core";
+import type { AgentMessage, ShouldStopAfterTurnContext } from "@amicus/agent-core";
 import {
 	type AssistantMessage,
 	fauxAssistantMessage,
@@ -9,7 +9,7 @@ import {
 	type Model,
 	type ToolResultMessage,
 	type Usage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../../src/config.js";
@@ -339,14 +339,14 @@ describe("AgentSession compaction", () => {
 	it("prepends the harness digest to the compaction head message on initial and update-merge compactions", async () => {
 		// Hermetic global store: the ambient developer harness would crowd the
 		// ranked digest window and hide the local fixture entry.
-		const previousAgentDir = process.env.PRIME_AGENT_CODING_AGENT_DIR;
+		const previousAgentDir = process.env.AMICUS_CODING_AGENT_DIR;
 		const agentDir = join(tmpdir(), `pi-compaction-digest-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(agentDir, { recursive: true });
 		tempDirs.push(agentDir);
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = agentDir;
+		process.env.AMICUS_CODING_AGENT_DIR = agentDir;
 		onTestFinished(() => {
-			if (previousAgentDir === undefined) delete process.env.PRIME_AGENT_CODING_AGENT_DIR;
-			else process.env.PRIME_AGENT_CODING_AGENT_DIR = previousAgentDir;
+			if (previousAgentDir === undefined) delete process.env.AMICUS_CODING_AGENT_DIR;
+			else process.env.AMICUS_CODING_AGENT_DIR = previousAgentDir;
 		});
 		const harness = await createHarness({
 			settings: { compaction: { keepRecentTokens: 1 } },

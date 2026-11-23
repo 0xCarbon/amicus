@@ -1,4 +1,4 @@
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 import { describe, expect, test } from "vitest";
 import { PRIME_INFERENCE_PROVIDER_ID } from "../src/core/prime-inference-auth.js";
 import { type OnboardingStartupState, shouldRunOnboarding } from "../src/modes/interactive/onboarding.js";

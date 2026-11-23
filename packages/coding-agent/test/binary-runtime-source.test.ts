@@ -15,9 +15,9 @@ afterEach(() => {
 it("resolves and fingerprints the Python source beside a standalone executable", async () => {
 	directory = mkdtempSync(join(tmpdir(), "prime-binary-runtime-"));
 	vi.stubEnv("PI_PACKAGE_DIR", directory);
-	const source = join(directory, "prime-agent-runtime");
+	const source = join(directory, "amicus-runtime");
 	mkdirSync(join(source, "src/rlm"), { recursive: true });
-	const files = { "pyproject.toml": '[project]\nname = "prime-agent-runtime"\n', "src/rlm/repl.py": "VALUE = 1\n" };
+	const files = { "pyproject.toml": '[project]\nname = "amicus-runtime"\n', "src/rlm/repl.py": "VALUE = 1\n" };
 	const expected = createHash("sha256");
 	for (const [name, content] of Object.entries(files)) {
 		writeFileSync(join(source, name), content);

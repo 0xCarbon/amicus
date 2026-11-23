@@ -27,7 +27,7 @@ vi.mock("../src/package-manager-cli.js", () => ({
 		mocks.packageCommands.push(args);
 		return true;
 	},
-	isSelfUpdateSource: (source: string) => source === "self" || source === "pi" || source === "prime-agent",
+	isSelfUpdateSource: (source: string) => source === "self" || source === "pi" || source === "amicus",
 }));
 
 vi.mock("../src/core/mcp/mcp-command.js", () => ({
@@ -196,7 +196,7 @@ describe("public command routing", () => {
 				args: [],
 				explicitAgentsView: false,
 			});
-			expect(write.mock.calls.map((call) => String(call[0])).join("")).toContain("prime-agent session editor");
+			expect(write.mock.calls.map((call) => String(call[0])).join("")).toContain("amicus session editor");
 			expect(mocks.daemonCommands).toEqual([]);
 		} finally {
 			rmSync(directory, { recursive: true, force: true });
@@ -388,10 +388,10 @@ describe("public command routing", () => {
 
 	it("shows sessions usage in command help", async () => {
 		await expect(handlePublicCommand(["help", "sessions"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("prime-agent sessions [--all] [--json]"));
+		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("amicus sessions [--all] [--json]"));
 	});
 
-	it("separates Prime Agent updates from package updates", async () => {
+	it("separates Amicus updates from package updates", async () => {
 		await handlePublicCommand(["update", "--force"]);
 		await handlePublicCommand(["package", "update"]);
 		await handlePublicCommand(["package", "update", "npm:@example/tools"]);
@@ -432,7 +432,7 @@ describe("public command routing", () => {
 	it.each<[string[]]>([
 		[["update", "self"]],
 		[["update", "--self"]],
-		[["update", "prime-agent"]],
+		[["update", "amicus"]],
 		[["update", "npm:@example/tools"]],
 		[["update", "--extensions"]],
 		[["update", "--self", "--extensions"]],
@@ -478,21 +478,21 @@ describe("public command routing", () => {
 
 	it("keeps the help topic when an explicit help flag follows it", async () => {
 		await expect(handlePublicCommand(["help", "status", "--help"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("prime-agent status [--json]"));
+		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("amicus status [--json]"));
 		await expect(handlePublicCommand(["--offline", "help", "mcp", "add", "-h"])).resolves.toMatchObject({
 			handled: true,
 		});
-		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("prime-agent mcp add <name>"));
+		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("amicus mcp add <name>"));
 		await expect(handlePublicCommand(["help", "--help"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenLastCalledWith(expect.not.stringContaining("prime-agent status [--json]"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.not.stringContaining("amicus status [--json]"));
 		expect(mocks.daemonCommands).toEqual([]);
 	});
 
 	it("treats help written after global flags as a help request", async () => {
 		await expect(handlePublicCommand(["--offline", "help"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("prime-agent - AI coding assistant"));
+		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("amicus - AI coding assistant"));
 		await expect(handlePublicCommand(["--offline", "help", "status"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("prime-agent status [--json]"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("amicus status [--json]"));
 		expect(mocks.daemonCommands).toEqual([]);
 		expect(process.exitCode).toBeUndefined();
 	});
@@ -501,30 +501,30 @@ describe("public command routing", () => {
 		await expect(handlePublicCommand(["--offline", "help", "mcp", "add"])).resolves.toMatchObject({
 			handled: true,
 		});
-		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("prime-agent mcp add <name>"));
+		expect(console.log).toHaveBeenCalledWith(expect.stringContaining("amicus mcp add <name>"));
 
 		await expect(handlePublicCommand(["help", "--verbose"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("prime-agent - AI coding assistant"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("amicus - AI coding assistant"));
 	});
 
 	it("excludes parseArgs-consumed flag values from the help command path", async () => {
 		await expect(handlePublicCommand(["help", "--resume", "status"])).resolves.toMatchObject({
 			handled: true,
 		});
-		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("prime-agent - AI coding assistant"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("amicus - AI coding assistant"));
 		await expect(handlePublicCommand(["help", "-r", "status"])).resolves.toMatchObject({ handled: true });
-		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("prime-agent - AI coding assistant"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("amicus - AI coding assistant"));
 		await expect(handlePublicCommand(["help", "--print", "status"])).resolves.toMatchObject({
 			handled: true,
 		});
-		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("prime-agent - AI coding assistant"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.stringContaining("amicus - AI coding assistant"));
 
 		// The print flag must not swallow the help flag itself: an explicit
 		// --help still defers to the per-command help block.
 		await expect(handlePublicCommand(["help", "--print", "--help"])).resolves.toMatchObject({
 			handled: true,
 		});
-		expect(console.log).toHaveBeenLastCalledWith(expect.not.stringContaining("prime-agent status [--json]"));
+		expect(console.log).toHaveBeenLastCalledWith(expect.not.stringContaining("amicus status [--json]"));
 	});
 
 	it("keeps a -- after the help command on the message path", async () => {
@@ -583,7 +583,7 @@ describe("public command routing", () => {
 		).resolves.toMatchObject({ handled: true });
 		expect(process.exitCode).toBe(1);
 		expect(console.error).toHaveBeenCalledWith(expect.stringContaining("--until must be after --since."));
-		expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Run "prime-agent help incident" for usage.'));
+		expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Run "amicus help incident" for usage.'));
 		expect(mocks.incidentCalls).toEqual([]);
 	});
 
@@ -591,7 +591,7 @@ describe("public command routing", () => {
 		await expect(handlePublicCommand(["incident", "--since", "yesterday"])).resolves.toMatchObject({ handled: true });
 		expect(process.exitCode).toBe(1);
 		expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Invalid time for --since: "yesterday"'));
-		expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Run "prime-agent help incident" for usage.'));
+		expect(console.error).toHaveBeenCalledWith(expect.stringContaining('Run "amicus help incident" for usage.'));
 		expect(mocks.incidentCalls).toEqual([]);
 	});
 

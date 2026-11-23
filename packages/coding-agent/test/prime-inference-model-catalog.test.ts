@@ -1,7 +1,7 @@
 import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { Model } from "@earendil-works/pi-ai";
+import type { Model } from "@amicus/ai";
 import { afterEach, describe, expect, it, test, vi } from "vitest";
 import {
 	buildPrimeInferenceModels,

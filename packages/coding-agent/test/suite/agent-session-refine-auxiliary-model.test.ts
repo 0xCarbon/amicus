@@ -1,12 +1,12 @@
-import type * as PiAi from "@earendil-works/pi-ai";
-import type { AssistantMessage } from "@earendil-works/pi-ai";
+import type * as PiAi from "@amicus/ai";
+import type { AssistantMessage } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const { completeSimpleMock } = vi.hoisted(() => ({
 	completeSimpleMock: vi.fn(),
 }));
 
-vi.mock("@earendil-works/pi-ai", async (importOriginal) => {
+vi.mock("@amicus/ai", async (importOriginal) => {
 	const actual = await importOriginal<typeof PiAi>();
 	return {
 		...actual,

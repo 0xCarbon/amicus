@@ -8,15 +8,15 @@ import { getLatestPiRelease } from "../src/utils/version-check.js";
 
 const artifact = {
 	platform: "linux-x64",
-	file: "prime-agent-1.2.4-linux-x64.tar.gz",
+	file: "amicus-1.2.4-linux-x64.tar.gz",
 	sha256: "b".repeat(64),
 };
-const tarball = "https://github.com/canesin/prime-agent/releases/download/v1.2.4/prime-agent-1.2.4.tgz";
+const tarball = "https://github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz";
 const invalidMetadata: Array<{ name: string; binaries: unknown }> = [
 	{ name: "invalid checksum", binaries: [{ ...artifact, sha256: "invalid" }] },
 	{ name: "duplicate platform", binaries: [artifact, artifact] },
 	{ name: "valid entry followed by invalid entry", binaries: [artifact, null] },
-	{ name: "wrong archive version", binaries: [{ ...artifact, file: "prime-agent-1.2.3-linux-x64.tar.gz" }] },
+	{ name: "wrong archive version", binaries: [{ ...artifact, file: "amicus-1.2.3-linux-x64.tar.gz" }] },
 	{ name: "non-array metadata", binaries: { artifact } },
 ];
 
@@ -29,14 +29,14 @@ describe("native release metadata isolation", () => {
 	beforeEach(() => {
 		vi.stubEnv("PI_SKIP_VERSION_CHECK", "");
 		vi.stubEnv("PI_OFFLINE", "");
-		vi.stubEnv("PRIME_AGENT_DOWNLOAD_BASE_URL", baseUrl);
+		vi.stubEnv("AMICUS_DOWNLOAD_BASE_URL", baseUrl);
 		root = realpathSync(mkdtempSync(join(tmpdir(), "prime-native-metadata-")));
 		const checksum = "a".repeat(64);
 		const releaseName = `1.2.3-linux-x64-${checksum}`;
 		const releaseDir = join(root, "releases", releaseName);
 		mkdirSync(releaseDir, { recursive: true });
 		mkdirSync(join(root, "bin"));
-		writeFileSync(join(root, ".managed"), "prime-agent-native-v1\n");
+		writeFileSync(join(root, ".managed"), "amicus-native-v1\n");
 		for (const asset of NATIVE_RELEASE_ASSETS) {
 			mkdirSync(dirname(join(releaseDir, asset)), { recursive: true });
 			writeFileSync(join(releaseDir, asset), "fixture\n");
@@ -44,10 +44,10 @@ describe("native release metadata isolation", () => {
 		writeFileSync(join(releaseDir, ".archive-sha256"), checksum);
 		writeFileSync(join(releaseDir, ".install-source"), baseUrl);
 		writeFileSync(join(releaseDir, "package.json"), JSON.stringify({ version: "1.2.3" }));
-		executable = join(releaseDir, "prime-agent");
+		executable = join(releaseDir, "amicus");
 		writeFileSync(executable, "fixture executable");
-		target = `../releases/${releaseName}/prime-agent`;
-		symlinkSync(target, join(root, "bin", "prime-agent"));
+		target = `../releases/${releaseName}/amicus`;
+		symlinkSync(target, join(root, "bin", "amicus"));
 	});
 
 	afterEach(() => {
@@ -64,7 +64,7 @@ describe("native release metadata isolation", () => {
 				vi.fn(async () =>
 					Response.json({
 						version: "v1.2.4",
-						package: "prime-agent",
+						package: "amicus",
 						tarball,
 						binaries,
 					}),
@@ -73,7 +73,7 @@ describe("native release metadata isolation", () => {
 
 			await expect(getLatestPiRelease("1.2.3")).resolves.toEqual({
 				version: "1.2.4",
-				packageName: "prime-agent",
+				packageName: "amicus",
 				installSpec: tarball,
 			});
 			for (const force of [false, true]) {
@@ -81,20 +81,20 @@ describe("native release metadata isolation", () => {
 					"No verified compiled archive is available for linux-x64.",
 				);
 			}
-			expect(readlinkSync(join(root, "bin", "prime-agent"))).toBe(target);
+			expect(readlinkSync(join(root, "bin", "amicus"))).toBe(target);
 		},
 	);
 
 	it("uses the verified platform checksum when the entire native list is valid", async () => {
 		vi.stubGlobal(
 			"fetch",
-			vi.fn(async () => Response.json({ version: "1.2.4", package: "prime-agent", tarball, binaries: [artifact] })),
+			vi.fn(async () => Response.json({ version: "1.2.4", package: "amicus", tarball, binaries: [artifact] })),
 		);
 
 		const plan = await getNativeUpdatePlan({ force: false, rollback: false, executable });
 
 		expect(plan.targetVersion).toBe("1.2.4");
-		expect(plan.command?.args).toContain(`PRIME_AGENT_EXPECTED_SHA256=${artifact.sha256}`);
-		expect(plan.command?.args).toContain("PRIME_AGENT_INSTALL_METHOD=binary");
+		expect(plan.command?.args).toContain(`AMICUS_EXPECTED_SHA256=${artifact.sha256}`);
+		expect(plan.command?.args).toContain("AMICUS_INSTALL_METHOD=binary");
 	});
 });

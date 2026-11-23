@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { registerFauxProvider } from "@earendil-works/pi-ai";
+import { registerFauxProvider } from "@amicus/ai";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../src/config.js";
 import { AGENT_MESSAGE_SKILL_NAME, type AgentSessionMessageController } from "../src/core/agent-messages.js";
@@ -43,7 +43,7 @@ describe("createAgentSessionFromServices", () => {
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
 		vi.stubEnv(ENV_AGENT_DIR, tempDir);
-		vi.stubEnv("PRIME_AGENT_TRACES_API_KEY", "unused-trace-key");
+		vi.stubEnv("AMICUS_TRACES_API_KEY", "unused-trace-key");
 		writeFileSync(join(tempDir, "settings.json"), JSON.stringify({ agentTraces: { enabled: true } }));
 		const services = await createAgentSessionServices({
 			cwd: tempDir,
@@ -104,7 +104,7 @@ describe("createAgentSessionFromServices", () => {
 
 	it("shows the telemetry disclosure independently of the Herdr reporter", async () => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const tempDir = join(tmpdir(), `pi-session-telemetry-notice-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
@@ -127,7 +127,7 @@ describe("createAgentSessionFromServices", () => {
 
 	it("defers the telemetry disclosure on a first interactive launch", async () => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const tempDir = join(tmpdir(), `pi-session-telemetry-first-run-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
@@ -152,7 +152,7 @@ describe("createAgentSessionFromServices", () => {
 
 	it("discloses telemetry immediately for sessions that never onboard", async () => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const tempDir = join(tmpdir(), `pi-session-telemetry-headless-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
@@ -175,7 +175,7 @@ describe("createAgentSessionFromServices", () => {
 
 	it("honors an explicit daemon-carried telemetry opt-out", async () => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const tempDir = join(tmpdir(), `pi-session-daemon-telemetry-opt-out-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
@@ -207,7 +207,7 @@ describe("createAgentSessionFromServices", () => {
 
 	it("does not install top-level telemetry for a resumed child session", async () => {
 		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("PRIME_AGENT_TELEMETRY", "1");
+		vi.stubEnv("AMICUS_TELEMETRY", "1");
 		const tempDir = join(tmpdir(), `pi-session-child-telemetry-${Date.now()}`);
 		mkdirSync(tempDir, { recursive: true });
 		cleanupPaths.push(tempDir);
@@ -245,7 +245,7 @@ describe("createAgentSessionFromServices", () => {
 		const tempDir = join(tmpdir(), `pi-session-mcp-prompt-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		const projectDir = join(tempDir, "project");
 		const agentDir = join(tempDir, "agent");
-		mkdirSync(join(projectDir, ".prime", "agent"), { recursive: true });
+		mkdirSync(join(projectDir, ".amicus"), { recursive: true });
 		mkdirSync(agentDir, { recursive: true });
 		cleanupPaths.push(tempDir);
 
@@ -267,7 +267,7 @@ describe("createAgentSessionFromServices", () => {
 			}),
 		);
 		writeFileSync(
-			join(projectDir, ".prime", "agent", "settings.json"),
+			join(projectDir, ".amicus", "settings.json"),
 			JSON.stringify({ mcpServers: { projectOnly: { type: "stdio", command: "project-secret" } } }),
 		);
 

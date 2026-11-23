@@ -16,7 +16,7 @@ SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
 CANDIDATE_TARBALLS = {
     f"{name}-0.0.0-benchmark.tgz"
-    for name in ("prime-agent", "prime-agent-ai", "prime-agent-core", "prime-agent-tui")
+    for name in ("amicus", "amicus-ai", "amicus-core", "amicus-tui")
 }
 
 
@@ -93,7 +93,7 @@ def install_verified_verifier(manifest: dict, environments: Path) -> None:
                 update={
                     "image": image,
                     "workdir": "/testbed",
-                    "artifacts": [Artifact(source="/tmp/prime-agent.patch")],
+                    "artifacts": [Artifact(source="/tmp/amicus.patch")],
                     "collect": [
                         CollectHook(
                             command=patch_collect_command(Path(task.data.task_dir))
@@ -222,7 +222,7 @@ def oracle_config_text(manifest: dict) -> str:
             "labels = "
             + toml_array(
                 [
-                    "prime-agent-behavioral-v1",
+                    "amicus-behavioral-v1",
                     f"repository:{os.environ.get('GITHUB_REPOSITORY', 'local/local')}",
                     f"run:{os.environ.get('GITHUB_RUN_ID', 'local')}",
                     f"attempt:{os.environ.get('GITHUB_RUN_ATTEMPT', 'local')}",
@@ -252,7 +252,7 @@ def oracle_config_text(manifest: dict) -> str:
             "labels = "
             + toml_array(
                 [
-                    "prime-agent-behavioral-v1",
+                    "amicus-behavioral-v1",
                     f"repository:{os.environ.get('GITHUB_REPOSITORY', 'local/local')}",
                     f"run:{os.environ.get('GITHUB_RUN_ID', 'local')}",
                     f"attempt:{os.environ.get('GITHUB_RUN_ATTEMPT', 'local')}",

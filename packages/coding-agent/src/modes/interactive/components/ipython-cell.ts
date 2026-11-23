@@ -1,10 +1,4 @@
-import {
-	type Component,
-	truncateToWidth,
-	VersionedRenderCache,
-	visibleWidth,
-	wrapTextWithAnsi,
-} from "@earendil-works/pi-tui";
+import { type Component, truncateToWidth, VersionedRenderCache, visibleWidth, wrapTextWithAnsi } from "@amicus/tui";
 import { formatAgentMessageParticipant } from "../../../core/agent-messages.js";
 import { previewIpythonCode, pythonStatementLines } from "../../../core/tools/code-preview.js";
 import { generateDiffString } from "../../../core/tools/edit-diff.js";

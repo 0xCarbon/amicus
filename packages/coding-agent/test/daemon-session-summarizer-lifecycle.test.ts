@@ -1,4 +1,4 @@
-import * as ai from "@earendil-works/pi-ai";
+import * as ai from "@amicus/ai";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import { SettingsManager } from "../src/core/settings-manager.js";
 import type { ActiveSessionState } from "../src/modes/daemon/active-session-state.js";

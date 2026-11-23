@@ -7,7 +7,7 @@ import {
 	type TUI,
 	truncateToWidth,
 	visibleWidth,
-} from "@earendil-works/pi-tui";
+} from "@amicus/tui";
 
 interface CenteredOverlayOptions {
 	getRows: () => number;

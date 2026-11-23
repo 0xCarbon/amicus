@@ -21,7 +21,7 @@ export const NATIVE_PLATFORMS = [
 const NATIVE_PLATFORM_PATTERN = [...NATIVE_PLATFORMS].sort((left, right) => right.length - left.length).join("|");
 
 const NATIVE_RELEASE_DIRECTORY = new RegExp(
-	`^\\.\\./releases/(\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?)-(${NATIVE_PLATFORM_PATTERN})-([a-f0-9]{64})(?:\\.[A-Za-z0-9]{6})?/prime-agent$`,
+	`^\\.\\./releases/(\\d+\\.\\d+\\.\\d+(?:-[0-9A-Za-z.-]+)?)-(${NATIVE_PLATFORM_PATTERN})-([a-f0-9]{64})(?:\\.[A-Za-z0-9]{6})?/amicus$`,
 );
 
 export function isNativePlatform(platform: string): boolean {
@@ -29,11 +29,11 @@ export function isNativePlatform(platform: string): boolean {
 }
 
 export const NATIVE_RELEASE_ASSETS = [
-	"prime-agent",
+	"amicus",
 	"package.json",
 	"install.sh",
-	"prime-agent-runtime/pyproject.toml",
-	"prime-agent-runtime/src/rlm/repl.py",
+	"amicus-runtime/pyproject.toml",
+	"amicus-runtime/src/rlm/repl.py",
 	"theme/prime.json",
 	"export-html/template.html",
 	"photon_rs_bg.wasm",
@@ -61,7 +61,7 @@ function readNativeTarget(root: string, link: string, recoveredTarget?: string):
 		for (const part of [".managed", "bin", "releases"]) {
 			if (lstatSync(join(root, part)).isSymbolicLink()) return undefined;
 		}
-		if (readFileSync(join(root, ".managed"), "utf8").trim() !== "prime-agent-native-v1") return undefined;
+		if (readFileSync(join(root, ".managed"), "utf8").trim() !== "amicus-native-v1") return undefined;
 		const launcher = join(root, "bin", link);
 		const target = recoveredTarget ?? readlinkSync(launcher);
 		const match = NATIVE_RELEASE_DIRECTORY.exec(target);
@@ -82,7 +82,7 @@ function readNativeTarget(root: string, link: string, recoveredTarget?: string):
 	}
 }
 
-export function readNativeInstallation(root: string, link = "prime-agent"): NativeInstallation | undefined {
+export function readNativeInstallation(root: string, link = "amicus"): NativeInstallation | undefined {
 	return validateNativeInstallation(readNativeTarget(root, link));
 }
 
@@ -118,12 +118,12 @@ export function readNativeRollbackInstallation(root: string): NativeInstallation
 	if (!state.isFile() || state.isSymbolicLink()) throw invalid();
 	const recorded = /^([^\n]+)\n([^\n]*)\n$/.exec(readFileSync(statePath, "utf8"));
 	if (!recorded) throw invalid();
-	const target = validateNativeInstallation(readNativeTarget(root, "prime-agent", recorded[1]));
+	const target = validateNativeInstallation(readNativeTarget(root, "amicus", recorded[1]));
 	const previous = recorded[2]
 		? validateNativeInstallation(readNativeTarget(root, "previous", recorded[2]))
 		: undefined;
 	if (!target || (recorded[2] && !previous)) throw invalid();
-	const current = readNativeTarget(root, "prime-agent");
+	const current = readNativeTarget(root, "amicus");
 	// Planning predicts the locked installer's recovery without modifying either launcher.
 	if (current?.executable === target.executable) return previous;
 	if (previous && current?.executable === previous.executable) return readNativeInstallation(root, "previous");
@@ -139,7 +139,7 @@ export function getNativeInstallationTarget(executable = process.execPath): Nati
 	try {
 		const actual = realpathSync(executable);
 		const root = resolve(dirname(actual), "../..");
-		const installation = readNativeTarget(root, "prime-agent");
+		const installation = readNativeTarget(root, "amicus");
 		// A running process may belong to the previous release after activation.
 		return installation && dirname(dirname(actual)) === join(root, "releases") ? installation : undefined;
 	} catch {

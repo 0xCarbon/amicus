@@ -1,4 +1,4 @@
-import { getLogger } from "@earendil-works/pi-ai";
+import { getLogger } from "@amicus/ai";
 import { existsSync, readdirSync, readFileSync, statSync } from "fs";
 import { basename, dirname, join, relative, resolve } from "path";
 import { CONFIG_DIR_NAME, getAgentDir } from "../config.js";

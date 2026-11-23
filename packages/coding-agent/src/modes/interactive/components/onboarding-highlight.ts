@@ -1,4 +1,4 @@
-import { blendColor, isLightColor, type Rgb, rgbTo256 } from "@earendil-works/pi-tui";
+import { blendColor, isLightColor, type Rgb, rgbTo256 } from "@amicus/tui";
 import { theme } from "../theme/theme.js";
 
 /** How far a selected row lifts off the canvas; lower reads more transparent. */

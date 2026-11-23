@@ -1,8 +1,8 @@
 import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentTool } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage, fauxToolCall } from "@earendil-works/pi-ai";
+import type { AgentTool } from "@amicus/agent-core";
+import { fauxAssistantMessage, fauxToolCall } from "@amicus/ai";
 import { Type } from "typebox";
 import { afterEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import type { BashResult } from "../../src/core/bash-executor.js";
@@ -1209,14 +1209,14 @@ describe("Harness digest at cold boundaries", () => {
 	});
 
 	function isolatedAgentDir(prefix: string): string {
-		const previousAgentDir = process.env.PRIME_AGENT_CODING_AGENT_DIR;
+		const previousAgentDir = process.env.AMICUS_CODING_AGENT_DIR;
 		const agentDir = join(tmpdir(), `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(agentDir, { recursive: true });
 		tempDirs.push(agentDir);
-		process.env.PRIME_AGENT_CODING_AGENT_DIR = agentDir;
+		process.env.AMICUS_CODING_AGENT_DIR = agentDir;
 		onTestFinished(() => {
-			if (previousAgentDir === undefined) delete process.env.PRIME_AGENT_CODING_AGENT_DIR;
-			else process.env.PRIME_AGENT_CODING_AGENT_DIR = previousAgentDir;
+			if (previousAgentDir === undefined) delete process.env.AMICUS_CODING_AGENT_DIR;
+			else process.env.AMICUS_CODING_AGENT_DIR = previousAgentDir;
 		});
 		return agentDir;
 	}

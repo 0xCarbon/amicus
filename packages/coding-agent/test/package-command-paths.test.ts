@@ -51,8 +51,8 @@ describe("package commands", () => {
 		const normalized = version.replace(/^v/, "");
 		return {
 			version,
-			package: "prime-agent",
-			tarball: `https://github.com/canesin/prime-agent/releases/download/v${normalized}/prime-agent-${normalized}.tgz`,
+			package: "amicus",
+			tarball: `https://github.com/0xCarbon/amicus/releases/download/v${normalized}/amicus-${normalized}.tgz`,
 		};
 	}
 
@@ -151,7 +151,7 @@ describe("package commands", () => {
 	});
 
 	it("keeps a successful extension update when the nightly manifest is missing for an all target", async () => {
-		process.env.PRIME_AGENT_DOWNLOAD_BASE_URL = "https://downloads.example.test/prime-agent";
+		process.env.AMICUS_DOWNLOAD_BASE_URL = "https://downloads.example.test/amicus";
 		vi.stubGlobal(
 			"fetch",
 			vi.fn(async () => new Response("", { status: 404 })),
@@ -185,7 +185,7 @@ describe("package commands", () => {
 			await expect(handlePackageCommand(["update", "--extensions", "--nightly"])).resolves.toBe(true);
 
 			const stderr = errorSpy.mock.calls.map(([message]) => String(message)).join("\n");
-			expect(stderr).toContain("--nightly and --stable only apply to Prime Agent itself");
+			expect(stderr).toContain("--nightly and --stable only apply to Amicus itself");
 			expect(process.exitCode).toBe(1);
 		} finally {
 			errorSpy.mockRestore();
@@ -217,7 +217,7 @@ describe("package commands", () => {
 			globalPrefix,
 			"lib",
 			"node_modules",
-			options.installDir ?? join(options.scope ?? "@earendil-works", "pi-coding-agent"),
+			options.installDir ?? join(options.scope ?? "@amicus", "coding-agent"),
 		);
 		const fakeNpmPath = join(tempDir, "fake-npm.cjs");
 		const recordPath = join(tempDir, "self-update.json");
@@ -240,9 +240,9 @@ ${options.failInstall ? 'if(args.includes("install")) process.exit(23);' : ""}
 			JSON.stringify({ npmCommand: [originalExecPath, fakeNpmPath, "--prefix", globalPrefix] }, null, 2),
 		);
 		if (options.projectNpmCommand) {
-			mkdirSync(join(projectDir, ".prime", "agent"), { recursive: true });
+			mkdirSync(join(projectDir, ".amicus"), { recursive: true });
 			writeFileSync(
-				join(projectDir, ".prime", "agent", "settings.json"),
+				join(projectDir, ".amicus", "settings.json"),
 				JSON.stringify({ npmCommand: [originalExecPath, fakeNpmPath, "--prefix", projectPrefix] }, null, 2),
 			);
 		}
@@ -312,7 +312,7 @@ ${options.failInstall ? 'if(args.includes("install")) process.exit(23);' : ""}
 			expect.arrayContaining([
 				"install",
 				"-g",
-				"https://github.com/canesin/prime-agent/releases/download/v0.73.0/prime-agent-0.73.0.tgz",
+				"https://github.com/0xCarbon/amicus/releases/download/v0.73.0/amicus-0.73.0.tgz",
 			]),
 			expect.arrayContaining(["uninstall", "-g", PACKAGE_NAME]),
 		]);
@@ -320,11 +320,10 @@ ${options.failInstall ? 'if(args.includes("install")) process.exit(23);' : ""}
 
 	it("fails closed without running npm when the fork release manifest is off-origin", async () => {
 		const fixture = setupSelfUpdate({
-			installDir: "prime-agent",
+			installDir: "amicus",
 			manifest: {
 				...forkManifest("0.73.0"),
-				tarball:
-					"https://github.com/PrimeIntellect-ai/prime-agent/releases/download/v0.73.0/prime-agent-0.73.0.tgz",
+				tarball: "https://github.com/PrimeIntellect-ai/prime-agent/releases/download/v0.73.0/amicus-0.73.0.tgz",
 			},
 		});
 
@@ -355,7 +354,7 @@ ${options.failInstall ? 'if(args.includes("install")) process.exit(23);' : ""}
 		expect(JSON.parse(readFileSync(join(agentDir, "settings.json"), "utf-8")).updateChannel).toBeUndefined();
 	});
 
-	it("does not self-update when the same-version manifest uses the Prime Agent package alias", async () => {
+	it("does not self-update when the same-version manifest uses the Amicus package alias", async () => {
 		const fixture = setupSelfUpdate({ manifest: forkManifest(VERSION) });
 
 		await expect(main(["update"])).resolves.toBeUndefined();
@@ -378,7 +377,7 @@ ${options.failInstall ? 'if(args.includes("install")) process.exit(23);' : ""}
 			expect.arrayContaining([
 				"install",
 				"-g",
-				"https://github.com/canesin/prime-agent/releases/download/v0.73.0/prime-agent-0.73.0.tgz",
+				"https://github.com/0xCarbon/amicus/releases/download/v0.73.0/amicus-0.73.0.tgz",
 			]),
 		]);
 	});

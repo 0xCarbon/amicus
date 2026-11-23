@@ -1,9 +1,9 @@
 # MCP Integrations
 
-Connect external services (Linear, Notion, …) to Prime Agent over the
+Connect external services (Linear, Notion, …) to Amicus over the
 [Model Context Protocol](https://modelcontextprotocol.io).
 
-Consistent with Prime Agent's single-tool design, MCP integrations are **not**
+Consistent with Amicus's single-tool design, MCP integrations are **not**
 exposed as new agent tools. Every service is reached through the one generic
 Python `mcp` module that is pre-imported in the kernel:
 
@@ -35,9 +35,9 @@ storage and refresh, and connection verification.
 - Each card shows its honest state: **Connect**, **Connected**, **Reconnect**,
   **Verifying**, **Requires setup**, or **Disabled**.
 - Press Enter on a **Connect** card to review and complete browser OAuth. The
-  credentials are stored locally in `~/.prime/agent/auth.json` under
-  `mcp:<service>`; Prime Agent never proxies them.
-- After login, Prime Agent verifies the connection with a real MCP handshake
+  credentials are stored locally in `~/.amicus/auth.json` under
+  `mcp:<service>`; Amicus never proxies them.
+- After login, Amicus verifies the connection with a real MCP handshake
   (initialize + `tools/list`). A stored token alone is never reported as
   Connected: until the handshake succeeds the state stays **Verifying** or
   **Reconnect**. On success the connection activates in the current conversation
@@ -51,7 +51,7 @@ storage and refresh, and connection verification.
 same connections. The advanced subcommands (`/mcp add|list|get|remove`) remain
 available and unchanged.
 
-Connection records live in `~/.prime/agent/mcp-connections.json`. They keep the
+Connection records live in `~/.amicus/mcp-connections.json`. They keep the
 `connectionId` (the dispatch id and credential key), the catalog `serviceId`, the
 bound endpoint, and the last verification result. Multiple accounts per service
 will use distinct connection ids; grants are never merged because names look
@@ -59,7 +59,7 @@ similar.
 
 ## How a call works
 
-The tool set is defined by the **server**, not by Prime Agent, so discover before
+The tool set is defined by the **server**, not by Amicus, so discover before
 you call — don't assume tool names or arguments:
 
 ```python
@@ -108,20 +108,20 @@ an explicit user action in `/plugins`.
 ## Generic MCP servers
 
 Manage generic servers from either the shell (which exits without starting an
-agent) or the TUI. Both surfaces update only `~/.prime/agent/settings.json`:
+agent) or the TUI. Both surfaces update only `~/.amicus/settings.json`:
 
 ```bash
-prime-agent mcp add remote --url https://mcp.example.com/mcp --bearer-token-env-var EXAMPLE_TOKEN
-prime-agent mcp add local --cwd /absolute/path --env TOKEN=EXAMPLE_TOKEN -- node server.js --stdio
-prime-agent mcp list
-prime-agent mcp get remote
-prime-agent mcp remove remote
+amicus mcp add remote --url https://mcp.example.com/mcp --bearer-token-env-var EXAMPLE_TOKEN
+amicus mcp add local --cwd /absolute/path --env TOKEN=EXAMPLE_TOKEN -- node server.js --stdio
+amicus mcp list
+amicus mcp get remote
+amicus mcp remove remote
 ```
 
 Use the same forms after `/mcp` in the TUI. Add `--oauth` for the existing OAuth
 login flow and then use `/mcp login <name>`; use `--force` to replace a complete
 existing entry. Static secret values are not accepted: bearer and stdio secrets
-are environment-variable references. Project `.prime/agent/settings.json` MCP
+are environment-variable references. Project `.amicus/settings.json` MCP
 entries are ignored for execution, so a repository cannot start a local process
 or shadow a user server.
 
@@ -193,9 +193,9 @@ Existing `mcp:linear` / `mcp:notion` credentials keep working unchanged; run
 - Discover before assuming tool names or argument schemas.
 - Token presence is not connection readiness; the Connected state requires a
   verified handshake.
-- Generic MCP connections are kernel-local. Separate Prime Agent sessions use
+- Generic MCP connections are kernel-local. Separate Amicus sessions use
   separate connections even when they reference the same user setting.
-- A custom `PRIME_AGENT_KERNEL_PYTHON` must include the current
-  `prime-agent-runtime` dependencies.
+- A custom `AMICUS_KERNEL_PYTHON` must include the current
+  `amicus-runtime` dependencies.
 
 See also: [Skills](skills.md), [Settings](settings.md).

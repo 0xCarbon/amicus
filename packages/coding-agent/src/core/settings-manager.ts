@@ -1,4 +1,4 @@
-import type { ServiceTier, Transport } from "@earendil-works/pi-ai";
+import type { ServiceTier, Transport } from "@amicus/ai";
 import { existsSync, mkdirSync, readFileSync } from "fs";
 import { homedir } from "os";
 import { dirname, join } from "path";
@@ -249,8 +249,8 @@ export interface Settings {
 	prompts?: string[]; // Array of local prompt template paths or directories
 	themes?: string[]; // Array of local theme file paths or directories
 	enableSkillCommands?: boolean; // default: true - register skills as /skill:name commands
-	bundledSkills?: BundledSkillsSettings; // Configure built-in skills shipped with Prime Agent
-	enableBuiltinSkills?: boolean; // default: true - load built-in skills shipped with prime-agent
+	bundledSkills?: BundledSkillsSettings; // Configure built-in skills shipped with Amicus
+	enableBuiltinSkills?: boolean; // default: true - load built-in skills shipped with amicus
 	terminal?: TerminalSettings;
 	images?: ImageSettings;
 	enabledModels?: string[]; // Model patterns for cycling (same format as --models CLI flag)

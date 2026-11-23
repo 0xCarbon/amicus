@@ -10,7 +10,7 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { UserMessage } from "@earendil-works/pi-ai";
+import type { UserMessage } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 import { SESSION_DOCUMENT_MARKER as M, renderSessionDocument } from "../src/core/session-editor/document.js";
 import {
@@ -239,7 +239,7 @@ describe("session edit file flow", () => {
 	});
 
 	it("refuses to write an active session without the worker-only lease flag unless forced (#18)", () => {
-		const env = { PRIME_AGENT_INTERNAL_SESSION_LEASES: "1" };
+		const env = { AMICUS_INTERNAL_SESSION_LEASES: "1" };
 		const lease = acquireSessionLease(sessionPath, directory, env);
 		try {
 			expect(() =>

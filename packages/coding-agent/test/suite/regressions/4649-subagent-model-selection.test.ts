@@ -1,4 +1,4 @@
-import { type Api, fauxAssistantMessage, type Model } from "@earendil-works/pi-ai";
+import { type Api, fauxAssistantMessage, type Model } from "@amicus/ai";
 import { describe, expect, it, vi } from "vitest";
 import type { HostRequestHandlers } from "../../../src/core/kernel/index.js";
 import { findUniqueRlmShortFormModelMatch, formatRlmModelUnavailableError } from "../../../src/core/rlm-runtime.js";

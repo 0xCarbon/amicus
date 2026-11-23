@@ -5,7 +5,7 @@
  * and provides a transformer to convert them to LLM-compatible messages.
  */
 
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import type {
 	Api,
 	AssistantMessage,
@@ -17,7 +17,7 @@ import type {
 	ToolResultMessage,
 	Usage,
 	UserMessage,
-} from "@earendil-works/pi-ai";
+} from "@amicus/ai";
 import type { AgentCronJob } from "./cron-jobs.js";
 import {
 	type AppliedRefinementEdit,
@@ -383,7 +383,7 @@ export interface CompactionSummaryMessage {
 	timestamp: number;
 }
 
-declare module "@earendil-works/pi-agent-core" {
+declare module "@amicus/agent-core" {
 	interface CustomAgentMessages {
 		bashExecution: BashExecutionMessage;
 		custom: CustomMessage;

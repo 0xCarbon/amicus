@@ -14,7 +14,7 @@ import type { PythonSkillRuntimeInfo } from "../skills.js";
 
 const BOOTSTRAP_SCHEMA = 9;
 const PYTHON_VERSION = "3.11";
-const RUNTIME_REQUIREMENT = "prime-agent-runtime";
+const RUNTIME_REQUIREMENT = "amicus-runtime";
 // Serializes the kernel's user namespace so it can be revived across session
 // resume. Internal-only; intentionally not surfaced to the model as an import.
 const STATE_SNAPSHOT_REQUIREMENT = "dill";
@@ -61,7 +61,7 @@ export function buildBatchShimInvocation(
 	}
 	const env = { ...baseEnv };
 	const variables = values.map((value, index) => {
-		const name = `PRIME_AGENT_BATCH_${token}_${index}`;
+		const name = `AMICUS_BATCH_${token}_${index}`;
 		env[name] = value;
 		return `"%${name}%"`;
 	});
@@ -95,7 +95,7 @@ const REQUIRED_HARNESS_METHODS = [
 	"delete_prompt_note",
 	"record_refinement",
 ];
-export const RUNTIME_READY_CHECK = `import inspect; import rlm; from rlm import McpIntegration; import rlm.mcp as mcp; from rlm.harness import HarnessEntry; _harness_methods = ${JSON.stringify(REQUIRED_HARNESS_METHODS)}; assert callable(mcp.list_tools); assert callable(mcp.call_tool); assert all(callable(getattr(mcp, _m, None)) for _m in ${JSON.stringify(REQUIRED_MCP_DISCOVERY_METHODS)}), "rlm.mcp is missing MCP discovery methods (list_plugins, search_plugins, list_connections, search_tools, describe_tool); the kernel venv needs a current prime-agent-runtime"; assert callable(rlm.spawn); assert hasattr(rlm, 'rlm'); assert callable(rlm.rlm.spawn); assert inspect.signature(rlm.spawn).parameters['name'].default is inspect.Parameter.empty; assert not hasattr(rlm, 'run'); assert not hasattr(rlm.rlm, 'run'); assert callable(rlm.host_request); assert callable(rlm.find_models); assert callable(rlm.rlm.find_models); assert callable(rlm.create_session); assert callable(rlm.rlm.create_session); assert callable(rlm.progress_note); assert callable(rlm.rlm.progress_note); assert hasattr(rlm, 'harness'); assert hasattr(rlm, 'get_harness_state'); assert hasattr(rlm.rlm, 'harness'); assert hasattr(rlm.rlm, 'get_harness_state'); assert all(callable(getattr(_harness, _method, None)) for _harness in (rlm.harness, rlm.rlm.harness) for _method in _harness_methods); assert 'reference' in HarnessEntry.__dataclass_fields__; assert 'scope' in HarnessEntry.__dataclass_fields__; assert 'reference' in inspect.signature(rlm.harness.create_skill).parameters; assert 'reference' in inspect.signature(rlm.harness.update_skill).parameters; assert 'global_' in inspect.signature(rlm.harness.create_memory).parameters; assert 'global_' in inspect.signature(rlm.get_harness_state).parameters; assert not hasattr(rlm, 'background'); assert not hasattr(rlm.rlm, 'background'); from rlm.bash import BashHandle, BashResult; assert callable(rlm.bash); assert all(callable(getattr(BashHandle, _m, None)) for _m in ('tail', 'output', 'poll', 'kill')); assert {'exit_code', 'output', 'duration'} <= set(BashResult.__dataclass_fields__); import rlm.repl as _repl; assert callable(_repl.main); assert callable(_repl.emit); assert callable(_repl.host_request); assert callable(_repl.is_active); assert _repl.PROTOCOL_VERSION == 3; assert callable(rlm.emit); assert not hasattr(rlm, 'HOST_COMM_TARGET'); assert not hasattr(mcp, 'install_shutdown_hook')`;
+export const RUNTIME_READY_CHECK = `import inspect; import rlm; from rlm import McpIntegration; import rlm.mcp as mcp; from rlm.harness import HarnessEntry; _harness_methods = ${JSON.stringify(REQUIRED_HARNESS_METHODS)}; assert callable(mcp.list_tools); assert callable(mcp.call_tool); assert all(callable(getattr(mcp, _m, None)) for _m in ${JSON.stringify(REQUIRED_MCP_DISCOVERY_METHODS)}), "rlm.mcp is missing MCP discovery methods (list_plugins, search_plugins, list_connections, search_tools, describe_tool); the kernel venv needs a current amicus-runtime"; assert callable(rlm.spawn); assert hasattr(rlm, 'rlm'); assert callable(rlm.rlm.spawn); assert inspect.signature(rlm.spawn).parameters['name'].default is inspect.Parameter.empty; assert not hasattr(rlm, 'run'); assert not hasattr(rlm.rlm, 'run'); assert callable(rlm.host_request); assert callable(rlm.find_models); assert callable(rlm.rlm.find_models); assert callable(rlm.create_session); assert callable(rlm.rlm.create_session); assert callable(rlm.progress_note); assert callable(rlm.rlm.progress_note); assert hasattr(rlm, 'harness'); assert hasattr(rlm, 'get_harness_state'); assert hasattr(rlm.rlm, 'harness'); assert hasattr(rlm.rlm, 'get_harness_state'); assert all(callable(getattr(_harness, _method, None)) for _harness in (rlm.harness, rlm.rlm.harness) for _method in _harness_methods); assert 'reference' in HarnessEntry.__dataclass_fields__; assert 'scope' in HarnessEntry.__dataclass_fields__; assert 'reference' in inspect.signature(rlm.harness.create_skill).parameters; assert 'reference' in inspect.signature(rlm.harness.update_skill).parameters; assert 'global_' in inspect.signature(rlm.harness.create_memory).parameters; assert 'global_' in inspect.signature(rlm.get_harness_state).parameters; assert not hasattr(rlm, 'background'); assert not hasattr(rlm.rlm, 'background'); from rlm.bash import BashHandle, BashResult; assert callable(rlm.bash); assert all(callable(getattr(BashHandle, _m, None)) for _m in ('tail', 'output', 'poll', 'kill')); assert {'exit_code', 'output', 'duration'} <= set(BashResult.__dataclass_fields__); import rlm.repl as _repl; assert callable(_repl.main); assert callable(_repl.emit); assert callable(_repl.host_request); assert callable(_repl.is_active); assert _repl.PROTOCOL_VERSION == 3; assert callable(rlm.emit); assert not hasattr(rlm, 'HOST_COMM_TARGET'); assert not hasattr(mcp, 'install_shutdown_hook')`;
 const BOOTSTRAP_VERSION_FILE = ".bootstrap-version";
 const BOOTSTRAP_VERSION_TMP_FILE = `${BOOTSTRAP_VERSION_FILE}.tmp`;
 const BOOTSTRAP_LOCK_NAME = ".bootstrap.lock";
@@ -376,8 +376,8 @@ function formatPythonSkillInstallArgs(skill: BootstrapPythonSkill): string[] {
 
 function ensureKernelPythonKey(pythonSkills: readonly BootstrapPythonSkill[]): string {
 	return [
-		process.env.PRIME_AGENT_KERNEL_PYTHON ?? "",
-		process.env.PRIME_AGENT_KERNEL_VENV ?? "",
+		process.env.AMICUS_KERNEL_PYTHON ?? "",
+		process.env.AMICUS_KERNEL_VENV ?? "",
 		process.env.HOME ?? "",
 		process.env.XDG_DATA_HOME ?? "",
 		JSON.stringify(pythonSkills),
@@ -385,9 +385,9 @@ function ensureKernelPythonKey(pythonSkills: readonly BootstrapPythonSkill[]): s
 }
 
 export function getKernelVenvDir(): string {
-	const override = process.env.PRIME_AGENT_KERNEL_VENV;
+	const override = process.env.AMICUS_KERNEL_VENV;
 	if (override) return path.resolve(expandHome(override));
-	return path.join(os.homedir(), ".prime", "agent", "kernel-venv");
+	return path.join(os.homedir(), ".amicus", "kernel-venv");
 }
 
 function getXdgKernelVenvDir(): string {
@@ -403,7 +403,7 @@ async function resolveWritableKernelVenvDir(): Promise<string> {
 		await mkdir(path.dirname(primary), { recursive: true });
 		return primary;
 	} catch (primaryError) {
-		if (process.env.PRIME_AGENT_KERNEL_VENV) {
+		if (process.env.AMICUS_KERNEL_VENV) {
 			throw new Error(`couldn't create kernel venv parent directory for ${primary}: ${errorMessage(primaryError)}`);
 		}
 
@@ -413,7 +413,7 @@ async function resolveWritableKernelVenvDir(): Promise<string> {
 			return fallback;
 		} catch (fallbackError) {
 			throw new Error(
-				`couldn't create kernel venv directory at ${primary} or ${fallback}; set PRIME_AGENT_KERNEL_PYTHON to a python with a current prime-agent-runtime installed. ${errorMessage(fallbackError)}`,
+				`couldn't create kernel venv directory at ${primary} or ${fallback}; set AMICUS_KERNEL_PYTHON to a python with a current amicus-runtime installed. ${errorMessage(fallbackError)}`,
 			);
 		}
 	}
@@ -454,7 +454,7 @@ async function pythonImports(python: string, moduleName: string): Promise<boolea
 	}
 }
 
-async function hasPrimeAgentRuntime(python: string): Promise<boolean> {
+async function hasAmicusRuntime(python: string): Promise<boolean> {
 	try {
 		await run(python, ["-c", RUNTIME_READY_CHECK], { stdio: "ignore" });
 		return true;
@@ -566,12 +566,11 @@ async function ensureUv(options: EnsureKernelPythonOptions): Promise<string> {
 	const localUv = path.join(os.homedir(), ".local", "bin", process.platform === "win32" ? "uv.exe" : "uv");
 	if (await isExecutable(localUv)) return localUv;
 
-	const shouldInstallUv =
-		process.env.PRIME_AGENT_INSTALL_UV === "1" || (!options.onProgress && (await confirmUvInstall()));
+	const shouldInstallUv = process.env.AMICUS_INSTALL_UV === "1" || (!options.onProgress && (await confirmUvInstall()));
 	if (!shouldInstallUv) {
 		throw new Error(
 			`uv is required to set up the Python kernel. Install uv yourself: ${UV_INSTALL_COMMAND}, ` +
-				"or set PRIME_AGENT_INSTALL_UV=1 to let prime-agent run that installer.",
+				"or set AMICUS_INSTALL_UV=1 to let amicus run that installer.",
 		);
 	}
 
@@ -580,7 +579,7 @@ async function ensureUv(options: EnsureKernelPythonOptions): Promise<string> {
 		await run("sh", ["-c", UV_INSTALL_COMMAND], { stdio: options.onProgress ? "ignore" : "inherit" });
 	} catch (error) {
 		throw new Error(
-			`couldn't install uv from astral.sh; install it yourself: ${UV_INSTALL_COMMAND}, then re-run prime-agent. ${errorMessage(error)}`,
+			`couldn't install uv from astral.sh; install it yourself: ${UV_INSTALL_COMMAND}, then re-run amicus. ${errorMessage(error)}`,
 		);
 	}
 
@@ -591,12 +590,12 @@ async function ensureUv(options: EnsureKernelPythonOptions): Promise<string> {
 }
 
 async function confirmUvInstall(): Promise<boolean> {
-	if (process.env.PRIME_AGENT_INSTALL_UV === "0") return false;
+	if (process.env.AMICUS_INSTALL_UV === "0") return false;
 	if (!stdin.isTTY || !stderr.isTTY) return false;
 
 	const rl = createInterface({ input: stdin, output: stderr });
 	try {
-		const answer = (await rl.question("Prime Agent needs uv to set up Python. Install uv from astral.sh now? [Y/n] "))
+		const answer = (await rl.question("Amicus needs uv to set up Python. Install uv from astral.sh now? [Y/n] "))
 			.trim()
 			.toLowerCase();
 		return answer !== "n" && answer !== "no";
@@ -746,10 +745,10 @@ function runtimeCandidateDirs(): string[] {
 	// Compiled executables use a flat sidecar layout; Node packages keep sources in dist/.
 	// Resolve both from the physical package directory, outside Bun's virtual filesystem.
 	return [
-		path.join(getPackageDir(), "prime-agent-runtime"),
-		path.join(getPackageDir(), "dist", "prime-agent-runtime"),
-		path.resolve(moduleDir, "..", "..", "prime-agent-runtime"),
-		path.resolve(moduleDir, "..", "..", "..", "..", "..", "prime-agent-runtime"),
+		path.join(getPackageDir(), "amicus-runtime"),
+		path.join(getPackageDir(), "dist", "amicus-runtime"),
+		path.resolve(moduleDir, "..", "..", "amicus-runtime"),
+		path.resolve(moduleDir, "..", "..", "..", "..", "..", "amicus-runtime"),
 	];
 }
 
@@ -922,8 +921,7 @@ async function syncPythonSkills(
 
 async function kernelBaseReady(python: string, venv: string, runtimeIdentity: string): Promise<boolean> {
 	return (
-		(await hasPrimeAgentRuntime(python)) &&
-		bootstrapBaseVersionCurrent(await readBootstrapVersion(venv), runtimeIdentity)
+		(await hasAmicusRuntime(python)) && bootstrapBaseVersionCurrent(await readBootstrapVersion(venv), runtimeIdentity)
 	);
 }
 
@@ -934,7 +932,7 @@ async function kernelReady(
 	pythonSkills: readonly BootstrapPythonSkill[],
 ): Promise<boolean> {
 	return (
-		(await hasPrimeAgentRuntime(python)) &&
+		(await hasAmicusRuntime(python)) &&
 		bootstrapVersionCurrent(await readBootstrapVersion(venv), runtimeIdentity, pythonSkills)
 	);
 }
@@ -942,9 +940,9 @@ async function kernelReady(
 function formatBootstrapFailure(error: unknown): Error {
 	return new Error(
 		`Failed to set up the Python kernel runtime. ${errorMessage(error)}\n` +
-			"First-time setup needs internet to install uv, Python, prime-agent-runtime, and default Python packages; once set up, prime-agent runs offline. " +
+			"First-time setup needs internet to install uv, Python, amicus-runtime, and default Python packages; once set up, amicus runs offline. " +
 			"An interrupted runtime upgrade needs network once more, so re-run this while online. " +
-			"Set PRIME_AGENT_KERNEL_PYTHON to a Python with a current prime-agent-runtime and default Python packages installed to skip auto-bootstrap.",
+			"Set AMICUS_KERNEL_PYTHON to a Python with a current amicus-runtime and default Python packages installed to skip auto-bootstrap.",
 	);
 }
 
@@ -952,18 +950,18 @@ async function ensureKernelPythonUncached(
 	options: EnsureKernelPythonOptions,
 	pythonSkills: readonly BootstrapPythonSkill[],
 ): Promise<string> {
-	const override = process.env.PRIME_AGENT_KERNEL_PYTHON;
+	const override = process.env.AMICUS_KERNEL_PYTHON;
 	if (override) {
 		const python = path.resolve(expandHome(override));
 		if (isBatchShim(python)) {
 			throw new Error(
-				`PRIME_AGENT_KERNEL_PYTHON must point directly to a Python executable, not a Windows batch shim: ${python}`,
+				`AMICUS_KERNEL_PYTHON must point directly to a Python executable, not a Windows batch shim: ${python}`,
 			);
 		}
 		const missing: string[] = [];
-		if (!(await hasPrimeAgentRuntime(python))) {
+		if (!(await hasAmicusRuntime(python))) {
 			missing.push(
-				"a current prime-agent-runtime with callable rlm.spawn, rlm.create_session, rlm.host_request, rlm.progress_note, and explicit harness CRUD methods",
+				"a current amicus-runtime with callable rlm.spawn, rlm.create_session, rlm.host_request, rlm.progress_note, and explicit harness CRUD methods",
 			);
 		}
 		if (missing.length === 0) {
@@ -977,12 +975,12 @@ async function ensureKernelPythonUncached(
 			if (missingPythonSkills.length > 0) {
 				reportProgress(
 					options,
-					`Warning: Python skills unavailable in PRIME_AGENT_KERNEL_PYTHON and will be disabled: ${missingPythonSkills.join(", ")}`,
+					`Warning: Python skills unavailable in AMICUS_KERNEL_PYTHON and will be disabled: ${missingPythonSkills.join(", ")}`,
 				);
 			}
 		}
 		if (missing.length === 0) return python;
-		throw new Error(`PRIME_AGENT_KERNEL_PYTHON points to a Python missing ${missing.join(" and ")}: ${python}`);
+		throw new Error(`AMICUS_KERNEL_PYTHON points to a Python missing ${missing.join(" and ")}: ${python}`);
 	}
 
 	const venv = await resolveWritableKernelVenvDir();

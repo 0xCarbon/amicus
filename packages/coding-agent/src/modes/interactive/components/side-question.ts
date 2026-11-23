@@ -1,4 +1,4 @@
-import { Box, type ClickRegion, type Component, Markdown, Text, visibleWidth } from "@earendil-works/pi-tui";
+import { Box, type ClickRegion, type Component, Markdown, Text, visibleWidth } from "@amicus/tui";
 import type { AgentConnectionSideQuestionEvent } from "../../agent-connection/types.js";
 import { getMarkdownTheme, theme } from "../theme/theme.js";
 

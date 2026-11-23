@@ -8,7 +8,7 @@ import { writeFileAtomicSync } from "../../utils/atomic-file.js";
 import { isProcessAlive, isZombieProcess, processIdExists } from "../../utils/child-process.js";
 import { defaultDaemonSocketDir, normalizeSocketPath } from "./daemon-socket.js";
 
-const DAEMON_SUPERVISOR_REGISTRY_DIR_ENV = "PRIME_AGENT_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
+const DAEMON_SUPERVISOR_REGISTRY_DIR_ENV = "AMICUS_INTERNAL_DAEMON_SUPERVISOR_REGISTRY_DIR";
 
 const OWNER_VERSION = 1;
 const REGISTRY_LOCK_STALE_MS = 5000;
@@ -314,7 +314,7 @@ class DaemonShutdownAdmission {
  * per-invocation agent dir.
  */
 function defaultDaemonSupervisorRegistryDir(environment: NodeJS.ProcessEnv = process.env): string {
-	return environment[DAEMON_SUPERVISOR_REGISTRY_DIR_ENV] ?? join(homedir(), ".prime", "supervisor-owners");
+	return environment[DAEMON_SUPERVISOR_REGISTRY_DIR_ENV] ?? join(homedir(), ".amicus", "supervisor-owners");
 }
 
 /** Read-only legacy registry location, disabled when the registry is overridden. */

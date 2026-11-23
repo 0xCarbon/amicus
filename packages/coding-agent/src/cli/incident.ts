@@ -4,13 +4,13 @@ import chalk from "chalk";
 import { getAgentLogPath, getLogsDir } from "../config.js";
 
 /**
- * `prime-agent incident` reconstructs what the daemon did during a time window
+ * `amicus incident` reconstructs what the daemon did during a time window
  * from its diagnostic logs, so an operator does not have to grep hundreds of
  * raw log lines by hand. The primary source is the shared structured log
- * (~/.prime/agent/logs/agent.jsonl, one JSON object per line, written by the
+ * (~/.amicus/logs/agent.jsonl, one JSON object per line, written by the
  * coding-agent.daemon-supervisor, coding-agent.daemon, and ai.provider
  * components). When that file is missing or unreadable, the newest per-daemon
- * log file (~/.prime/agent/logs/<socket>.<hash>.log, plain-text lines) is used
+ * log file (~/.amicus/logs/<socket>.<hash>.log, plain-text lines) is used
  * as a fallback.
  *
  * Message shapes below match the strings the supervisor and session worker
@@ -86,7 +86,7 @@ const ERROR_BURST_WINDOW_MS = 10 * 60 * 1000;
 const TIMEOUT_STALL_WINDOW_MS = 30 * 60 * 1000;
 const SUMMARY_TRUNCATION = 120;
 const RECOVERY_BREAKDOWN_LIMIT = 4;
-const WORKER_SOCKET_PATTERN = /^(?:prime-agent-)?worker-[0-9a-f]+-([0-9a-f]{12})(?:\.sock)?$/;
+const WORKER_SOCKET_PATTERN = /^(?:amicus-)?worker-[0-9a-f]+-([0-9a-f]{12})(?:\.sock)?$/;
 // Per-daemon logs are named `<socket basename>.<hash8>.log` (config.ts
 // getDaemonLogPath); the socket basename itself may lack `.sock` for custom
 // sockets and Windows named pipes, so key on the hash suffix instead.
@@ -392,7 +392,7 @@ function classifyWorkerStderrBody(
 		return undefined;
 	}
 	const line = firstLine(body);
-	if (/^Prime Agent daemon listening on \S+$/.test(line)) {
+	if (/^Amicus daemon listening on \S+$/.test(line)) {
 		return {
 			severity: "info",
 			eventClass: "worker-start",
@@ -553,7 +553,7 @@ export function classifyIncidentEntry(entry: IncidentLogEntry, workerPids: Worke
 		return { ...body, timeMs: entry.timeMs, category: "supervisor" };
 	}
 
-	if (/^Prime Agent daemon supervisor \S+ listening on \S+$/.test(msg)) {
+	if (/^Amicus daemon supervisor \S+ listening on \S+$/.test(msg)) {
 		return event(
 			entry,
 			"info",
@@ -1087,7 +1087,7 @@ export function buildIncidentReport(
 		sections.push({ title, lines });
 	}
 
-	const header = ["Prime Agent incident timeline"];
+	const header = ["Amicus incident timeline"];
 	const windowText = `Window: ${formatIncidentTime(options.sinceMs)} → ${formatIncidentTime(options.untilMs)} UTC (${formatIncidentDuration(options.untilMs - options.sinceMs)})`;
 	header.push(windowText);
 	if (options.source !== undefined) {
@@ -1256,7 +1256,7 @@ export function resolveIncidentWindow(options: IncidentCommandOptions, now: Date
 }
 
 /**
- * Entry point for `prime-agent incident`; prints the timeline to stdout.
+ * Entry point for `amicus incident`; prints the timeline to stdout.
  * Callers that validate the window pass it back so relative `HH:MM` bounds
  * resolve exactly once instead of again against a later clock reading.
  */

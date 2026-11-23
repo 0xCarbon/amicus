@@ -113,7 +113,7 @@ class Terminal:
         except pexpect.TIMEOUT:
             return False
         except pexpect.EOF as error:
-            raise RuntimeError("Prime Agent exited before the measurement completed") from error
+            raise RuntimeError("Amicus exited before the measurement completed") from error
         self.bytes += len(chunk)
         if self.bytes > 8_000_000:
             raise RuntimeError("Terminal transcript exceeds 8 MB")

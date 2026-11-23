@@ -1,6 +1,6 @@
 # Long-Running and Background Agents
 
-Prime Agent combines daemon-backed session workers with persistent state, scheduled prompts, direct agent messaging, goals, and bounded autonomous continuations. These features serve different purposes but share the same session and worker runtime.
+Amicus combines daemon-backed session workers with persistent state, scheduled prompts, direct agent messaging, goals, and bounded autonomous continuations. These features serve different purposes but share the same session and worker runtime.
 
 ## Runtime Flow
 
@@ -49,19 +49,19 @@ Normal interactive sessions run in resident worker processes managed by a local 
 Closing the terminal UI detaches the client; it does not stop the worker. List and reconnect to active agents with:
 
 ```bash
-prime-agent list
-prime-agent attach <agent>
+amicus list
+amicus attach <agent>
 ```
 
 Other lifecycle commands are:
 
 ```bash
-prime-agent agents                  # Open the agents view
-prime-agent rename <agent> <name>   # Give an agent a stable readable name
-prime-agent stop <agent>            # Stop one agent
-prime-agent status                  # Inspect background services
-prime-agent doctor [--fix]          # Diagnose or repair service state
-prime-agent shutdown [--force]      # Stop all agents and services
+amicus agents                  # Open the agents view
+amicus rename <agent> <name>   # Give an agent a stable readable name
+amicus stop <agent>            # Stop one agent
+amicus status                  # Inspect background services
+amicus doctor [--fix]          # Diagnose or repair service state
+amicus shutdown [--force]      # Stop all agents and services
 ```
 
 Workers persist transcripts as JSONL and store feature-specific state under the session artifact directory. A worker or supervisor restart can recover session state and schedules and rehydrate retained completed RLM children without treating a terminal client as the owner of the work.
@@ -73,7 +73,7 @@ Daemon workers are process-isolated for lifecycle and failure containment, not s
 The daemon routes direct messages between active sessions and retained daemon-backed subagents. From a shell:
 
 ```bash
-prime-agent send <agent> "Please verify the latest migration"
+amicus send <agent> "Please verify the latest migration"
 ```
 
 From the Python kernel, use the preloaded `agent_observe` and `agent_message` Python skills:
@@ -111,13 +111,13 @@ A receipt is `delivered` when it reached an idle target's context or `queued` wh
 
 ## Heartbeats and Scheduled Prompts
 
-Prime Agent has three related scheduling surfaces:
+Amicus has three related scheduling surfaces:
 
 | Surface | Owner | Purpose |
 |---|---|---|
 | `/heartbeat` | User | One visible recurring instruction for the current session. |
 | `rlm_heartbeat` | Agent | Multiple programmatically managed recurring instructions internal to the current session. |
-| `prime-agent schedule` | User or automation | General one-time or cron prompts targeted at an agent. |
+| `amicus schedule` | User or automation | General one-time or cron prompts targeted at an agent. |
 
 ### User heartbeat
 
@@ -161,10 +161,10 @@ RLM heartbeats are distinct from the user's `/heartbeat`; the Python skill canno
 Schedule a one-time or recurring prompt for an addressable agent:
 
 ```bash
-prime-agent schedule add worker "in 30m" -- "Check the benchmark result"
-prime-agent schedule add worker "0 9 * * 1-5" -- "Review open work"
-prime-agent schedule list --all
-prime-agent schedule cancel <job-id>
+amicus schedule add worker "in 30m" -- "Check the benchmark result"
+amicus schedule add worker "0 9 * * 1-5" -- "Review open work"
+amicus schedule list --all
+amicus schedule cancel <job-id>
 ```
 
 Scheduled jobs are persisted per session and continue while the UI is detached. Due ticks are claimed before delivery so a crash does not replay an uncertain prompt, and missed ticks are coalesced rather than accumulated into an unbounded backlog. A conditionally fenced `/goal` additionally persists its job receipt before queueing and its provider-commit phase before provider code can observe the prompt. Daemon recovery rebuilds only a receipt-phase turn, counts each recovery before queue admission, and terminalizes an exhausted pre-provider receipt so an external coordinator can safely rearm it.
@@ -206,7 +206,7 @@ Resident daemon `get_state` summaries expose a non-sensitive goal fence (`active
 
 ## Autonomous Mode
 
-Autonomous mode is a bounded host policy for runs where no human input is expected. Prime Agent adds follow-up continuations until configured quality gates pass or a continuation, turn, token, or wall-clock limit is reached.
+Autonomous mode is a bounded host policy for runs where no human input is expected. Amicus adds follow-up continuations until configured quality gates pass or a continuation, turn, token, or wall-clock limit is reached.
 
 Enable it in an interactive session. `/autonomous on` accepts the same budget
 options as the CLI, so an interactive run can define its own budget instead of
@@ -222,7 +222,7 @@ stopping at the default three continuations:
 Or configure a run from the CLI:
 
 ```bash
-prime-agent \
+amicus \
   --autonomous \
   --autonomous-gate "npm run check" \
   --autonomous-max-turns 20 \
@@ -260,7 +260,7 @@ the run. A background `bash()` handle that never exits holds the pause
 indefinitely by design — the handle settling, not a timer, is the wake-up —
 and a user prompt always wakes the session immediately.
 
-Autonomous mode supports limits for continuations, assistant turns, tokens, and wall-clock duration. Gate commands run before the session may finish; a failed gate returns its bounded output to the agent for another attempt. Prime Agent avoids rerunning the same failed gate when the workspace has not changed.
+Autonomous mode supports limits for continuations, assistant turns, tokens, and wall-clock duration. Gate commands run before the session may finish; a failed gate returns its bounded output to the agent for another attempt. Amicus avoids rerunning the same failed gate when the workspace has not changed.
 
 Goals and autonomous mode are complementary but different:
 
@@ -269,7 +269,7 @@ Goals and autonomous mode are complementary but different:
 
 ## Compaction and Continuity
 
-Automatic compaction handles context growth during long tasks. On overflow or near the configured threshold, Prime Agent summarizes older messages, retains recent context, and continues. The Python kernel persists through compaction, so variables, imports, helper functions, and task state remain available.
+Automatic compaction handles context growth during long tasks. On overflow or near the configured threshold, Amicus summarizes older messages, retains recent context, and continues. The Python kernel persists through compaction, so variables, imports, helper functions, and task state remain available.
 
 The agent can inspect or request compaction programmatically:
 

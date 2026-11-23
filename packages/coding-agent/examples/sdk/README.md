@@ -1,8 +1,8 @@
 # SDK Examples
 
-Programmatic usage of the Prime Agent SDK via `createAgentSession()` and `createAgentSessionRuntime()`.
+Programmatic usage of the Amicus SDK via `createAgentSession()` and `createAgentSessionRuntime()`.
 
-The published TypeScript packages still use inherited `@earendil-works/pi-*`
+The published TypeScript packages still use inherited `@amicus/*`
 identifiers. Those identifiers are API names, not a dependency on the upstream
 Pi monorepo.
 
@@ -36,7 +36,7 @@ npx tsx examples/sdk/01-minimal.ts
 ## Quick Reference
 
 ```typescript
-import { getModel } from "@earendil-works/pi-ai";
+import { getModel } from "@amicus/ai";
 import {
   AuthStorage,
   createAgentSession,
@@ -44,7 +44,7 @@ import {
   ModelRegistry,
   SessionManager,
   SettingsManager,
-} from "@earendil-works/pi-coding-agent";
+} from "@amicus/coding-agent";
 
 // Auth and models setup
 const authStorage = AuthStorage.create();
@@ -115,7 +115,7 @@ await session.prompt("Hello");
 | `authStorage` | `AuthStorage.create()` | Credential storage |
 | `modelRegistry` | `ModelRegistry.create(authStorage)` | Model registry |
 | `cwd` | `process.cwd()` | Working directory |
-| `agentDir` | `~/.prime/agent` | Config directory |
+| `agentDir` | `~/.amicus` | Config directory |
 | `model` | From settings/first available | Model to use |
 | `thinkingLevel` | From settings/"off" | off, low, medium, high |
 | `tools` | `["ipython"]` | Built-in tools |

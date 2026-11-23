@@ -15,7 +15,7 @@ from ui import CatalogClient, check_scheduled_jobs, session_id, spawn_ledger_pat
 
 HELLO = {
     "type": "daemon_hello",
-    "protocol": {"name": "prime-agent.daemon", "version": 7},
+    "protocol": {"name": "amicus.daemon", "version": 7},
     "serverCapabilities": ["heartbeat_catalog"],
 }
 
@@ -117,7 +117,7 @@ class CatalogProtocolTests(unittest.TestCase):
     def test_capability_mismatch_and_failed_scan_are_errors(self):
         for hello in (
             HELLO | {"serverCapabilities": []},
-            HELLO | {"protocol": {"name": "prime-agent.daemon", "version": 8}},
+            HELLO | {"protocol": {"name": "amicus.daemon", "version": 8}},
         ):
             with self.assertRaisesRegex(RuntimeError, "protocol 7"):
                 self.client(hello)

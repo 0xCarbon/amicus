@@ -1,4 +1,4 @@
-import { isPrivatePrimeInferenceModelId, type Model } from "@earendil-works/pi-ai";
+import { isPrivatePrimeInferenceModelId, type Model } from "@amicus/ai";
 import {
 	buildPrimeInferenceModels,
 	fetchPrimeInferenceModelCatalog,

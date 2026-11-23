@@ -1,8 +1,8 @@
 import { isNativePlatform } from "./native-installation.js";
 import { getPiUserAgent } from "./pi-user-agent.js";
 
-const DEFAULT_PRIME_AGENT_DOWNLOAD_BASE_URL = "https://github.com/canesin/prime-agent/releases/latest/download";
-const PRIME_AGENT_PACKAGE_NAME = "prime-agent";
+const DEFAULT_AMICUS_DOWNLOAD_BASE_URL = "https://github.com/0xCarbon/amicus/releases/latest/download";
+const AMICUS_PACKAGE_NAME = "amicus";
 const STABLE_VERSION_MANIFEST_PATH = "latest.json";
 const BETA_VERSION_MANIFEST_PATH = "beta.json";
 const DEFAULT_VERSION_CHECK_TIMEOUT_MS = 10000;
@@ -155,7 +155,7 @@ function getReleaseManifestPath(currentVersion: string, channel?: UpdateChannel)
 }
 
 function canonicalForkTarball(version: string): string {
-	return `https://github.com/canesin/prime-agent/releases/download/v${version}/prime-agent-${version}.tgz`;
+	return `https://github.com/0xCarbon/amicus/releases/download/v${version}/amicus-${version}.tgz`;
 }
 
 export async function getLatestPiRelease(
@@ -164,7 +164,7 @@ export async function getLatestPiRelease(
 ): Promise<LatestPiRelease | undefined> {
 	if (process.env.PI_SKIP_VERSION_CHECK || process.env.PI_OFFLINE) return undefined;
 
-	const baseUrl = options.baseUrl?.replace(/\/+$/, "") ?? DEFAULT_PRIME_AGENT_DOWNLOAD_BASE_URL;
+	const baseUrl = options.baseUrl?.replace(/\/+$/, "") ?? DEFAULT_AMICUS_DOWNLOAD_BASE_URL;
 	const response = await fetch(`${baseUrl}/${getReleaseManifestPath(currentVersion, options.channel)}`, {
 		headers: {
 			"User-Agent": getPiUserAgent(currentVersion),
@@ -185,10 +185,10 @@ export async function getLatestPiRelease(
 		return undefined;
 	}
 	const version = parseReleaseManifestVersion(data.version);
-	if (!version || data.package !== PRIME_AGENT_PACKAGE_NAME) return undefined;
+	if (!version || data.package !== AMICUS_PACKAGE_NAME) return undefined;
 	const installSpec = canonicalForkTarball(version);
 	if (data.tarball !== installSpec) return undefined;
-	const release: LatestPiRelease = { version, packageName: PRIME_AGENT_PACKAGE_NAME, installSpec };
+	const release: LatestPiRelease = { version, packageName: AMICUS_PACKAGE_NAME, installSpec };
 	// Prefer the complete v2 schema, with the v1 schema as a compatibility
 	// fallback. Structurally valid entries for future platforms are ignored,
 	// while malformed or duplicate supported-platform entries reject the list.
@@ -207,7 +207,7 @@ export async function getLatestPiRelease(
 			if (!isNativePlatform(artifact.platform)) continue;
 			if (
 				platforms.has(artifact.platform) ||
-				artifact.file !== `prime-agent-${release.version}-${artifact.platform}.tar.gz` ||
+				artifact.file !== `amicus-${release.version}-${artifact.platform}.tar.gz` ||
 				typeof artifact.sha256 !== "string" ||
 				!/^[a-f0-9]{64}$/.test(artifact.sha256)
 			)

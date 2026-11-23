@@ -1,4 +1,4 @@
-import type { Api, Model } from "@earendil-works/pi-ai";
+import type { Api, Model } from "@amicus/ai";
 import { getFixtureModel } from "../../ai/test/fixture-models.js";
 
 const codingAgentFixtureModels = {

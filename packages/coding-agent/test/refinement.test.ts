@@ -10,9 +10,9 @@ import {
 } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import type * as PiAi from "@earendil-works/pi-ai";
-import type { AssistantMessage, Model } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import type * as PiAi from "@amicus/ai";
+import type { AssistantMessage, Model } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import {
 	appendGlobalRefinement,
@@ -47,7 +47,7 @@ const { completeSimpleMock } = vi.hoisted(() => ({
 	completeSimpleMock: vi.fn(),
 }));
 
-vi.mock("@earendil-works/pi-ai", async (importOriginal) => {
+vi.mock("@amicus/ai", async (importOriginal) => {
 	const actual = await importOriginal<typeof PiAi>();
 	return {
 		...actual,
@@ -69,7 +69,7 @@ afterEach(() => {
 });
 
 function makeTempDir(): string {
-	tempDir = mkdtempSync(join(tmpdir(), "prime-agent-refinement-test-"));
+	tempDir = mkdtempSync(join(tmpdir(), "amicus-refinement-test-"));
 	return tempDir;
 }
 
@@ -579,8 +579,8 @@ describe("harness refinement", () => {
 		expect(
 			getRefinementHistory([
 				entry("other", {}, "custom_1"),
-				entry("prime-agent.refinement", result, "custom_2"),
-				entry("prime-agent.refinement", { id: "malformed" }, "custom_malformed"),
+				entry("amicus.refinement", result, "custom_2"),
+				entry("amicus.refinement", { id: "malformed" }, "custom_malformed"),
 			]),
 		).toEqual([result]);
 	});

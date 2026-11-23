@@ -1,7 +1,7 @@
 import { chmodSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { cleanupSessionResources } from "@earendil-works/pi-ai";
+import { cleanupSessionResources } from "@amicus/ai";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type { ExtensionContext } from "../src/core/extensions/types.js";
 import type { KernelBootstrapProgressHandler } from "../src/core/kernel/bootstrap.js";
@@ -118,7 +118,7 @@ input.on("line", (line) => {
 
 describe("IpythonKernelProvisioner", () => {
 	beforeEach(() => {
-		tempDir = mkdtempSync(join(tmpdir(), "prime-agent-provisioner-"));
+		tempDir = mkdtempSync(join(tmpdir(), "amicus-provisioner-"));
 	});
 
 	afterEach(() => {
@@ -452,7 +452,7 @@ describe("IpythonKernelProvisioner", () => {
 
 describe("ReplKernelManager session cleanup during startup", () => {
 	beforeEach(() => {
-		tempDir = mkdtempSync(join(tmpdir(), "prime-agent-kernel-cleanup-"));
+		tempDir = mkdtempSync(join(tmpdir(), "amicus-kernel-cleanup-"));
 	});
 
 	afterEach(() => {

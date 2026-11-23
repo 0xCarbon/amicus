@@ -519,10 +519,7 @@ beforeAll(async () => {
 		for await (const chunk of req) raw += chunk.toString();
 		const body = JSON.parse(raw) as Record<string, unknown>;
 		requests.push({ headers: req.headers, body });
-		if (
-			enforceContract &&
-			(!req.headers["x-opencode-session"] || !req.headers["user-agent"]?.startsWith("prime-agent"))
-		) {
+		if (enforceContract && (!req.headers["x-opencode-session"] || !req.headers["user-agent"]?.startsWith("amicus"))) {
 			res.writeHead(400, { "content-type": "application/json" });
 			res.end(JSON.stringify({ error: { type: "invalid_request_error", message: "Missing OpenCode identity" } }));
 			return;
@@ -634,7 +631,7 @@ describe.each(identityModels)("request identity headers: $provider/$api", (catal
 			const headers = requests.at(-1)?.headers;
 			expect({ session: headers?.["x-opencode-session"], userAgent: headers?.["user-agent"] }).toEqual({
 				session: sessionId,
-				userAgent: expect.stringMatching(/^prime-agent(?:\/|$)/),
+				userAgent: expect.stringMatching(/^amicus(?:\/|$)/),
 			});
 			expectSuccess(result);
 		}
@@ -657,20 +654,20 @@ describe.each(identityModels)("request identity headers: $provider/$api", (catal
 		const model = {
 			...catalogModel,
 			headers: {
-				"User-Agent": "prime-agent-model/1",
+				"User-Agent": "amicus-model/1",
 				"X-OpenCode-Session": "model-conversation",
 				"X-Fixture": "model",
 			},
 		};
 		expectSuccess(await request({}, model));
-		expect(requests.at(-1)?.headers["user-agent"]).toBe("prime-agent-model/1");
+		expect(requests.at(-1)?.headers["user-agent"]).toBe("amicus-model/1");
 		expect(requests.at(-1)?.headers["x-opencode-session"]).toBe("model-conversation");
 
 		expectSuccess(
 			await request(
 				{
 					headers: {
-						"user-agent": "prime-agent-request/1",
+						"user-agent": "amicus-request/1",
 						"x-opencode-session": "request-conversation",
 						"x-fixture": "request",
 					},
@@ -678,7 +675,7 @@ describe.each(identityModels)("request identity headers: $provider/$api", (catal
 				model,
 			),
 		);
-		expect(requests.at(-1)?.headers["user-agent"]).toBe("prime-agent-request/1");
+		expect(requests.at(-1)?.headers["user-agent"]).toBe("amicus-request/1");
 		expect(requests.at(-1)?.headers["x-opencode-session"]).toBe("request-conversation");
 		expect(requests.at(-1)?.headers["x-fixture"]).toBe("request");
 		expect(model.headers["X-Fixture"]).toBe("model");
@@ -688,14 +685,14 @@ describe.each(identityModels)("request identity headers: $provider/$api", (catal
 		enforceContract = false;
 		expectSuccess(await request({ sessionId }));
 		expect(requests.at(-1)?.headers["x-opencode-session"]).toBeUndefined();
-		expect(requests.at(-1)?.headers["user-agent"]).toMatch(/^prime-agent(?:\/|$)/);
+		expect(requests.at(-1)?.headers["user-agent"]).toMatch(/^amicus(?:\/|$)/);
 	});
 
 	it("does not add OpenCode identity for unrelated providers", async () => {
 		enforceContract = false;
 		expectSuccess(await request({}, { ...catalogModel, provider: "fixture-provider" }));
 		expect(requests.at(-1)?.headers["x-opencode-session"]).toBeUndefined();
-		expect(requests.at(-1)?.headers["user-agent"]).not.toMatch(/^prime-agent(?:\/|$)/);
+		expect(requests.at(-1)?.headers["user-agent"]).not.toMatch(/^amicus(?:\/|$)/);
 	});
 });
 

@@ -44,7 +44,7 @@ def validate_completion(report: Report, request: Report, run: dict) -> None:
         raise ValueError("Result identity does not match the trusted benchmark request")
     if (request.run_id, request.attempt) != (run["id"], run["run_attempt"]) or run[
         "display_title"
-    ] != f"Prime Agent benchmarks · PR #{request.pr}":
+    ] != f"Amicus benchmarks · PR #{request.pr}":
         raise ValueError("Benchmark request does not match the completed workflow")
 
 
@@ -80,7 +80,7 @@ def main() -> None:
     parser.add_argument("--pending-trust", action="store_true")
     args = parser.parse_args()
     args.results.mkdir(parents=True, exist_ok=True)
-    repository = os.environ.get("GITHUB_REPOSITORY", "PrimeIntellect-ai/prime-agent")
+    repository = os.environ.get("GITHUB_REPOSITORY", "0xCarbon/amicus")
     config = Config.load(args.config) if args.config else Config.load()
     if args.command == "local":
         if not args.base or not args.head:

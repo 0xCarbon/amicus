@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { resetOAuthProviders } from "@earendil-works/pi-ai/oauth";
-import type { Component, OverlayHandle, TUI } from "@earendil-works/pi-tui";
+import { resetOAuthProviders } from "@amicus/ai/oauth";
+import type { Component, OverlayHandle, TUI } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, onTestFinished, vi } from "vitest";
 import { ENV_AGENT_DIR } from "../src/config.js";
@@ -146,8 +146,8 @@ describe("ProviderAuthFlows", () => {
 
 	beforeEach(() => {
 		resetOAuthProviders();
-		vi.stubEnv("PRIME_AGENT_INFERENCE_API_BASE_URL", "");
-		vi.stubEnv("PRIME_AGENT_INFERENCE_FRONTEND_URL", "");
+		vi.stubEnv("AMICUS_INFERENCE_API_BASE_URL", "");
+		vi.stubEnv("AMICUS_INFERENCE_FRONTEND_URL", "");
 		tempDir = join(tmpdir(), `pi-auth-flows-${Date.now()}-${Math.random().toString(36).slice(2)}`);
 		mkdirSync(tempDir, { recursive: true });
 		authJsonPath = join(tempDir, "auth.json");
@@ -180,9 +180,9 @@ describe("ProviderAuthFlows", () => {
 		process.env.HOME = tempDir;
 		vi.stubEnv(ENV_AGENT_DIR, "");
 		vi.stubEnv("PI_OFFLINE", "1");
-		authJsonPath = join(tempDir, ".prime", "agent", "auth.json");
+		authJsonPath = join(tempDir, ".amicus", "auth.json");
 		primeConfigPath = join(tempDir, ".prime", "config.json");
-		mkdirSync(join(tempDir, ".prime", "agent"), { recursive: true });
+		mkdirSync(join(tempDir, ".amicus"), { recursive: true });
 		process.env.PRIME_TEAM_ID = "env-team";
 		writeFileSync(
 			primeConfigPath,
@@ -419,7 +419,7 @@ describe("ProviderAuthFlows", () => {
 		"uses the Agent auth target for manual validation and teams (%s)",
 		async (override) => {
 			delete process.env.PRIME_TEAM_ID;
-			if (override) vi.stubEnv("PRIME_AGENT_INFERENCE_API_BASE_URL", override);
+			if (override) vi.stubEnv("AMICUS_INFERENCE_API_BASE_URL", override);
 			const baseUrl = override ? "https://agent-api.example" : "https://api.primeintellect.ai";
 			const original = JSON.stringify({
 				api_key: "dev-secret",

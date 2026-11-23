@@ -1,4 +1,4 @@
-import { type Api, type Model, parseModelCatalog } from "@earendil-works/pi-ai";
+import { type Api, type Model, parseModelCatalog } from "@amicus/ai";
 
 export const PROVIDER_MODEL_CATALOG_URL =
 	"https://raw.githubusercontent.com/PrimeIntellect-ai/prime-agent-catalog/main/models/catalog.v1.json";

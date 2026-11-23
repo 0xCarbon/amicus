@@ -1,4 +1,4 @@
-import { getModels, type Model, streamSimple } from "@earendil-works/pi-ai";
+import { getModels, type Model, streamSimple } from "@amicus/ai";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { resolveCliModel } from "../src/core/model-resolver.js";
 import { getPrivatePrimeInferenceModels } from "../src/core/prime-inference-models.js";

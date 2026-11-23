@@ -43,7 +43,7 @@ export async function getNativeUpdatePlan(options: {
 	const current = getNativeInstallationTarget(options.executable);
 	if (!current)
 		throw new Error(
-			"This compiled application is not owned by the Prime Agent installer. Update it using its original installer.",
+			"This compiled application is not owned by the Amicus installer. Update it using its original installer.",
 		);
 	const active = readNativeInstallation(current.root);
 	const installation = active ?? readNativeInstallation(current.root, "previous");
@@ -51,17 +51,17 @@ export async function getNativeUpdatePlan(options: {
 		throw new Error("The compiled installation is damaged. Run the published installer again to repair it.");
 	if (
 		(options.rollback || !active) &&
-		!/^# prime-agent-native-recovery-v1$/m.test(readFileSync(join(installation.releaseDir, "install.sh"), "utf8"))
+		!/^# amicus-native-recovery-v1$/m.test(readFileSync(join(installation.releaseDir, "install.sh"), "utf8"))
 	)
 		throw new Error(
-			"The retained installer does not support this recovery. Run the published installer at https://app.primeintellect.ai/prime-agent/install.sh again to repair it.",
+			"The retained installer does not support this recovery. Run the published installer at https://app.primeintellect.ai/amicus/install.sh again to repair it.",
 		);
 	accessSync(installation.root, constants.W_OK);
 	accessSync(join(installation.root, "bin"), constants.W_OK);
 	let version: string;
 	let checksum: string | undefined;
 	let previousTarget: string | undefined;
-	const baseUrl = process.env.PRIME_AGENT_DOWNLOAD_BASE_URL?.trim() || installation.baseUrl;
+	const baseUrl = process.env.AMICUS_DOWNLOAD_BASE_URL?.trim() || installation.baseUrl;
 	if (options.rollback) {
 		const previous = readNativeRollbackInstallation(installation.root);
 		if (!previous || previous.executable === current.executable)
@@ -104,16 +104,16 @@ export async function getNativeUpdatePlan(options: {
 		checksum = artifact.sha256;
 	}
 	const environment = {
-		PRIME_AGENT_INSTALL_METHOD: "binary",
-		PRIME_AGENT_INSTALL_DIR: installation.root,
-		PRIME_AGENT_DOWNLOAD_BASE_URL: baseUrl,
-		PRIME_AGENT_INSTALL_LINK: "0",
-		PRIME_AGENT_INSTALLER_NONINTERACTIVE: "1",
-		PRIME_AGENT_INSTALLER_PLAIN: "1",
-		PRIME_AGENT_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
-		PRIME_AGENT_EXPECTED_CURRENT: relative(join(current.root, "bin"), current.executable),
-		...(previousTarget ? { PRIME_AGENT_EXPECTED_PREVIOUS: previousTarget } : {}),
-		...(checksum ? { PRIME_AGENT_EXPECTED_SHA256: checksum } : {}),
+		AMICUS_INSTALL_METHOD: "binary",
+		AMICUS_INSTALL_DIR: installation.root,
+		AMICUS_DOWNLOAD_BASE_URL: baseUrl,
+		AMICUS_INSTALL_LINK: "0",
+		AMICUS_INSTALLER_NONINTERACTIVE: "1",
+		AMICUS_INSTALLER_PLAIN: "1",
+		AMICUS_BOOTSTRAP_KERNEL_ON_INSTALL: "0",
+		AMICUS_EXPECTED_CURRENT: relative(join(current.root, "bin"), current.executable),
+		...(previousTarget ? { AMICUS_EXPECTED_PREVIOUS: previousTarget } : {}),
+		...(checksum ? { AMICUS_EXPECTED_SHA256: checksum } : {}),
 	};
 	return {
 		targetVersion: version,

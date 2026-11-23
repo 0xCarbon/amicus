@@ -1,5 +1,5 @@
-import { fauxAssistantMessage, fauxText, fauxThinking } from "@earendil-works/pi-ai";
-import { setKeybindings } from "@earendil-works/pi-tui";
+import { fauxAssistantMessage, fauxText, fauxThinking } from "@amicus/ai";
+import { setKeybindings } from "@amicus/tui";
 import stripAnsi from "strip-ansi";
 import { beforeAll, describe, expect, test } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";

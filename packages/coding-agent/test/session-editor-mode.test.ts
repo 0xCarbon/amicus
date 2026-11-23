@@ -1,5 +1,5 @@
-import type { AssistantMessage, ToolResultMessage, UserMessage } from "@earendil-works/pi-ai";
-import type { TUI } from "@earendil-works/pi-tui";
+import type { AssistantMessage, ToolResultMessage, UserMessage } from "@amicus/ai";
+import type { TUI } from "@amicus/tui";
 import { describe, expect, it, vi } from "vitest";
 import { KeybindingsManager } from "../src/core/keybindings.js";
 import { SessionEditModel } from "../src/core/session-editor/model.js";
@@ -110,7 +110,7 @@ describe("session editor mode", () => {
 	it("renders the transcript with the selected entry in the detail pane", () => {
 		const { mode } = createMode(sampleEntries());
 		const view = screen(mode);
-		expect(view).toContain("Prime Agent session editor");
+		expect(view).toContain("Amicus session editor");
 		expect(view).toContain("run it");
 		expect(view).toContain("1/4");
 		mode.handleInput("j");
@@ -202,7 +202,7 @@ describe("session editor mode", () => {
 		const lines = mode.render(80);
 		expect(lines.length).toBeGreaterThan(0);
 		expect(lines.length).toBeLessThanOrEqual(8);
-		expect(lines[0]).toContain("Prime Agent session editor");
+		expect(lines[0]).toContain("Amicus session editor");
 		expect(lines.some((line) => line.includes("─"))).toBe(true);
 	});
 
@@ -218,7 +218,7 @@ describe("session editor mode", () => {
 			},
 		] as unknown as SessionEntry[];
 		const { mode } = createMode(malformed);
-		expect(screen(mode)).toContain("Prime Agent session editor");
+		expect(screen(mode)).toContain("Amicus session editor");
 		for (const rows of [1, 2, 6]) {
 			const small = createMode(sampleEntries(), {}, rows);
 			expect(small.mode.render(60).length).toBeGreaterThan(0);

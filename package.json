@@ -1,5 +1,5 @@
 {
-	"name": "prime-agent",
+	"name": "amicus",
 	"private": true,
 	"type": "module",
 	"workspaces": [
@@ -29,7 +29,7 @@
 		"prepublishOnly": "npm run clean && npm run build && npm run check",
 		"publish": "npm run prepublishOnly && npm publish -ws --access public",
 		"publish:dry": "npm run prepublishOnly && npm publish -ws --access public --dry-run",
-		"release:pack": "node scripts/pack-prime-agent-release.mjs",
+		"release:pack": "node scripts/pack-amicus-release.mjs",
 		"release:patch": "node scripts/release.mjs patch",
 		"release:minor": "node scripts/release.mjs minor",
 		"release:major": "node scripts/release.mjs major",
@@ -54,7 +54,7 @@
 	},
 	"version": "0.9.8",
 	"dependencies": {
-		"@earendil-works/pi-coding-agent": "^0.9.8",
+		"@amicus/coding-agent": "^0.9.8",
 		"get-east-asian-width": "^1.6.0"
 	},
 	"overrides": {

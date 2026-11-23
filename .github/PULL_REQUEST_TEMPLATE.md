@@ -1,7 +1,7 @@
 <!--
 Pull requests are accepted from maintainers and vouched contributors only.
 If a maintainer has not invited this work, open an issue first:
-https://github.com/canesin/prime-agent/issues
+https://github.com/0xCarbon/amicus/issues
 -->
 
 ## Context

@@ -28,15 +28,15 @@ let publicCommand: string;
 let ttyHook: string;
 
 function native(version = "1.0.0", suffix = "", platform = `${process.platform}-${process.arch}`) {
-	const install = join(home, "data/prime-agent");
+	const install = join(home, "data/amicus");
 	const digest = "a".repeat(64);
 	const name = `${version}-${platform}-${digest}${suffix}`;
 	const release = join(install, "releases", name);
 	mkdirSync(release, { recursive: true });
 	for (const asset of [
 		"install.sh",
-		"prime-agent-runtime/pyproject.toml",
-		"prime-agent-runtime/src/rlm/repl.py",
+		"amicus-runtime/pyproject.toml",
+		"amicus-runtime/src/rlm/repl.py",
 		"theme/prime.json",
 		"export-html/template.html",
 		"photon_rs_bg.wasm",
@@ -45,18 +45,18 @@ function native(version = "1.0.0", suffix = "", platform = `${process.platform}-
 		writeFileSync(join(release, asset), "fixture\n");
 	}
 	mkdirSync(join(install, "bin"), { recursive: true });
-	writeFileSync(join(install, ".managed"), "prime-agent-native-v1\n");
+	writeFileSync(join(install, ".managed"), "amicus-native-v1\n");
 	writeFileSync(join(release, ".archive-sha256"), digest);
 	writeFileSync(join(release, ".install-source"), "https://example.com");
 	writeFileSync(join(release, "package.json"), JSON.stringify({ version }));
 	writeFileSync(
-		join(release, "prime-agent"),
+		join(release, "amicus"),
 		`#!/bin/sh\nif [ "$1" = fail ]; then exit 23; fi\nif [ "$1" = --version ]; then echo ${version}; exit; fi\nprintf "native:%s\\n" "$@"\n`,
 		{ mode: 0o755 },
 	);
-	rmSync(join(install, "bin/prime-agent"), { force: true });
-	symlinkSync(`../releases/${name}/prime-agent`, join(install, "bin/prime-agent"));
-	return realpathSync(join(install, "bin/prime-agent"));
+	rmSync(join(install, "bin/amicus"), { force: true });
+	symlinkSync(`../releases/${name}/amicus`, join(install, "bin/amicus"));
+	return realpathSync(join(install, "bin/amicus"));
 }
 
 function start(args: string[] = [], extra: NodeJS.ProcessEnv = {}) {
@@ -67,7 +67,7 @@ function start(args: string[] = [], extra: NodeJS.ProcessEnv = {}) {
 		env: ambientFreeEnv({
 			HOME: home,
 			XDG_DATA_HOME: join(home, "data"),
-			PRIME_AGENT_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
+			AMICUS_ALLOW_INSECURE_HTTP_FOR_TESTS: "1",
 			...extra,
 		}),
 		cwd: home,
@@ -108,14 +108,14 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 	beforeEach(() => {
 		root = realpathSync(mkdtempSync(join(tmpdir(), "native-bridge-")));
 		home = join(root, "home with spaces");
-		pkg = join(home, "prefix/lib/node_modules/prime-agent");
+		pkg = join(home, "prefix/lib/node_modules/amicus");
 		entry = join(pkg, "dist/bundle/cli.js");
-		publicCommand = join(home, "prefix/bin/prime-agent");
+		publicCommand = join(home, "prefix/bin/amicus");
 		mkdirSync(dirname(entry), { recursive: true });
 		mkdirSync(dirname(publicCommand), { recursive: true });
 		writeFileSync(
 			join(pkg, "package.json"),
-			JSON.stringify({ type: "module", version: "1.0.0", bin: { "prime-agent": "dist/bundle/cli.js" } }),
+			JSON.stringify({ type: "module", version: "1.0.0", bin: { amicus: "dist/bundle/cli.js" } }),
 		);
 		for (const [source, target] of [
 			["cli/npm-native-bridge", "bundle/cli"],
@@ -166,7 +166,7 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 	});
 	it.each([
 		{ label: "version check", args: ["--version"], env: {} },
-		{ label: "worker", args: [], env: { PRIME_AGENT_INTERNAL_DAEMON_WORKER: "1" } },
+		{ label: "worker", args: [], env: { AMICUS_INTERNAL_DAEMON_WORKER: "1" } },
 		{ label: "coordinator", args: ["update", "--internal-update-restart-coordinator"], env: {} },
 		{ label: "non-interactive launch", args: [], env: {} },
 	])("does not download after handoff during a $label", async ({ label, args, env }) => {
@@ -186,7 +186,7 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 		expect(realpathSync(publicCommand)).toBe(older);
 	});
 	it.each(["reuse", "download"])("migrates a scoped global package through %s", async (mode) => {
-		const scoped = join(dirname(pkg), "@earendil-works/pi-coding-agent");
+		const scoped = join(dirname(pkg), "@amicus/coding-agent");
 		mkdirSync(dirname(scoped), { recursive: true });
 		renameSync(pkg, scoped);
 		pkg = scoped;
@@ -195,7 +195,7 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 		symlinkSync(entry, publicCommand);
 		const verify = async () => {
 			expect(await run([], foreground())).toMatchObject({ code: 0, stdout: "native:\n" });
-			expect(realpathSync(publicCommand)).toBe(realpathSync(join(home, "data/prime-agent/bin/prime-agent")));
+			expect(realpathSync(publicCommand)).toBe(realpathSync(join(home, "data/amicus/bin/amicus")));
 		};
 		if (mode === "download") await withReleaseFeed(verify);
 		else {
@@ -239,7 +239,7 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 			expect(result).toMatchObject({ code: 0, stdout: "node:\n" });
 			if (failure === "unsupported") expect(result.stderr).toBe("");
 			else {
-				expect(result.stderr).toContain("Reinstall prime-agent");
+				expect(result.stderr).toContain("Reinstall amicus");
 				expect((await run([], foreground())).stderr).toBe("");
 			}
 			expect(realpathSync(publicCommand)).toBe(entry);
@@ -255,13 +255,13 @@ describe.skipIf(process.platform === "win32")("npm release bridge", () => {
 			previous: "0.9.0",
 		},
 		{ label: "daemon", args: ["--mode", "daemon"], env: {}, previous: undefined },
-		{ label: "worker", args: [], env: { PRIME_AGENT_INTERNAL_DAEMON_WORKER: "1" }, previous: undefined },
-		{ label: "catalog", args: [], env: { PRIME_AGENT_INTERNAL_DAEMON_CATALOG: "1" }, previous: undefined },
-		{ label: "owned worker", args: [], env: { PRIME_AGENT_INTERNAL_OWNED_WORKER: "1" }, previous: undefined },
+		{ label: "worker", args: [], env: { AMICUS_INTERNAL_DAEMON_WORKER: "1" }, previous: undefined },
+		{ label: "catalog", args: [], env: { AMICUS_INTERNAL_DAEMON_CATALOG: "1" }, previous: undefined },
+		{ label: "owned worker", args: [], env: { AMICUS_INTERNAL_OWNED_WORKER: "1" }, previous: undefined },
 		{
 			label: "interactive update child",
 			args: ["update"],
-			env: { PRIME_AGENT_INTERACTIVE_SELF_UPDATE: "1" },
+			env: { AMICUS_INTERACTIVE_SELF_UPDATE: "1" },
 			previous: undefined,
 		},
 		{ label: "version output", args: ["--version"], env: {}, previous: undefined },
@@ -351,7 +351,7 @@ syncBuiltinESMExports();
 				writeFileSync(proceed, "");
 			}
 			expect(await pending).toMatchObject({ code: 0, stdout: "node:launch\n" });
-			expect(realpathSync(join(home, "data/prime-agent/bin/prime-agent"))).toBe(newer);
+			expect(realpathSync(join(home, "data/amicus/bin/amicus"))).toBe(newer);
 			expect(realpathSync(publicCommand)).toBe(entry);
 			expect(await run([], foreground())).toMatchObject({ code: 0, stdout: "native:\n" });
 			expect(await run(["--version"])).toMatchObject({ code: 0, stdout: "1.0.1\n" });
@@ -432,8 +432,8 @@ syncBuiltinESMExports();
 		const release = dirname(executable);
 		for (const asset of [
 			"install.sh",
-			"prime-agent-runtime/pyproject.toml",
-			"prime-agent-runtime/src/rlm/repl.py",
+			"amicus-runtime/pyproject.toml",
+			"amicus-runtime/src/rlm/repl.py",
 			"theme/prime.json",
 			"export-html/template.html",
 			"photon_rs_bg.wasm",
@@ -445,7 +445,7 @@ syncBuiltinESMExports();
 		execFileSync("tar", ["-czf", archive, "-C", release, "."]);
 		const bytes = readFileSync(archive);
 		const checksum = createHash("sha256").update(bytes).digest("hex");
-		const filename = `prime-agent-1.0.0-${process.platform}-${process.arch}.tar.gz`;
+		const filename = `amicus-1.0.0-${process.platform}-${process.arch}.tar.gz`;
 		rmSync(join(home, "data"), { recursive: true, force: true });
 		const server = createServer((request, response) =>
 			response.end(request.url?.endsWith("SHA256SUMS") ? `${checksum}  ${filename}\n` : bytes),
@@ -471,11 +471,7 @@ syncBuiltinESMExports();
 		const result = await run(
 			[],
 			foreground(
-				reason === "offline"
-					? { PI_OFFLINE: "1" }
-					: reason === "opt-out"
-						? { PRIME_AGENT_INSTALL_METHOD: "node" }
-						: {},
+				reason === "offline" ? { PI_OFFLINE: "1" } : reason === "opt-out" ? { AMICUS_INSTALL_METHOD: "node" } : {},
 			),
 		);
 		expect(result).toMatchObject({ code: 0, stdout: "node:\n" });

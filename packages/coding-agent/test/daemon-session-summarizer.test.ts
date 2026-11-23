@@ -1,4 +1,4 @@
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
+import type { AgentMessage } from "@amicus/agent-core";
 import { describe, expect, test, vi } from "vitest";
 import type { AgentStatus } from "../src/core/session-manager.js";
 import { SettingsManager } from "../src/core/settings-manager.js";

@@ -1,6 +1,6 @@
 import { PassThrough } from "node:stream";
-import type { AgentMessage } from "@earendil-works/pi-agent-core";
-import { fauxAssistantMessage } from "@earendil-works/pi-ai";
+import type { AgentMessage } from "@amicus/agent-core";
+import { fauxAssistantMessage } from "@amicus/ai";
 import { describe, expect, it, vi } from "vitest";
 import { DaemonAgentConnection } from "../src/modes/agent-connection/daemon-agent-connection.js";
 import type {
@@ -583,7 +583,7 @@ class FakeDaemonClient {
 
 	async connect(): Promise<void> {
 		if (this.connected) {
-			throw new Error("Prime Agent daemon client is already connected");
+			throw new Error("Amicus daemon client is already connected");
 		}
 		this.reconnectCount++;
 		if (this.reconnectError) {
@@ -635,7 +635,7 @@ class FakeDaemonClient {
 	disconnectForReconnect(reason: "shutdown" | "update"): void {
 		this.closeCount++;
 		this.connected = false;
-		this.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", reason));
+		this.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", reason));
 	}
 }
 
@@ -980,7 +980,7 @@ describe("DaemonAgentConnection", () => {
 			request: async () => {
 				// The authoritative stop lands while the direct link is still up; then the direct attach dies.
 				supervisor.connected = false;
-				supervisor.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "shutdown"));
+				supervisor.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "shutdown"));
 				directConnected = false;
 				const error = new Error("direct attach socket closed");
 				for (const listener of [...closeListeners]) listener(error);
@@ -1070,7 +1070,7 @@ describe("DaemonAgentConnection", () => {
 				rosterSubscribes++;
 				if (rosterSubscribes === 2) {
 					supervisor.connected = false;
-					supervisor.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+					supervisor.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 				}
 			}
 			return originalRequest(command, timeoutMs ?? 30000, options ?? {});
@@ -1220,7 +1220,7 @@ describe("DaemonAgentConnection", () => {
 		});
 
 		supervisor.connected = false;
-		supervisor.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+		supervisor.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 
 		await expect(restored).resolves.toMatchObject({ type: "session_resynced" });
 		expect(routed.hasDirectTransport).toBe(false);
@@ -1469,7 +1469,7 @@ describe("DaemonAgentConnection", () => {
 		});
 		await connection.attach();
 
-		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 
 		await expect(restored).resolves.toMatchObject({
 			type: "session_resynced",
@@ -1565,7 +1565,7 @@ describe("DaemonAgentConnection", () => {
 		expect(closedEvents).toHaveLength(1);
 		expect(closedEvents[0]).toMatchObject({
 			type: "closed",
-			error: expect.stringContaining("The Prime Agent daemon shut down while this window was attached."),
+			error: expect.stringContaining("The Amicus daemon shut down while this window was attached."),
 		});
 		const closedError = closedEvents[0]?.type === "closed" ? closedEvents[0].error : undefined;
 		expect(closedError).toContain("Session ID: session-current.");
@@ -1582,7 +1582,7 @@ describe("DaemonAgentConnection", () => {
 		[
 			"shutdown socket close",
 			(fakeClient: FakeDaemonClient) =>
-				fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "shutdown")),
+				fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "shutdown")),
 		],
 		// An orderly supervisor shutdown archive-stops its workers, so attached windows
 		// read the relayed close as "killed"; a direct worker link closes as "shutdown".
@@ -1630,7 +1630,7 @@ describe("DaemonAgentConnection", () => {
 			await connection.attach();
 
 			fakeClient.emitClose(new Error("Daemon socket closed"));
-			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "shutdown"));
+			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "shutdown"));
 			await vi.advanceTimersByTimeAsync(2_000);
 			// The restart recovery owns the outcome: one resync, no duplicate, no terminal close.
 			expect(events.filter((event) => event.type === "session_resynced")).toHaveLength(1);
@@ -1649,7 +1649,7 @@ describe("DaemonAgentConnection", () => {
 			const events: AgentConnectionEvent[] = [];
 			connection.subscribe((event) => void events.push(event));
 			await connection.attach();
-			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "shutdown"));
+			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "shutdown"));
 			await vi.advanceTimersByTimeAsync(50); // parks the shutdown recovery on its retry delay
 			fakeClient.updateRestartSessions = [{ id: "r1", activeSessionId: "restored", sessionId: "session-current" }];
 			fakeClient.emitMessage({ type: "session_closed", activeSessionId: "active-original", reason: "update" });
@@ -1679,12 +1679,12 @@ describe("DaemonAgentConnection", () => {
 			});
 			await connection.attach();
 
-			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "shutdown"));
+			fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "shutdown"));
 			await vi.advanceTimersByTimeAsync(5100);
 
 			expect(closedEvents).toHaveLength(1);
 			const closedError = closedEvents[0]?.type === "closed" ? closedEvents[0].error : undefined;
-			expect(closedError).toContain("The Prime Agent daemon shut down while this window was attached.");
+			expect(closedError).toContain("The Amicus daemon shut down while this window was attached.");
 			await connection.dispose();
 		} finally {
 			vi.useRealTimers();
@@ -1712,7 +1712,7 @@ describe("DaemonAgentConnection", () => {
 		});
 		await connection.attach();
 
-		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 		await vi.waitFor(() => {
 			expect(
 				fakeClient.requests.some(
@@ -1757,10 +1757,10 @@ describe("DaemonAgentConnection", () => {
 			expect(closedEvents).toHaveLength(1);
 			const closedError = closedEvents[0]?.type === "closed" ? closedEvents[0].error : undefined;
 			expect(closedError).toContain(
-				"The Prime Agent daemon restarted for an update, but this window could not reconnect",
+				"The Amicus daemon restarted for an update, but this window could not reconnect",
 			);
 			expect(closedError).toContain("Last error: daemon unavailable");
-			expect(closedError).toContain("restart Prime Agent and reopen it from Agents View");
+			expect(closedError).toContain("restart Amicus and reopen it from Agents View");
 			expect(closedError).toContain("Session ID: session-current.");
 			expect(closedError).toContain("Session file: /tmp/session-current.jsonl.");
 			expect(closedError).toContain("Diagnostic log:");
@@ -2992,7 +2992,7 @@ describe("DaemonAgentConnection", () => {
 		});
 		await connection.attach();
 
-		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+		fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 
 		await vi.waitFor(() => expect(statuses).toEqual(["reconnecting", "connected"]));
 		expect(fakeClient.requests.at(-1)).toMatchObject({
@@ -4015,7 +4015,7 @@ describe("DaemonAgentConnection deferred session events", () => {
 					if (boundary === "update-session") {
 						fakeClient.emitMessage({ type: "session_closed", activeSessionId: "active-1", reason: "update" });
 					} else {
-						fakeClient.emitClose(new DaemonSocketClosedError("/tmp/prime-agent.sock", "update"));
+						fakeClient.emitClose(new DaemonSocketClosedError("/tmp/amicus.sock", "update"));
 					}
 				} else {
 					const snapshot = createAttachResult("active-1", undefined, undefined, 1).snapshot;
