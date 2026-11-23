@@ -1,0 +1,1 @@
+- Added Z.ai GLM-5.4 to the zai model list while the remote catalog does not list it yet.

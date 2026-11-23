@@ -90,17 +90,20 @@ describe("Z.ai mandatory thinking payload", () => {
 	});
 
 	for (const api of ["anthropic-messages", "openai-completions", "openai-responses"] as const) {
-		it.each(["glm-5.3", "glm-5.3-flash"])(`${api} enables thinking for custom %s without metadata`, async (id) => {
-			expect(getSupportedThinkingLevels(customModel(api, id))).toEqual(["low", "high", "max"]);
-			const payload = await captureCustomPayload(api, id, "off");
-			if (api === "anthropic-messages") {
-				expect(payload).toMatchObject({ thinking: { type: "enabled", budget_tokens: 2048 } });
-			} else if (api === "openai-completions") {
-				expect(payload).toMatchObject({ thinking: { type: "enabled" }, reasoning_effort: "low" });
-			} else {
-				expect(payload).toMatchObject({ reasoning: { effort: "low" } });
-			}
-		});
+		it.each(["glm-5.3", "glm-5.3-flash", "glm-5.4"])(
+			`${api} enables thinking for custom %s without metadata`,
+			async (id) => {
+				expect(getSupportedThinkingLevels(customModel(api, id))).toEqual(["low", "high", "max"]);
+				const payload = await captureCustomPayload(api, id, "off");
+				if (api === "anthropic-messages") {
+					expect(payload).toMatchObject({ thinking: { type: "enabled", budget_tokens: 2048 } });
+				} else if (api === "openai-completions") {
+					expect(payload).toMatchObject({ thinking: { type: "enabled" }, reasoning_effort: "low" });
+				} else {
+					expect(payload).toMatchObject({ reasoning: { effort: "low" } });
+				}
+			},
+		);
 
 		it(`${api} does not implicitly disable mandatory thinking when reasoning is omitted`, async () => {
 			const payload = await captureCustomPayload(api, "glm-5.3");
@@ -117,13 +120,14 @@ describe("Z.ai mandatory thinking payload", () => {
 		}
 		expect(getSupportedThinkingLevels({ ...model, id: "glm-5.30" })).toContain("off");
 		expect(getSupportedThinkingLevels({ ...model, id: "glm-5.2" })).toContain("off");
+		expect(getSupportedThinkingLevels({ ...model, id: "glm-5.40" })).toContain("off");
 	});
 
 	it("honors explicit custom capability overrides", () => {
 		const model = customModel("openai-completions", "glm-5.3");
 		expect(getSupportedThinkingLevels({ ...model, thinkingLevelMap: { off: "none" } })).toContain("off");
 	});
-	for (const id of ["glm-5.3", "glm-5.3-flash", "glm-5.3-highspeed"] as const) {
+	for (const id of ["glm-5.3", "glm-5.3-flash", "glm-5.3-highspeed", "glm-5.4"] as const) {
 		it(`${id} exposes only supported reasoning levels`, () => {
 			expect(getSupportedThinkingLevels(catalogZaiModel(id))).toEqual(["low", "high", "max"]);
 		});
