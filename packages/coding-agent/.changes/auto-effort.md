@@ -1,0 +1,1 @@
+- Added `/effort auto`, which picks the reasoning level for each prompt from a TypeSafe Jev difficulty score of the request and recent messages; it needs `TYPESAFE_API_KEY`.

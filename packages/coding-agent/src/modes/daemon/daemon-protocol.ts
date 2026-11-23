@@ -72,8 +72,9 @@ export const DAEMON_COMMAND_ENVELOPE_MIN_PROTOCOL_VERSION = 7;
 // Revision 32 publishes the last recorded model on saved-session rows.
 // Revision 33 adds the capability-gated abort_and_send_queued command.
 // Revision 34 adds structured update_restarting failure info for opens fenced by an update restart.
-export const DAEMON_SCHEMA_REVISION = 34;
-export const DAEMON_SCHEMA_ID = "protocol-7-schema-34-87a4862265b9";
+// Revision 35 adds the capability-gated set_auto_thinking command and optional auto-thinking state.
+export const DAEMON_SCHEMA_REVISION = 35;
+export const DAEMON_SCHEMA_ID = "protocol-7-schema-35-4ebc9fca1330";
 
 export type DaemonProtocolName = typeof DAEMON_PROTOCOL_NAME;
 export type DaemonProtocolVersion = number;
@@ -124,7 +125,8 @@ export type DaemonServerCapability =
 	| "conditional_session_profile"
 	| "kernel_cwd"
 	| "direct_peer_transport"
-	| "abort_and_send_queued";
+	| "abort_and_send_queued"
+	| "auto_thinking";
 
 export type DaemonReplayStatus = "complete" | "partial" | "unavailable";
 
@@ -175,6 +177,7 @@ export const DAEMON_DEFAULT_SERVER_CAPABILITIES: readonly DaemonServerCapability
 	"conditional_session_profile",
 	"kernel_cwd",
 	"abort_and_send_queued",
+	"auto_thinking",
 ];
 
 export interface DaemonSessionProfilePrecondition {
@@ -664,6 +667,7 @@ export type DaemonCommand =
 	| { id?: string; type: "cycle_model"; activeSessionId: string; direction?: "forward" | "backward" }
 	| { id?: string; type: "set_scoped_models"; activeSessionId: string; scopedModels: AgentConnectionScopedModel[] }
 	| { id?: string; type: "set_thinking_level"; activeSessionId: string; level: ThinkingLevel }
+	| { id?: string; type: "set_auto_thinking"; activeSessionId: string; enabled: boolean }
 	| { id?: string; type: "set_service_tier"; activeSessionId: string; serviceTier: ServiceTier }
 	| { id?: string; type: "cycle_thinking_level"; activeSessionId: string }
 	| { id?: string; type: "set_transport"; activeSessionId: string; transport: Transport }
@@ -882,6 +886,7 @@ export const DAEMON_COMMAND_COMPATIBILITY = {
 	cycle_model: LEGACY_DAEMON_COMMAND,
 	set_scoped_models: LEGACY_DAEMON_COMMAND,
 	set_thinking_level: LEGACY_DAEMON_COMMAND,
+	set_auto_thinking: { minProtocol: 7, minSchemaRevision: 35, capability: "auto_thinking" },
 	set_service_tier: LEGACY_DAEMON_COMMAND,
 	cycle_thinking_level: LEGACY_DAEMON_COMMAND,
 	set_transport: LEGACY_DAEMON_COMMAND,
@@ -1020,6 +1025,7 @@ export const DAEMON_COMMAND_PLANE = {
 	cycle_model: "session",
 	set_scoped_models: "session",
 	set_thinking_level: "session",
+	set_auto_thinking: "session",
 	set_service_tier: "session",
 	cycle_thinking_level: "session",
 	set_transport: "session",

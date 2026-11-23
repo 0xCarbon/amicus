@@ -1510,6 +1510,21 @@ export class DaemonAgentConnection implements AgentConnection {
 		await this.requestOk({ type: "set_thinking_level", activeSessionId: this.activeSessionId, level });
 	}
 
+	async setAutoThinking(enabled: boolean): Promise<boolean> {
+		if (!this.client.supportsServerCapability("auto_thinking")) return false;
+		try {
+			const result = await this.requestData<{ enabled: boolean }>({
+				type: "set_auto_thinking",
+				activeSessionId: this.activeSessionId,
+				enabled,
+			});
+			return result.enabled;
+		} catch (error) {
+			if (isUnknownDaemonCommandError(error, "set_auto_thinking")) return false;
+			throw error;
+		}
+	}
+
 	async setServiceTier(serviceTier: ServiceTier): Promise<void> {
 		await this.requestOk({ type: "set_service_tier", activeSessionId: this.activeSessionId, serviceTier });
 	}

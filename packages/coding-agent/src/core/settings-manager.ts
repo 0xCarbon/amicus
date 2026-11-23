@@ -210,6 +210,7 @@ export interface Settings {
 	// to a different model moves those calls off the session model.
 	auxiliaryModel?: string;
 	defaultThinkingLevel?: "off" | "minimal" | "low" | "medium" | "high" | "xhigh" | "max";
+	defaultAutoThinking?: boolean; // pick the reasoning level per prompt via TypeSafe Jev
 	defaultServiceTier?: ServiceTier;
 	rlmMaxDepth?: number; // default for new sessions; unset falls through to RLM_MAX_DEPTH, then 2
 	idleEvictionMinutes?: number | "off"; // global daemon policy; default: 90
@@ -898,6 +899,10 @@ export class SettingsManager {
 		this.globalSettings.defaultThinkingLevel = level;
 		this.markModified("defaultThinkingLevel");
 		this.save();
+	}
+
+	getDefaultAutoThinking(): boolean {
+		return this.settings.defaultAutoThinking === true;
 	}
 
 	getDefaultServiceTier(): ServiceTier {

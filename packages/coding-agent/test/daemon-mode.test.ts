@@ -3931,7 +3931,7 @@ describe("daemon mode helpers", () => {
 			releaseCatalog = resolve;
 		});
 		session.modelRegistry.refreshAvailableModels.mockImplementationOnce(() => catalog);
-		session.setThinkingLevel = vi.fn((level: string) => {
+		session.selectThinkingLevel = vi.fn((level: string) => {
 			session.thinkingLevel = level;
 		});
 		const internals = daemon as unknown as {
@@ -3952,13 +3952,13 @@ describe("daemon mode helpers", () => {
 			level: "low",
 		});
 		await Promise.resolve();
-		expect(session.setThinkingLevel).not.toHaveBeenCalled();
+		expect(session.selectThinkingLevel).not.toHaveBeenCalled();
 
 		releaseCatalog([session.model, targetModel]);
 		await expect(conditional).resolves.toMatchObject({ success: true, data: { status: "applied" } });
 		await expect(legacy).resolves.toMatchObject({ success: true, command: "set_thinking_level" });
 		expect(session.setModel.mock.invocationCallOrder[0]).toBeLessThan(
-			session.setThinkingLevel.mock.invocationCallOrder[0],
+			session.selectThinkingLevel.mock.invocationCallOrder[0],
 		);
 		expect(session.thinkingLevel).toBe("low");
 	});

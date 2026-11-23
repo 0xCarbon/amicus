@@ -490,7 +490,11 @@ export class InProcessAgentConnection implements AgentConnection {
 	}
 
 	async setThinkingLevel(level: ThinkingLevel): Promise<void> {
-		this.session.setThinkingLevel(level);
+		this.session.selectThinkingLevel(level);
+	}
+
+	async setAutoThinking(enabled: boolean): Promise<boolean> {
+		return this.session.setAutoThinking(enabled);
 	}
 
 	async setServiceTier(serviceTier: ServiceTier): Promise<void> {

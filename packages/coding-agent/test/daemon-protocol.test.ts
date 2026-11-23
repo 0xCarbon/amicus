@@ -39,6 +39,7 @@ describe("daemon protocol helpers", () => {
 		["get_model_catalog", { minProtocol: 7, capability: "model_catalog" }, true],
 		["mutate_queued_message", { minProtocol: 7, minSchemaRevision: 15, capability: "queue_message_mutation" }, true],
 		["abort_and_send_queued", { minProtocol: 7, minSchemaRevision: 33, capability: "abort_and_send_queued" }, true],
+		["set_auto_thinking", { minProtocol: 7, minSchemaRevision: 35, capability: "auto_thinking" }, true],
 		["get_rlm_max_depth_status", { minProtocol: 7, minSchemaRevision: 11 }, undefined],
 		["set_rlm_max_depth", { minProtocol: 7, minSchemaRevision: 11 }, undefined],
 		[

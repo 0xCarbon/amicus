@@ -706,6 +706,8 @@ function createFakeConnectionSession(commandName: string): AgentSessionRuntime["
 			getEntries: () => [],
 		},
 		getAvailableThinkingLevels: () => ["medium"],
+		autoThinking: false,
+		isAutoThinkingAvailable: () => false,
 		getActiveToolNames: () => [],
 		getContextUsage: () => undefined,
 		thinkingLevel: "medium",

@@ -53,6 +53,7 @@ class FakeDaemonClient {
 	abortBashUnknownCommand = false;
 	abortAndClearQueueUnknownCommand = false;
 	abortAndSendQueuedUnknownCommand = false;
+	autoThinkingUnknownCommand = false;
 	inputPauseAcquireGate: Promise<void> | undefined;
 	cronAddGate: Promise<void> | undefined;
 	promptGate: Promise<void> | undefined;
@@ -318,6 +319,10 @@ class FakeDaemonClient {
 					success: true,
 					data: { steering: ["aborted"], followUp: ["cleared"] },
 				};
+			case "set_auto_thinking":
+				return this.autoThinkingUnknownCommand
+					? failure(command.id, command.type, "Unknown daemon command: set_auto_thinking")
+					: success(command.id, command.type, { enabled: command.enabled });
 			case "abort_and_send_queued":
 				return this.abortAndSendQueuedUnknownCommand
 					? failure(command.id, command.type, "Unknown daemon command: abort_and_send_queued")
@@ -4135,6 +4140,21 @@ describe("DaemonAgentConnection deferred session events", () => {
 		} finally {
 			await connection.dispose();
 		}
+	});
+
+	it("sends set_auto_thinking only behind the advertised daemon capability", async () => {
+		const send = (client: FakeDaemonClient) =>
+			new DaemonAgentConnection(asDaemonClient(client), "active-1").setAutoThinking(true);
+		const capable = new FakeDaemonClient();
+		capable.serverCapabilities.add("auto_thinking");
+		await expect(send(capable)).resolves.toBe(true);
+		expect(capable.requests).toEqual([{ type: "set_auto_thinking", activeSessionId: "active-1", enabled: true }]);
+		const older = new FakeDaemonClient();
+		await expect(send(older)).resolves.toBe(false);
+		expect(older.requests).toEqual([]);
+		const stale = Object.assign(new FakeDaemonClient(), { autoThinkingUnknownCommand: true });
+		stale.serverCapabilities.add("auto_thinking");
+		await expect(send(stale)).resolves.toBe(false);
 	});
 
 	it("sends abort_and_send_queued only behind the advertised daemon capability", async () => {
