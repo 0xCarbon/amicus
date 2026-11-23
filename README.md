@@ -19,11 +19,11 @@ Prime Agent: A Self-Improving RLM Harness
 </p>
 
 <p align="center">
-  <a href="https://github.com/PrimeIntellect-ai/prime-agent/actions/workflows/ci.yml">
-    <img src="https://github.com/PrimeIntellect-ai/prime-agent/actions/workflows/ci.yml/badge.svg" alt="CI" />
+  <a href="https://github.com/canesin/prime-agent/actions/workflows/ci.yml">
+    <img src="https://github.com/canesin/prime-agent/actions/workflows/ci.yml/badge.svg" alt="CI" />
   </a>
-  <a href="https://github.com/PrimeIntellect-ai/prime-agent/actions/workflows/build-binaries.yml">
-    <img src="https://github.com/PrimeIntellect-ai/prime-agent/actions/workflows/build-binaries.yml/badge.svg" alt="Build Binaries" />
+  <a href="https://github.com/canesin/prime-agent/actions/workflows/fork-release.yml">
+    <img src="https://github.com/canesin/prime-agent/actions/workflows/fork-release.yml/badge.svg" alt="Release" />
   </a>
   <a href="https://arxiv.org/abs/2608.23552">
     <img src="https://img.shields.io/badge/arXiv-2608.23552-b31b1b.svg" alt="arXiv" />
