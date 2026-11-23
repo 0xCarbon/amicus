@@ -42,7 +42,7 @@ jobs:
         uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: PrimeIntellect-ai/prime-agent-catalog
-          ref: main
+          ref: 01f4d46dd5157ec73f8faf440214088237c81d59 # pinned so upstream catalog edits cannot change test results
           token: ${{ secrets.PRIME_CATALOG_REPO_TOKEN || github.token }}
           path: prime-agent-catalog
           persist-credentials: false
