@@ -32,6 +32,8 @@ export function createAgentConnectionState(
 		thinkingLevel: session.thinkingLevel,
 		serviceTier: session.serviceTier,
 		availableThinkingLevels: session.getAvailableThinkingLevels(),
+		autoThinking: session.autoThinking,
+		autoThinkingAvailable: session.isAutoThinkingAvailable(),
 		isStreaming: session.isStreaming,
 		isCompacting: session.isCompacting,
 		isBashRunning: session.isBashRunning,

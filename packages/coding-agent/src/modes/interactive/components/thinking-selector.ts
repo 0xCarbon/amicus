@@ -18,14 +18,18 @@ const LEVEL_DESCRIPTIONS: Record<ThinkingLevel, string> = {
 	max: "Maximum reasoning",
 };
 
+export const AUTO_THINKING_LABEL = "auto";
+export const AUTO_THINKING_DESCRIPTION = "Pick the level per prompt";
+
 export class ThinkingSelectorComponent extends Container {
 	private selectList: SelectList;
 
 	constructor(
-		currentLevel: ThinkingLevel,
+		currentLevel: ThinkingLevel | typeof AUTO_THINKING_LABEL,
 		availableLevels: ThinkingLevel[],
-		onSelect: (level: ThinkingLevel) => void,
+		onSelect: (level: ThinkingLevel | typeof AUTO_THINKING_LABEL) => void,
 		onCancel: () => void,
+		autoAvailable = false,
 	) {
 		super();
 
@@ -34,6 +38,13 @@ export class ThinkingSelectorComponent extends Container {
 			label: level,
 			description: LEVEL_DESCRIPTIONS[level],
 		}));
+		if (autoAvailable) {
+			thinkingLevels.unshift({
+				value: AUTO_THINKING_LABEL,
+				label: AUTO_THINKING_LABEL,
+				description: AUTO_THINKING_DESCRIPTION,
+			});
+		}
 
 		this.addChild(new DynamicBorder());
 
@@ -50,7 +61,7 @@ export class ThinkingSelectorComponent extends Container {
 		}
 
 		this.selectList.onSelect = (item) => {
-			onSelect(item.value as ThinkingLevel);
+			onSelect(item.value as ThinkingLevel | typeof AUTO_THINKING_LABEL);
 		};
 
 		this.selectList.onCancel = () => {

@@ -5597,8 +5597,16 @@ export class AgentDaemon {
 			case "set_thinking_level": {
 				const state = this.getSessionState(command.activeSessionId);
 				return this.withSessionProfileTransition(state, async () => {
-					state.runtime.session.setThinkingLevel(command.level);
+					state.runtime.session.selectThinkingLevel(command.level);
 					return success(command.id, "set_thinking_level");
+				});
+			}
+
+			case "set_auto_thinking": {
+				const state = this.getSessionState(command.activeSessionId);
+				return this.withSessionProfileTransition(state, async () => {
+					const enabled = state.runtime.session.setAutoThinking(command.enabled);
+					return success(command.id, "set_auto_thinking", { enabled });
 				});
 			}
 

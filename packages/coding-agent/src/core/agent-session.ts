@@ -83,6 +83,13 @@ import {
 } from "./auth-guidance.js";
 import type { AuthSourceToken } from "./auth-storage.js";
 import {
+	AUTO_THINKING_API_KEY_ENV,
+	autoThinkingCandidates,
+	buildAutoThinkingWindow,
+	chooseAutoThinkingLevel,
+	fetchAutoThinkingProbabilities,
+} from "./auto-thinking.js";
+import {
 	type AgentAutonomousConfig,
 	type AgentAutonomousStatus,
 	type AutonomousRuntimeState,
@@ -429,7 +436,7 @@ export type AgentSessionEvent =
 			customInstructions?: string;
 	  }
 	| { type: "session_info_changed"; name: string | undefined }
-	| { type: "thinking_level_changed"; level: ThinkingLevel }
+	| { type: "thinking_level_changed"; level: ThinkingLevel; auto?: boolean }
 	| { type: "service_tier_changed"; serviceTier: ServiceTier }
 	| {
 			type: "compaction_end";
@@ -1162,6 +1169,7 @@ const KERNEL_STATE_LISTING_TIMEOUT_MS = 5000;
  */
 const UNKNOWN_RLM_CHILD_MODEL = { provider: "unknown", id: "unknown" } as Model<Api>;
 const RLM_MAX_DEPTH_STATE_CUSTOM_TYPE = "rlm_max_depth_state";
+const AUTO_THINKING_CUSTOM_TYPE = "auto_thinking_state";
 /** Minimum spacing between accepted progress notes from one child session. */
 const RLM_PROGRESS_NOTE_MIN_INTERVAL_MS = 10_000;
 /** Minimum spacing between streamed-delta child update emits per child run. */
@@ -1602,6 +1610,7 @@ export class AgentSession {
 	private _pendingNextTurnMessages: CustomMessage[] = [];
 
 	private _goalState: GoalState = emptyGoalState();
+	private _autoThinking = false;
 	private readonly _goalContinuationGuard = new GoalContinuationGuard((state) =>
 		this.sessionManager.appendCustomEntryWithRollback(GOAL_CONTINUATION_GUARD_TYPE, state),
 	);
@@ -1889,6 +1898,7 @@ export class AgentSession {
 			defaultLimits: this.settingsManager.getAutonomousLimits(),
 		});
 		this._goalState = this._loadPersistedGoalState();
+		this._autoThinking = this._loadPersistedAutoThinking();
 		this._goalContinuationGuard.restore(this.sessionManager.getBranch(), this._goalState.goalId);
 		this._goalPauseBlocksAutonomous = this._goalState.status === "paused";
 		// Seed initial goal from CLI --goal flag, but only for top-level sessions
@@ -2237,6 +2247,18 @@ export class AgentSession {
 			return { maxDepth: parseDepth(env, 1, "RLM_MAX_DEPTH"), source: "env" };
 		}
 		return { maxDepth: 2, source: "default" };
+	}
+
+	private _loadPersistedAutoThinking(): boolean {
+		if (!this.isAutoThinkingAvailable()) return false;
+		const branch = this.sessionManager.getBranch();
+		for (let i = branch.length - 1; i >= 0; i--) {
+			const entry = branch[i];
+			if (entry.type === "custom" && entry.customType === AUTO_THINKING_CUSTOM_TYPE) {
+				return (entry.data as { enabled?: unknown } | undefined)?.enabled === true;
+			}
+		}
+		return this.settingsManager.getDefaultAutoThinking();
 	}
 
 	private _loadPersistedGoalState(): GoalState {
@@ -7662,12 +7684,14 @@ export class AgentSession {
 			parkNextTurnMessages(nextTurnMessages);
 			nextTurnMessages = [];
 		};
+		let autoThinkingLevel: Promise<ThinkingLevel | undefined> | undefined;
 		try {
 			const preparedTurn = await this._prepareForCommit(executionPolicy.preparation, {
 				afterValidation: () => {
 					if (this._isSessionInputHandoffDeferred(epoch)) {
 						throw new DeferredSessionInputError("Session input paused before preflight");
 					}
+					autoThinkingLevel = this._startAutoThinkingResolution(activeTurns());
 					// Re-evaluate image routing for this batch before any pre-commit read of
 					// the serving model: pre-turn compaction must not follow the previous
 					// turn's override. Retries and post-compaction continuations of a routed
@@ -7717,6 +7741,7 @@ export class AgentSession {
 				return;
 			}
 			const { prepared, turns } = preparedTurn;
+			const resolvedAutoThinkingLevel = await autoThinkingLevel;
 			const commitFence = await this._acquireSessionActionCommitFence();
 			let promptPromise: Promise<void>;
 			try {
@@ -7788,6 +7813,9 @@ export class AgentSession {
 					// before_agent_start injections land after the earlier per-turn
 					// decision and may carry images the session model cannot serve.
 					this.agent.modelOverride = this._imageModelOverrideForTurns(turns, preparedMessages);
+					if (resolvedAutoThinkingLevel && this._autoThinking) {
+						this.setThinkingLevel(resolvedAutoThinkingLevel, { persistDefault: false });
+					}
 					return turns.some((action) => action.suppressAutonomousContinuation)
 						? this._runWithAutonomousContinuationSuppressed(() => this.agent.prompt(preparedMessages))
 						: this.agent.prompt(preparedMessages);
@@ -9047,7 +9075,7 @@ export class AgentSession {
 			if (options.persistDefault !== false && (this.supportsThinking() || effectiveLevel !== "off")) {
 				this.settingsManager.setDefaultThinkingLevel(effectiveLevel);
 			}
-			this._emit({ type: "thinking_level_changed", level: effectiveLevel });
+			this._emit({ type: "thinking_level_changed", level: effectiveLevel, auto: this._autoThinking });
 			void this._extensionRunner.emit({
 				type: "thinking_level_select",
 				level: effectiveLevel,
@@ -9102,8 +9130,15 @@ export class AgentSession {
 		});
 	}
 
+	/** A person's explicit level choice: it ends auto selection. */
+	selectThinkingLevel(level: ThinkingLevel): void {
+		this.setAutoThinking(false);
+		this.setThinkingLevel(level);
+	}
+
 	cycleThinkingLevel(): ThinkingLevel | undefined {
 		if (!this.supportsThinking()) return undefined;
+		this.setAutoThinking(false);
 
 		const levels = this.getAvailableThinkingLevels();
 		const currentIndex = levels.indexOf(this.thinkingLevel);
@@ -9112,6 +9147,50 @@ export class AgentSession {
 
 		this.setThinkingLevel(nextLevel);
 		return nextLevel;
+	}
+
+	get autoThinking(): boolean {
+		return this._autoThinking;
+	}
+
+	/** Auto needs a TypeSafe key and a model with at least two reasoning levels besides off. */
+	isAutoThinkingAvailable(): boolean {
+		return (
+			!!process.env[AUTO_THINKING_API_KEY_ENV] &&
+			autoThinkingCandidates(this.getAvailableThinkingLevels()).length > 0
+		);
+	}
+
+	/** Returns whether auto is enabled afterwards; enabling is refused while auto is unavailable. */
+	setAutoThinking(enabled: boolean): boolean {
+		const next = enabled && this.isAutoThinkingAvailable();
+		if (next === this._autoThinking) return next;
+		this._autoThinking = next;
+		this.sessionManager.appendCustomEntry(AUTO_THINKING_CUSTOM_TYPE, { enabled: next });
+		this.settingsManager.setDefaultAutoThinking(next);
+		this._emit({ type: "thinking_level_changed", level: this.thinkingLevel, auto: next });
+		return next;
+	}
+
+	private _startAutoThinkingResolution(
+		turns: readonly SessionAction<PreparedTurnPayload>[],
+	): Promise<ThinkingLevel | undefined> | undefined {
+		if (!this._autoThinking) return undefined;
+		const human = turns.filter(
+			(action) =>
+				isHumanInputSource(action.source) &&
+				action.priority !== "background" &&
+				primaryDeliveryRecord(action).message.role === "user",
+		);
+		const request = human.at(-1)?.payload.text;
+		if (request === undefined) return undefined;
+		const levels = this.getAvailableThinkingLevels();
+		const apiKey = process.env[AUTO_THINKING_API_KEY_ENV];
+		if (!apiKey) return Promise.resolve(chooseAutoThinkingLevel(levels, undefined));
+		const window = buildAutoThinkingWindow(this.messages, request);
+		return fetchAutoThinkingProbabilities({ window, apiKey }).then((probabilities) =>
+			chooseAutoThinkingLevel(levels, probabilities),
+		);
 	}
 
 	getAvailableThinkingLevels(): ThinkingLevel[] {

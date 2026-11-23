@@ -335,6 +335,9 @@ export interface AgentConnectionState {
 	thinkingLevel: ThinkingLevel;
 	serviceTier: ServiceTier;
 	availableThinkingLevels: ThinkingLevel[];
+	/** Omitted by daemons without the auto_thinking capability. */
+	autoThinking?: boolean;
+	autoThinkingAvailable?: boolean;
 	isStreaming: boolean;
 	isCompacting: boolean;
 	isBashRunning: boolean;
@@ -588,7 +591,7 @@ export type AgentConnectionSessionEvent =
 			customInstructions?: string;
 	  }
 	| { type: "session_info_changed"; name: string | undefined }
-	| { type: "thinking_level_changed"; level: ThinkingLevel }
+	| { type: "thinking_level_changed"; level: ThinkingLevel; auto?: boolean }
 	| { type: "service_tier_changed"; serviceTier: ServiceTier }
 	| {
 			type: "compaction_end";
@@ -772,6 +775,8 @@ export interface AgentConnection {
 	cycleModel(direction?: "forward" | "backward"): Promise<AgentConnectionModelCycleResult | undefined>;
 	setScopedModels(scopedModels: AgentConnectionScopedModel[]): Promise<void>;
 	setThinkingLevel(level: ThinkingLevel): Promise<void>;
+	/** Pick the reasoning level per prompt; resolves to whether auto is now on (false when unsupported). */
+	setAutoThinking(enabled: boolean): Promise<boolean>;
 	setServiceTier(serviceTier: ServiceTier): Promise<void>;
 	cycleThinkingLevel(): Promise<ThinkingLevel | undefined>;
 	setTransport(transport: Transport): Promise<void>;

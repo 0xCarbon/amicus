@@ -76,6 +76,7 @@ import {
 } from "../../core/agent-messages.js";
 import { isNoModelsAvailableMessage } from "../../core/auth-guidance.js";
 import type { AuthCredential } from "../../core/auth-storage.js";
+import { AUTO_THINKING_API_KEY_ENV } from "../../core/auto-thinking.js";
 import {
 	type AgentCronJob,
 	type AgentHeartbeatManagementAction,
@@ -290,7 +291,11 @@ import {
 	countSubtreeSubagentStatuses,
 	SubagentSummaryLine,
 } from "./components/subagent-summary-line.js";
-import { ThinkingSelectorComponent } from "./components/thinking-selector.js";
+import {
+	AUTO_THINKING_DESCRIPTION,
+	AUTO_THINKING_LABEL,
+	ThinkingSelectorComponent,
+} from "./components/thinking-selector.js";
 import {
 	selectLatestToolExpandHint,
 	ToolExecutionComponent,
@@ -3224,7 +3229,11 @@ export class InteractiveMode {
 				this.patchConnectionState({ sessionName: event.name });
 				break;
 			case "thinking_level_changed":
-				this.patchConnectionState({ thinkingLevel: event.level });
+				this.patchConnectionState(
+					event.auto === undefined
+						? { thinkingLevel: event.level }
+						: { thinkingLevel: event.level, autoThinking: event.auto },
+				);
 				break;
 			case "service_tier_changed":
 				this.patchConnectionState({ serviceTier: event.serviceTier });
@@ -6726,7 +6735,8 @@ export class InteractiveMode {
 			const providerPrefix = `${model.provider}/`;
 			const modelId = model.id.startsWith(providerPrefix) ? model.id.slice(providerPrefix.length) : model.id;
 			const effort = model.reasoning ? this.connectionState?.thinkingLevel : undefined;
-			parts.push(effort ? `${modelId}:${effort.toLowerCase()}` : modelId);
+			const auto = effort && this.connectionState?.autoThinking ? "auto·" : "";
+			parts.push(effort ? `${modelId}:${auto}${effort.toLowerCase()}` : modelId);
 			const serviceTier = this.connectionState?.serviceTier;
 			if (serviceTier === "priority") {
 				parts.push("fast");
@@ -8456,13 +8466,14 @@ export class InteractiveMode {
 
 	/** Patch model-derived connection state and refresh the UI that reads it. */
 	private applyModelSwitchUiState(
-		state: Pick<AgentConnectionState, "model" | "serviceTier" | "availableThinkingLevels">,
+		state: Pick<AgentConnectionState, "model" | "serviceTier" | "availableThinkingLevels" | "autoThinkingAvailable">,
 		fallbackModel: AgentConnectionModel,
 	): void {
 		this.patchConnectionState({
 			model: state.model ?? fallbackModel,
 			serviceTier: state.serviceTier,
 			availableThinkingLevels: state.availableThinkingLevels,
+			autoThinkingAvailable: state.autoThinkingAvailable,
 		});
 		this.footer.invalidate();
 		this.subagentSummaryLine.invalidate();
@@ -8683,13 +8694,22 @@ export class InteractiveMode {
 		const current = this.connectionState?.thinkingLevel;
 		const term = prefix.trim().toLowerCase();
 		const matches = term ? levels.filter((level) => level.startsWith(term)) : levels;
-		if (matches.length === 0) return null;
-		return matches.map((level) => ({
+		const items: AutocompleteItem[] = matches.map((level) => ({
 			value: level,
 			label: level,
 			description:
-				level === current ? `${THINKING_LEVEL_DESCRIPTIONS[level]} (current)` : THINKING_LEVEL_DESCRIPTIONS[level],
+				level === current && !this.connectionState?.autoThinking
+					? `${THINKING_LEVEL_DESCRIPTIONS[level]} (current)`
+					: THINKING_LEVEL_DESCRIPTIONS[level],
 		}));
+		if (this.connectionState?.autoThinkingAvailable && AUTO_THINKING_LABEL.startsWith(term)) {
+			items.unshift({
+				value: AUTO_THINKING_LABEL,
+				label: AUTO_THINKING_LABEL,
+				description: `${AUTO_THINKING_DESCRIPTION}${this.connectionState.autoThinking ? " (current)" : ""}`,
+			});
+		}
+		return items.length > 0 ? items : null;
 	}
 
 	private getHeartbeatArgumentCompletions(prefix: string): AutocompleteItem[] | null {
@@ -8818,6 +8838,10 @@ export class InteractiveMode {
 			this.showThinkingSelector(levels);
 			return;
 		}
+		if (requested === AUTO_THINKING_LABEL) {
+			void this.applyAutoThinking();
+			return;
+		}
 		if (!levels.includes(requested as ThinkingLevel)) {
 			this.showError(`Unknown thinking level '${requested}'. Available: ${levels.join(", ")}`);
 			return;
@@ -8831,18 +8855,21 @@ export class InteractiveMode {
 			this.showStatus("Current model does not support thinking");
 			return;
 		}
+		const autoAvailable = this.connectionState?.autoThinkingAvailable === true;
 		this.showSelector((done) => {
 			const selector = new ThinkingSelectorComponent(
-				currentLevel,
+				autoAvailable && this.connectionState?.autoThinking ? AUTO_THINKING_LABEL : currentLevel,
 				levels,
 				(level) => {
 					done();
-					this.applyThinkingLevel(level);
+					if (level === AUTO_THINKING_LABEL) void this.applyAutoThinking();
+					else this.applyThinkingLevel(level);
 				},
 				() => {
 					done();
 					this.ui.requestRender();
 				},
+				autoAvailable,
 			);
 			return { component: selector, focus: selector.getSelectList() };
 		});
@@ -8852,7 +8879,7 @@ export class InteractiveMode {
 		return this.agentConnection
 			.setThinkingLevel(level)
 			.then(() => {
-				this.patchConnectionState({ thinkingLevel: level });
+				this.patchConnectionState({ thinkingLevel: level, autoThinking: false });
 				this.footer.invalidate();
 				this.updateEditorBorderColor();
 				this.showStatus(`Thinking level: ${level}`);
@@ -8862,6 +8889,21 @@ export class InteractiveMode {
 				this.showError(error instanceof Error ? error.message : String(error));
 				return false;
 			});
+	}
+
+	private async applyAutoThinking(): Promise<void> {
+		try {
+			const enabled = await this.agentConnection.setAutoThinking(true);
+			this.patchConnectionState({ autoThinking: enabled });
+			this.footer.invalidate();
+			if (enabled) this.showStatus("Thinking level: auto (picked per prompt)");
+			else
+				this.showError(
+					`Auto thinking needs ${AUTO_THINKING_API_KEY_ENV} and a model with several reasoning levels`,
+				);
+		} catch (error) {
+			this.showError(error instanceof Error ? error.message : String(error));
+		}
 	}
 
 	private handleModelCycle(direction: "forward" | "backward"): void {
