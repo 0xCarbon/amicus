@@ -183,6 +183,7 @@ describe("ProviderAuthFlows", () => {
 		authJsonPath = join(tempDir, ".amicus", "auth.json");
 		primeConfigPath = join(tempDir, ".prime", "config.json");
 		mkdirSync(join(tempDir, ".amicus"), { recursive: true });
+		mkdirSync(join(tempDir, ".prime"), { recursive: true });
 		process.env.PRIME_TEAM_ID = "env-team";
 		writeFileSync(
 			primeConfigPath,

@@ -15,8 +15,7 @@ ROOT = Path(__file__).resolve().parent
 SHA_RE = re.compile(r"^[0-9a-f]{40}$")
 DIGEST_RE = re.compile(r"^[0-9a-f]{64}$")
 CANDIDATE_TARBALLS = {
-    f"{name}-0.0.0-benchmark.tgz"
-    for name in ("amicus", "amicus-ai", "amicus-core", "amicus-tui")
+    f"{name}-0.0.0-benchmark.tgz" for name in ("amicus", "amicus-ai", "amicus-core", "amicus-tui")
 }
 
 

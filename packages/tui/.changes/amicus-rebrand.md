@@ -1,0 +1,1 @@
+- Changed the package scope from `@earendil-works/pi-*` to `@amicus/*` (`@amicus/ai`, `@amicus/agent-core`, `@amicus/tui`, `@amicus/coding-agent`).

@@ -113,7 +113,7 @@ describe("version checks", () => {
 		{ ...manifest("v1.2.4"), tarball: "releases/download/v1.2.4/amicus-1.2.4.tgz" },
 		{
 			...manifest("v1.2.4"),
-			tarball: "https://github.com/0xCarbon/amicus/releases/download/v1.2.4/amicus-1.2.4.tgz",
+			tarball: "https://github.com/PrimeIntellect-ai/prime-agent/releases/download/v1.2.4/amicus-1.2.4.tgz",
 		},
 		{
 			...manifest("v1.2.4"),
