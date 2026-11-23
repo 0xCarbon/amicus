@@ -79,35 +79,7 @@ describe("daemon protocol helpers", () => {
 
 	// Field-conditional gates: the same command carries a higher floor only when an opt-in field is present.
 	it.each([
-		[
-			"create without a telemetry policy",
-			{ type: "create", config: { cwd: "/tmp" } },
-			[{ minProtocol: 7, optionalMetadata: ["kernel_cwd"] }],
-		],
-		[
-			"create carrying a telemetry policy",
-			{ type: "create", config: { cwd: "/tmp", telemetryDisabled: true } },
-			[
-				{ minProtocol: 7, minSchemaRevision: 14 },
-				{ minProtocol: 7, optionalMetadata: ["kernel_cwd"] },
-			],
-		],
-		[
-			"attach carrying a telemetry policy",
-			{ type: "attach", activeSessionId: "active-1", telemetryDisabled: true },
-			[
-				{ minProtocol: 7, minSchemaRevision: 14 },
-				{ minProtocol: 7, optionalMetadata: ["kernel_cwd"] },
-			],
-		],
-		[
-			"reattach carrying a telemetry policy",
-			{ type: "reattach", activeSessionId: "active-1", targetActiveSessionId: "active-2", telemetryDisabled: true },
-			[
-				{ minProtocol: 7, minSchemaRevision: 14 },
-				{ minProtocol: 7, optionalMetadata: ["kernel_cwd"] },
-			],
-		],
+		["create", { type: "create", config: { cwd: "/tmp" } }, [{ minProtocol: 7, optionalMetadata: ["kernel_cwd"] }]],
 		[
 			"attach carrying owned-session recovery context",
 			{ type: "attach", activeSessionId: "active-1", recoveryConfig: { cwd: "/tmp/fresh-owner" } },
@@ -165,7 +137,6 @@ describe("daemon protocol helpers", () => {
 				sessionPath: "/sessions/root.jsonl",
 				config: {
 					sessionDir: "/legacy/sessions",
-					telemetryDisabled: true,
 					apiKey: "secret-api-key",
 					extensionFlagValues: { providerSecretKey: "secret-extension" },
 				},
@@ -187,7 +158,6 @@ describe("daemon protocol helpers", () => {
 			workerInstanceId: "instance-1",
 			sessionFile: "/sessions/root.jsonl",
 			sessionDir: "/legacy/sessions",
-			telemetryDisabled: true,
 		});
 		expect(JSON.stringify(durable)).not.toContain("secret-");
 	});

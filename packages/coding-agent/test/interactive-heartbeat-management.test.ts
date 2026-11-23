@@ -720,8 +720,7 @@ describe("interactive /heartbeats command", () => {
 				},
 			},
 			agentConnection: { prompt: vi.fn(async () => undefined) },
-			// Only settingsManager is read on the /heartbeats path (telemetry
-			// capture is fire-and-forget), so a minimal uiServices suffices.
+			// Only settingsManager is read on the /heartbeats path, so a minimal uiServices suffices.
 			uiServices: { settingsManager: {} },
 			showError: vi.fn(),
 			showStatus: vi.fn(),

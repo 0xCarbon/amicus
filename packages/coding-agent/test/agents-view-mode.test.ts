@@ -373,7 +373,7 @@ describe("AgentsViewMode", () => {
 
 		await runAgentsViewMode({
 			socketPath: "/tmp/fake-daemon.sock",
-			config: { cwd: "/tmp", telemetryDisabled: true } as never,
+			config: { cwd: "/tmp" } as never,
 			initialSession: previous,
 			uiServices: {
 				settingsManager: settingsManager as never,
@@ -389,7 +389,7 @@ describe("AgentsViewMode", () => {
 		expect(DaemonAgentConnection.attach).toHaveBeenCalledWith(
 			expect.anything(),
 			opened.activeSessionId,
-			expect.objectContaining({ telemetryDisabled: true }),
+			expect.anything(),
 		);
 		runView.mockRestore();
 	});

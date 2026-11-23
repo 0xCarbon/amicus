@@ -244,8 +244,6 @@ export interface DaemonAgentConnectionOptions {
 	ownedSession?: boolean;
 	/** Fresh runtime context used only if the owned worker must be relaunched. */
 	ownedSessionRecoveryConfig?: AgentSessionRuntimeConfig;
-	/** Require the target worker to have been created with telemetry disabled. */
-	telemetryDisabled?: true;
 }
 
 /**
@@ -503,7 +501,6 @@ export class DaemonAgentConnection implements AgentConnection {
 				this.client.supportsServerCapability("owned_session_recovery_context")
 					? { recoveryConfig: this.options.ownedSessionRecoveryConfig }
 					: {}),
-				telemetryDisabled: this.options.telemetryDisabled,
 				resumeCursor:
 					this.lastEventCursor === undefined
 						? undefined
@@ -1697,7 +1694,6 @@ export class DaemonAgentConnection implements AgentConnection {
 				],
 				env: this.options.sendClientEnv ? collectDaemonClientEnv() : undefined,
 				launchEnv: this.options.ownedSession ? collectDaemonLaunchEnv() : undefined,
-				telemetryDisabled: this.options.telemetryDisabled,
 			});
 			// Reattach rebinds the connection (and drops any direct link); pauses on the old session are gone.
 			this.sessionInputPauses.clear();

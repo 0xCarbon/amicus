@@ -159,7 +159,6 @@ export interface DaemonWorkerDescriptor {
 	rootSessionId?: string;
 	sessionFile?: string;
 	sessionDir?: string;
-	telemetryDisabled?: true;
 	createdAt: string;
 	updatedAt: string;
 	lifecycle: DaemonWorkerLifecycle;
@@ -184,7 +183,6 @@ export function durableDaemonWorkerDescriptor(descriptor: DaemonWorkerDescriptor
 	const sessionDir =
 		descriptor.sessionDir ??
 		(typeof versionOneConfig?.sessionDir === "string" ? versionOneConfig.sessionDir : undefined);
-	const telemetryDisabled = descriptor.telemetryDisabled === true || versionOneConfig?.telemetryDisabled === true;
 	return {
 		version: 2,
 		workerId: descriptor.workerId,
@@ -203,7 +201,6 @@ export function durableDaemonWorkerDescriptor(descriptor: DaemonWorkerDescriptor
 		...(descriptor.rootSessionId !== undefined ? { rootSessionId: descriptor.rootSessionId } : {}),
 		...(descriptor.sessionFile !== undefined ? { sessionFile: descriptor.sessionFile } : {}),
 		...(sessionDir !== undefined ? { sessionDir } : {}),
-		...(telemetryDisabled ? { telemetryDisabled: true as const } : {}),
 		createdAt: descriptor.createdAt,
 		updatedAt: descriptor.updatedAt,
 		lifecycle: descriptor.lifecycle,

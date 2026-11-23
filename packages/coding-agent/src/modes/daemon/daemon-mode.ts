@@ -3081,7 +3081,6 @@ export class AgentDaemon {
 						model: options.model.id,
 						...(apiKey ? { apiKey } : {}),
 						thinking: options.thinkingLevel,
-						...(runtimeConfig?.telemetryDisabled ? { telemetryDisabled: true as const } : {}),
 					},
 				},
 				120_000,

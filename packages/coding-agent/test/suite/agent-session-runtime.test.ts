@@ -483,7 +483,6 @@ describe("AgentSessionRuntime characterization", () => {
 				noSkills: true,
 				noPromptTemplates: true,
 				noThemes: true,
-				telemetryDisabled: true,
 			},
 			[
 				(pi: ExtensionAPI) => {

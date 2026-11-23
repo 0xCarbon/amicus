@@ -51,7 +51,7 @@ export const DAEMON_COMMAND_ENVELOPE_MIN_PROTOCOL_VERSION = 7;
 // Revision 11 adds immediate get/set commands for active-session RLM max depth.
 // Revision 12 publishes idle-residency metadata on session summary rows.
 // Revision 13 narrows agent-origin reach and roster wire shapes to the nuclear family.
-// Revision 14 carries the client's monotonic telemetry opt-out on attach and reattach.
+// Revision 14 carried the client's monotonic telemetry opt-out on attach and reattach (removed in 36).
 // Revision 15 adds the mutate_queued_message command and queue_message_mutation capability.
 // Revision 16 adds the "stopping" workerState and stops reporting disconnected workers as "ready".
 // Revision 17 gates authoritative child rosters and transient owned-session recovery context.
@@ -73,8 +73,9 @@ export const DAEMON_COMMAND_ENVELOPE_MIN_PROTOCOL_VERSION = 7;
 // Revision 33 adds the capability-gated abort_and_send_queued command.
 // Revision 34 adds structured update_restarting failure info for opens fenced by an update restart.
 // Revision 35 adds the capability-gated set_auto_thinking command and optional auto-thinking state.
-export const DAEMON_SCHEMA_REVISION = 35;
-export const DAEMON_SCHEMA_ID = "protocol-7-schema-35-4ebc9fca1330";
+// Revision 36 removes the telemetry opt-out from attach, reattach, and create; clients never reuse an older daemon.
+export const DAEMON_SCHEMA_REVISION = 36;
+export const DAEMON_SCHEMA_ID = "protocol-7-schema-36-4ebc9fca1330";
 
 export type DaemonProtocolName = typeof DAEMON_PROTOCOL_NAME;
 export type DaemonProtocolVersion = number;
@@ -228,8 +229,6 @@ export interface DaemonAttachClientMetadata {
 	clientId?: DaemonClientId;
 	capabilities?: readonly DaemonClientCapability[];
 	resumeCursor?: DaemonResumeCursor;
-	/** Opt-out-only policy. A telemetry-enabled worker must reject this attach. */
-	telemetryDisabled?: true;
 	/** Fresh owner-supplied runtime context for recovering a client-owned worker. Never persisted. */
 	recoveryConfig?: AgentSessionRuntimeConfig;
 }
@@ -767,7 +766,6 @@ const DELETE_RLM_SUBAGENT_COMMAND = {
 	capability: "delete_rlm_subagent",
 } as const;
 const FLAT_SESSION_TREE_COMMAND = { minProtocol: 7 } as const;
-const TELEMETRY_POLICY_COMMAND = { minProtocol: 7, minSchemaRevision: 14 } as const;
 const AUTHORITATIVE_CHILD_ROSTER_COMMAND = {
 	minProtocol: 7,
 	minSchemaRevision: 17,
@@ -1075,10 +1073,6 @@ export function getDaemonCommandCompatibilities(command: DaemonCommand): readonl
 	if ((command.type === "attach" || command.type === "reattach") && command.recoveryConfig !== undefined) {
 		requirements.push(OWNED_SESSION_RECOVERY_CONTEXT);
 	}
-	const carriesTelemetryPolicy =
-		((command.type === "attach" || command.type === "reattach") && command.telemetryDisabled !== undefined) ||
-		(command.type === "create" && command.config?.telemetryDisabled !== undefined);
-	if (carriesTelemetryPolicy) requirements.push(TELEMETRY_POLICY_COMMAND);
 	if ((command.type === "prompt" || command.type === "prompt_and_wait") && command.admissionId !== undefined) {
 		requirements.push(PROMPT_ADMISSION_CANCELLATION_COMMAND);
 	}
