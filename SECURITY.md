@@ -2,9 +2,9 @@
 
 ## Reporting a Vulnerability
 
-Do not report security vulnerabilities through public Issues, Discussions, or pull requests.
+Do not report security vulnerabilities through public Issues or pull requests.
 
-Send the report to [security@primeintellect.ai](mailto:security@primeintellect.ai). For encrypted communication and the current company-wide disclosure policy, see [primeintellect.ai/security](https://www.primeintellect.ai/security).
+Report them privately through [GitHub private vulnerability reporting](https://github.com/0xCarbon/amicus/security/advisories/new).
 
 Include the following when possible:
 
@@ -34,4 +34,4 @@ Maintainers will assess the report, determine its scope, and coordinate remediat
 
 Security fixes are generally prepared against the default branch and released on a schedule chosen by the maintainers. We do not guarantee fixes for older versions.
 
-For ordinary bugs, feature requests, and support questions, use [GitHub Discussions](https://github.com/0xCarbon/amicus/discussions).
+For ordinary bugs, feature requests, and support questions, use [GitHub Issues](https://github.com/0xCarbon/amicus/issues).

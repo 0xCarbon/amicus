@@ -54,7 +54,7 @@ export async function getNativeUpdatePlan(options: {
 		!/^# amicus-native-recovery-v1$/m.test(readFileSync(join(installation.releaseDir, "install.sh"), "utf8"))
 	)
 		throw new Error(
-			"The retained installer does not support this recovery. Run the published installer at https://app.primeintellect.ai/amicus/install.sh again to repair it.",
+			"The retained installer does not support this recovery. Reinstall Amicus (https://github.com/0xCarbon/amicus#install) to repair it.",
 		);
 	accessSync(installation.root, constants.W_OK);
 	accessSync(join(installation.root, "bin"), constants.W_OK);

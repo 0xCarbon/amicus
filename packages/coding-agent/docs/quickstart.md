@@ -7,16 +7,11 @@ This page gets you from install to a useful first Amicus session.
 Install the latest stable release on Linux or macOS:
 
 ```bash
-curl --proto '=https' --proto-redir '=https' -fsSL https://app.primeintellect.ai/amicus/install.sh | sh
+npm install -g "$(curl -fsSL https://github.com/0xCarbon/amicus/releases/latest/download/latest.json \
+  | node -pe 'JSON.parse(require("fs").readFileSync(0, "utf8")).tarball')"
 ```
 
-To try the latest beta built from `main`:
-
-```bash
-curl --proto '=https' --proto-redir '=https' -fsSL https://app.primeintellect.ai/amicus/install.sh | sh -s -- beta
-```
-
-Both commands fetch versioned Amicus release artifacts and install the `amicus` command. The inherited npm workspace identifiers in the source tree are not the public install path.
+This fetches the versioned Amicus release tarball named by the release manifest and installs the `amicus` command.
 
 Then start Amicus in the project directory you want it to work on:
 

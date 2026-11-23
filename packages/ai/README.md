@@ -1,8 +1,8 @@
 <p align="center">
-  <a href="https://primeintellect.ai">
+  <a href="https://github.com/0xCarbon/amicus">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="../../assets/brand/prime-butterfly.svg">
-      <img alt="Prime Intellect butterfly mark" src="../../assets/brand/prime-butterfly-black.svg" width="88">
+      <source media="(prefers-color-scheme: dark)" srcset="../../assets/brand/amicus-scales.svg">
+      <img alt="Amicus scales mark" src="../../assets/brand/amicus-scales-black.svg" width="88">
     </picture>
   </a>
 </p>

@@ -1,38 +1,26 @@
 # Contributing to Amicus
 
-Thanks for your interest in contributing to Amicus! Amicus is developed in public, and we welcome bug reports, feature requests, questions, and other feedback. To keep the project maintainable, public contributions begin in [GitHub Discussions](https://github.com/0xCarbon/amicus/discussions).
+Thanks for your interest in contributing to Amicus! We welcome bug reports, feature requests, questions, and other feedback in [GitHub Issues](https://github.com/0xCarbon/amicus/issues).
 
-With the influx of agent-generated contributions, we do not review unsolicited pull requests or use public Issues as the initial intake queue. While we are open to contributions by agents, you are responsible for your code and must understand how it interacts with the entire project.
-
-## Start with a Discussion
-
-Choose the category that best matches what you want to share:
-
-- [General discussion or question](https://github.com/0xCarbon/amicus/discussions/categories/general)
-- [Bug report](https://github.com/0xCarbon/amicus/discussions/categories/bug-reports)
-- [Feature request](https://github.com/0xCarbon/amicus/discussions/categories/feature-requests)
-
-Search existing Discussions before creating a new one. Include enough detail for someone else to understand and reproduce the problem, but do not share API keys, tokens, private prompts, or other sensitive information.
-
-For security vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of posting publicly.
+With the influx of agent-generated contributions, we do not review unsolicited pull requests. While we are open to contributions by agents, you are responsible for your code and must understand how it interacts with the entire project.
 
 ## Issues
 
-GitHub Issues track work that maintainers have accepted and intend to investigate or implement. A maintainer may create an Issue from a Discussion when the scope is clear and the work fits the roadmap. An existing Issue does not automatically mean that an external pull request is wanted. Wait for a maintainer to invite implementation before starting substantial work.
+Search existing Issues before opening a new one. Include enough detail for someone else to understand and reproduce the problem, but do not share API keys, tokens, private prompts, or other sensitive information. Issues labeled `backlog` are accepted work; an existing Issue does not automatically mean that an external pull request is wanted, so wait for a maintainer to invite implementation before starting substantial work.
 
-Issues opened by unapproved contributors are automatically closed and redirected to Discussions. To contribute, share interest in Discussions or corresponding issues, and maintainers can invite implementation for requested work.
+For security vulnerabilities, follow [SECURITY.md](SECURITY.md) instead of posting publicly.
 
 ## Pull Requests and Trusted Contributors
 
-Amicus runs on user machines and can execute code with the user's permissions. We therefore limit pull requests to maintainers and trusted contributors who have been explicitly vouched for. Maintainers may vouch for someone after they have consistently demonstrated a useful understanding of the project through Discussions, issue investigation, testing, documentation, or other collaboration. There is no separate application process and no guarantee that participation will result in approval.
+Amicus runs on user machines and can execute code with the user's permissions. We therefore limit pull requests to maintainers and trusted contributors who have been explicitly vouched for. Maintainers may vouch for someone after they have consistently demonstrated a useful understanding of the project through issue investigation, testing, documentation, or other collaboration. There is no separate application process and no guarantee that participation will result in approval.
 
-Pull requests from unvouched contributors are automatically closed. If you are interested in contributing code, begin with a Discussion and work with the maintainers on the problem first.
+Pull requests from unvouched contributors are automatically closed. If you are interested in contributing code, start with an Issue and work with the maintainers on the problem first.
 
 ## Preparing an Approved Pull Request
 
 If a maintainer has invited a pull request:
 
-1. Keep the change focused on the accepted Issue or Discussion.
+1. Keep the change focused on the accepted Issue.
 2. Follow the repository's development rules and existing conventions.
 3. Add or update tests for behavioral changes.
 4. Run the relevant checks locally and describe the validation in the pull request.
