@@ -40,8 +40,11 @@ describe("auto thinking", () => {
 			};
 			harness.setResponses([reply, reply, reply, reply]);
 
+			const defaultLevel = harness.settingsManager.getDefaultThinkingLevel();
 			expect(harness.session.setAutoThinking(true)).toBe(true);
 			for (const text of ["rename foo", "add a flag", "the daemon deadlocks"]) await harness.session.prompt(text);
+			expect(harness.settingsManager.getDefaultAutoThinking()).toBe(false);
+			expect(harness.settingsManager.getDefaultThinkingLevel()).toBe(defaultLevel);
 			harness.session.selectThinkingLevel("low");
 			await harness.session.prompt("thanks");
 
@@ -62,6 +65,28 @@ describe("auto thinking", () => {
 				{ enabled: true },
 				{ enabled: false },
 			]);
+		} finally {
+			harness.cleanup();
+		}
+	});
+
+	it("stops consulting Jev after a switch to a model without a level choice", async () => {
+		process.env[AUTO_THINKING_API_KEY_ENV] = "test-key";
+		const bodies = jevAnswers([[0, 0, 1]]);
+		const harness = await createHarness({
+			models: [
+				{ id: "glm-like", reasoning: true },
+				{ id: "plain", reasoning: false },
+			],
+		});
+		try {
+			harness.session.agent.state.model.thinkingLevelMap = { ...GLM_LIKE };
+			harness.setResponses([fauxAssistantMessage("done")]);
+			expect(harness.session.setAutoThinking(true)).toBe(true);
+			await harness.session.setModel(harness.models[1]);
+			await harness.session.prompt("the daemon deadlocks");
+			expect(bodies).toHaveLength(0);
+			expect(harness.session.isAutoThinkingAvailable()).toBe(false);
 		} finally {
 			harness.cleanup();
 		}

@@ -6735,7 +6735,8 @@ export class InteractiveMode {
 			const providerPrefix = `${model.provider}/`;
 			const modelId = model.id.startsWith(providerPrefix) ? model.id.slice(providerPrefix.length) : model.id;
 			const effort = model.reasoning ? this.connectionState?.thinkingLevel : undefined;
-			const auto = effort && this.connectionState?.autoThinking ? "auto·" : "";
+			const auto =
+				effort && this.connectionState?.autoThinking && this.connectionState.autoThinkingAvailable ? "auto·" : "";
 			parts.push(effort ? `${modelId}:${auto}${effort.toLowerCase()}` : modelId);
 			const serviceTier = this.connectionState?.serviceTier;
 			if (serviceTier === "priority") {
@@ -8616,6 +8617,7 @@ export class InteractiveMode {
 			scopedModels: state.scopedModels,
 			serviceTier: state.serviceTier,
 			availableThinkingLevels: state.availableThinkingLevels,
+			autoThinkingAvailable: state.autoThinkingAvailable,
 		});
 		this.subagentSummaryLine.invalidate();
 		this.setupAutocompleteProvider();
@@ -8897,6 +8899,8 @@ export class InteractiveMode {
 			this.patchConnectionState({ autoThinking: enabled });
 			this.footer.invalidate();
 			if (enabled) this.showStatus("Thinking level: auto (picked per prompt)");
+			else if (this.connectionState?.autoThinkingAvailable === undefined)
+				this.showError("This daemon does not support auto thinking; restart it after updating");
 			else
 				this.showError(
 					`Auto thinking needs ${AUTO_THINKING_API_KEY_ENV} and a model with several reasoning levels`,

@@ -1499,7 +1499,7 @@ class DaemonAttachTerminal {
 				this.writeLine(chalk.dim(`Session name: ${event.name ?? "(unnamed)"}`));
 				return;
 			case "thinking_level_changed":
-				this.writeLine(chalk.dim(`Thinking: ${event.level}`));
+				this.writeLine(chalk.dim(`Thinking: ${event.level}${event.auto ? " (auto)" : ""}`));
 				return;
 			case "compaction_start":
 				this.writeLine(chalk.dim(`Compaction started: ${event.reason}`));

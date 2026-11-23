@@ -905,12 +905,6 @@ export class SettingsManager {
 		return this.settings.defaultAutoThinking === true;
 	}
 
-	setDefaultAutoThinking(enabled: boolean): void {
-		this.globalSettings.defaultAutoThinking = enabled;
-		this.markModified("defaultAutoThinking");
-		this.save();
-	}
-
 	getDefaultServiceTier(): ServiceTier {
 		return this.settings.defaultServiceTier ?? "default";
 	}

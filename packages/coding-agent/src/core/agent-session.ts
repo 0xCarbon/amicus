@@ -84,6 +84,7 @@ import {
 import type { AuthSourceToken } from "./auth-storage.js";
 import {
 	AUTO_THINKING_API_KEY_ENV,
+	type AutoThinkingProbabilities,
 	autoThinkingCandidates,
 	buildAutoThinkingWindow,
 	chooseAutoThinkingLevel,
@@ -2327,6 +2328,13 @@ export class AgentSession {
 		}
 		this._goalAccountingStartedAt = this._goalState.status === "active" ? Date.now() : undefined;
 		this._emitGoalUpdate();
+	}
+
+	private _reloadAutoThinkingFromBranch(): void {
+		const next = this._loadPersistedAutoThinking();
+		if (next === this._autoThinking) return;
+		this._autoThinking = next;
+		this._emit({ type: "thinking_level_changed", level: this.thinkingLevel, auto: next });
 	}
 
 	private _reloadRlmMaxDepthFromBranch(): void {
@@ -7684,14 +7692,14 @@ export class AgentSession {
 			parkNextTurnMessages(nextTurnMessages);
 			nextTurnMessages = [];
 		};
-		let autoThinkingLevel: Promise<ThinkingLevel | undefined> | undefined;
+		let autoThinking: Promise<AutoThinkingProbabilities | undefined> | undefined;
 		try {
 			const preparedTurn = await this._prepareForCommit(executionPolicy.preparation, {
 				afterValidation: () => {
 					if (this._isSessionInputHandoffDeferred(epoch)) {
 						throw new DeferredSessionInputError("Session input paused before preflight");
 					}
-					autoThinkingLevel = this._startAutoThinkingResolution(activeTurns());
+					autoThinking = this._startAutoThinkingResolution(activeTurns());
 					// Re-evaluate image routing for this batch before any pre-commit read of
 					// the serving model: pre-turn compaction must not follow the previous
 					// turn's override. Retries and post-compaction continuations of a routed
@@ -7741,7 +7749,7 @@ export class AgentSession {
 				return;
 			}
 			const { prepared, turns } = preparedTurn;
-			const resolvedAutoThinkingLevel = await autoThinkingLevel;
+			const autoThinkingProbabilities = autoThinking && { value: await autoThinking };
 			const commitFence = await this._acquireSessionActionCommitFence();
 			let promptPromise: Promise<void>;
 			try {
@@ -7813,9 +7821,7 @@ export class AgentSession {
 					// before_agent_start injections land after the earlier per-turn
 					// decision and may carry images the session model cannot serve.
 					this.agent.modelOverride = this._imageModelOverrideForTurns(turns, preparedMessages);
-					if (resolvedAutoThinkingLevel && this._autoThinking) {
-						this.setThinkingLevel(resolvedAutoThinkingLevel, { persistDefault: false });
-					}
+					if (autoThinkingProbabilities) this._applyAutoThinking(autoThinkingProbabilities.value);
 					return turns.some((action) => action.suppressAutonomousContinuation)
 						? this._runWithAutonomousContinuationSuppressed(() => this.agent.prompt(preparedMessages))
 						: this.agent.prompt(preparedMessages);
@@ -9072,7 +9078,12 @@ export class AgentSession {
 			if (options.persistSession !== false) {
 				this.sessionManager.appendThinkingLevelChange(effectiveLevel);
 			}
-			if (options.persistDefault !== false && (this.supportsThinking() || effectiveLevel !== "off")) {
+			// Auto-picked levels (and clamps of them on model switches) are not a person's default.
+			if (
+				options.persistDefault !== false &&
+				!this._autoThinking &&
+				(this.supportsThinking() || effectiveLevel !== "off")
+			) {
 				this.settingsManager.setDefaultThinkingLevel(effectiveLevel);
 			}
 			this._emit({ type: "thinking_level_changed", level: effectiveLevel, auto: this._autoThinking });
@@ -9167,15 +9178,15 @@ export class AgentSession {
 		if (next === this._autoThinking) return next;
 		this._autoThinking = next;
 		this.sessionManager.appendCustomEntry(AUTO_THINKING_CUSTOM_TYPE, { enabled: next });
-		this.settingsManager.setDefaultAutoThinking(next);
 		this._emit({ type: "thinking_level_changed", level: this.thinkingLevel, auto: next });
 		return next;
 	}
 
+	/** Starts the difficulty request; the level is chosen at commit against the then-current model. */
 	private _startAutoThinkingResolution(
 		turns: readonly SessionAction<PreparedTurnPayload>[],
-	): Promise<ThinkingLevel | undefined> | undefined {
-		if (!this._autoThinking) return undefined;
+	): Promise<AutoThinkingProbabilities | undefined> | undefined {
+		if (!this._autoThinking || !this.isAutoThinkingAvailable()) return undefined;
 		const human = turns.filter(
 			(action) =>
 				isHumanInputSource(action.source) &&
@@ -9184,13 +9195,14 @@ export class AgentSession {
 		);
 		const request = human.at(-1)?.payload.text;
 		if (request === undefined) return undefined;
-		const levels = this.getAvailableThinkingLevels();
-		const apiKey = process.env[AUTO_THINKING_API_KEY_ENV];
-		if (!apiKey) return Promise.resolve(chooseAutoThinkingLevel(levels, undefined));
-		const window = buildAutoThinkingWindow(this.messages, request);
-		return fetchAutoThinkingProbabilities({ window, apiKey }).then((probabilities) =>
-			chooseAutoThinkingLevel(levels, probabilities),
-		);
+		const apiKey = process.env[AUTO_THINKING_API_KEY_ENV] ?? "";
+		return fetchAutoThinkingProbabilities({ window: buildAutoThinkingWindow(this.messages, request), apiKey });
+	}
+
+	private _applyAutoThinking(probabilities: AutoThinkingProbabilities | undefined): void {
+		if (!this._autoThinking || !this.isAutoThinkingAvailable()) return;
+		const level = chooseAutoThinkingLevel(this.getAvailableThinkingLevels(), probabilities);
+		if (level) this.setThinkingLevel(level);
 	}
 
 	getAvailableThinkingLevels(): ThinkingLevel[] {
@@ -11266,7 +11278,7 @@ export class AgentSession {
 					return true;
 				},
 				getThinkingLevel: () => this.thinkingLevel,
-				setThinkingLevel: (level) => this.setThinkingLevel(level),
+				setThinkingLevel: (level) => this.selectThinkingLevel(level),
 			},
 			{
 				getModel: () => this.model,
@@ -15346,6 +15358,7 @@ export class AgentSession {
 			this._ensureHarnessDigestContext();
 			this._reloadGoalStateFromBranch({ monotonicTokens: Boolean(summaryText) });
 			this._reloadRlmMaxDepthFromBranch();
+			this._reloadAutoThinkingFromBranch();
 			await this._reloadQuotaParkFromBranch();
 			this._invalidateQueuedPromptPreparation();
 

@@ -20,14 +20,14 @@ Edit directly or use `/settings` for common options.
 | `subagentDefaultModel` | string | - | Model selector (`"provider/id"`) used when `rlm.spawn` does not pin a model; unset inherits the parent model |
 | `imageModel` | string | none | Model (`"provider/model-id"` or a bare id) that serves turns attaching images when the session model does not accept image input |
 | `defaultThinkingLevel` | string | `"medium"` | `"off"`, `"minimal"`, `"low"`, `"medium"`, `"high"`, `"xhigh"`, `"max"` |
-| `defaultAutoThinking` | boolean | `false` | Start new sessions with `/effort auto` (needs `TYPESAFE_API_KEY`) |
+| `defaultAutoThinking` | boolean | `false` | Start new sessions with `/effort auto` (needs `TYPESAFE_API_KEY`); set it here, `/effort auto` never changes it |
 | `thinkingBudgets` | object | - | Custom token budgets per thinking level |
 
 `subagentDefaultModel` applies only to spawned subagents whose `rlm.spawn` call omits `model=`. An explicit `model=` per spawn always wins, and an unset setting keeps the inherit-parent behavior. If the configured default is unavailable, unauthenticated, or expired, the spawn fails with that error instead of silently falling back.
 
 When `defaultThinkingLevel` is unset, new sessions start at `"medium"` reasoning, clamped to the levels each model supports.
 
-`/effort auto` picks the reasoning level for each prompt you send. It needs `TYPESAFE_API_KEY` and a model with at least two reasoning levels besides `off`. Before the turn starts, the request and a bounded window of recent messages (user and assistant text, tool names and results, clipped to 4000 characters) go to TypeSafe Jev, which scores the request as trivial, moderate, or hard. Auto chooses the model's top level unless Jev is at least 70% sure the request is trivial (`low`) or at most 30% likely to be hard (`high`, or the closest middle level). It also uses the top level when Jev errors or takes longer than 1 second. Choosing a level explicitly turns auto off. The footer shows `auto·<level>` while auto is on.
+`/effort auto` picks the reasoning level for each prompt you send. It needs `TYPESAFE_API_KEY` and a model with at least two reasoning levels besides `off`. Before the turn starts, the request and a bounded window of recent messages (user and assistant text, tool names and results, clipped to 4000 characters) go to TypeSafe Jev, which scores the request as trivial, moderate, or hard. Auto chooses the model's top level unless Jev is at least 70% sure the request is trivial (`low`) or at most 30% likely to be hard (`high`, or the closest middle level). It also uses the top level when Jev errors or takes longer than 1 second. Choosing a level explicitly, including from an extension, turns auto off. Auto state is saved in the session and follows tree navigation, and auto-picked levels never overwrite `defaultThinkingLevel`. Auto pauses (no TypeSafe call) on a model without a level choice. The footer shows `auto·<level>` while auto is on. Because a TypeSafe outage falls back to the top level, it can raise cost until the service recovers.
 
 `imageModel` routes image turns on text-only session or subagent models. When a
 turn attaches images and the selected model has no image input, that turn (and
