@@ -129,6 +129,22 @@ describe("remote catalog compatibility", () => {
 		);
 	});
 
+	it("supplements GLM-5.4 only for a served zai provider and lets the catalog entry win", () => {
+		const bundled = getModels("zai") as Model<Api>[];
+		const zai = bundled[0]!;
+		const find = (models: Model<Api>[]) => models.find((model) => model.provider === "zai" && model.id === "glm-5.4");
+
+		expect(find(parseProviderModelCatalog(modelPayload([zai]), bundled))).toMatchObject({
+			baseUrl: zai.baseUrl,
+			thinkingLevelMap: { off: null, low: "low", high: "high", max: "max" },
+		});
+		const served = { ...zai, id: "glm-5.4", name: "GLM-5.4 catalog" };
+		const parsed = parseProviderModelCatalog(modelPayload([zai, served]), bundled);
+		expect(parsed.filter((model) => model.id === "glm-5.4").map((model) => model.name)).toEqual([served.name]);
+		const anthropic = getModels("anthropic")[0] as Model<Api>;
+		expect(find(parseProviderModelCatalog(modelPayload([anthropic]), [...bundled, anthropic]))).toBeUndefined();
+	});
+
 	it("rejects malformed MCP catalogs as a whole, keeps last-good data, and recovers on the next good fetch", async () => {
 		const tempDir = makeTempDir();
 		const cache = new CatalogCache(

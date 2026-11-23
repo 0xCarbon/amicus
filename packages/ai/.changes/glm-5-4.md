@@ -1,0 +1,1 @@
+- Added GLM-5.4 reasoning support: Z.ai `glm-5.4` exposes only the low, high, and max thinking levels.
