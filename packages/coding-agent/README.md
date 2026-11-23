@@ -694,9 +694,6 @@ amicus --thinking high "Solve this complex problem"
 | `PI_PACKAGE_DIR` | Override package directory (useful for Nix/Guix where store paths tokenize poorly) |
 | `PI_OFFLINE` | Disable startup network operations, including update checks and package update checks |
 | `PI_SKIP_VERSION_CHECK` | Skip the Amicus version update check at startup. This prevents the release manifest request |
-| `AMICUS_TELEMETRY` | Override pseudonymous aggregate usage analytics with `1`/`true`/`yes` or `0`/`false`/`no` |
-| `AMICUS_TELEMETRY_ENDPOINT` | Override the aggregate analytics ingestion endpoint |
-| `DO_NOT_TRACK` | Disable aggregate usage analytics when set to `1`/`true`/`yes` |
 | `PI_CACHE_RETENTION` | Set to `long` for extended prompt cache (Anthropic: 1h, OpenAI: 24h) |
 | `PRIME_API_KEY` | Prime Inference API key |
 | `PRIME_TEAM_ID` | Override the Prime Inference team request header without changing the saved Agent team |

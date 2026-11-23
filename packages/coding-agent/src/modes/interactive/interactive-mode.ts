@@ -166,11 +166,6 @@ import {
 	parseSlashCommand,
 	resolveBuiltinSlashCommandName,
 } from "../../core/slash-commands.js";
-import {
-	captureAgentCommandUsed,
-	captureOnboardingCompleted,
-	type TelemetryOnboardingOutcome,
-} from "../../core/telemetry.js";
 import { type TruncationResult, truncateTail } from "../../core/tools/truncate.js";
 import { AMICUS_COMPACT_LOGO } from "../../themes/amicus-logo.js";
 import { getChangelogPath, parseChangelog } from "../../utils/changelog.js";
@@ -2181,38 +2176,17 @@ export class InteractiveMode {
 			return false;
 		}
 
-		const startedAt = Date.now();
-		let outcome: TelemetryOnboardingOutcome = "aborted";
-		try {
-			// The flow reports completion itself: a user who already had a working
-			// model would otherwise look "ready" straight after cancelling it, and
-			// the questions they never saw would be skipped for good.
-			const completed = await this.runOnboardingFlow();
-			outcome = completed && isOnboardingModelReady(this.getOnboardingState()) ? "success" : "aborted";
-			if (outcome === "success") {
-				// Only a completed onboarding counts as seen: a cancelled sign-in
-				// leaves the flag unset so the next launch retries the flow.
-				this.markOnboardingShown();
-				await this.settingsManager.flush();
-			}
-			return true;
-		} catch (error) {
-			outcome = "error";
-			throw error;
-		} finally {
-			const model = this.getCurrentModel();
-			const authStatus = model ? this.modelRegistry.getProviderAuthStatus(model.provider) : undefined;
-			const storedCredential = model ? this.modelRegistry.authStorage.get(model.provider) : undefined;
-			void captureOnboardingCompleted({
-				agentDir: getAgentDir(),
-				settingsManager: this.settingsManager,
-				durationMs: Date.now() - startedAt,
-				outcome,
-				provider: model?.provider,
-				authSource: authStatus?.source,
-				storedCredentialType: storedCredential?.type,
-			}).catch(() => {});
+		// The flow reports completion itself: a user who already had a working
+		// model would otherwise look "ready" straight after cancelling it, and
+		// the questions they never saw would be skipped for good.
+		const completed = await this.runOnboardingFlow();
+		if (completed && isOnboardingModelReady(this.getOnboardingState())) {
+			// Only a completed onboarding counts as seen: a cancelled sign-in
+			// leaves the flag unset so the next launch retries the flow.
+			this.markOnboardingShown();
+			await this.settingsManager.flush();
 		}
+		return true;
 	}
 
 	/** Runs the first-launch sequence. Resolves true only when every step ran. */
@@ -5141,14 +5115,6 @@ export class InteractiveMode {
 					this.ui.requestRender();
 					return;
 				}
-				if (commandName) {
-					void captureAgentCommandUsed({
-						agentDir: getAgentDir(),
-						settingsManager: this.settingsManager,
-						commandName,
-					}).catch(() => {});
-				}
-
 				if (commandName === "btw") {
 					this.editor.setText("");
 					await this.handleSideQuestion(commandArgs);

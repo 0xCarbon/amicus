@@ -49,7 +49,6 @@ describe("createAgentSessionFromServices", () => {
 			cwd: tempDir,
 			agentDir: tempDir,
 			authStorage: AuthStorage.inMemory(),
-			telemetryDisabled: true,
 			resourceLoaderOptions: {
 				noExtensions: true,
 				noSkills: true,
@@ -63,7 +62,6 @@ describe("createAgentSessionFromServices", () => {
 		const { session } = await createAgentSessionFromServices({
 			services,
 			sessionManager,
-			telemetryDisabled: true,
 		});
 		try {
 			expect(onPersist).not.toHaveBeenCalled();
@@ -85,7 +83,6 @@ describe("createAgentSessionFromServices", () => {
 			const services = await createAgentSessionServices({
 				cwd: tempDir,
 				...options,
-				telemetryDisabled: true,
 				resourceLoaderOptions: {
 					noExtensions: true,
 					noSkills: true,
@@ -99,133 +96,6 @@ describe("createAgentSessionFromServices", () => {
 				"agentDir" in options || "authStorage" in options ? undefined : join(tempDir, ".prime", "config.json"),
 			);
 			if ("authStorage" in options) expect(services.authStorage).toBe(injected);
-		}
-	});
-
-	it("shows the telemetry disclosure independently of the Herdr reporter", async () => {
-		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("AMICUS_TELEMETRY", "1");
-		const tempDir = join(tmpdir(), `pi-session-telemetry-notice-${Date.now()}`);
-		mkdirSync(tempDir, { recursive: true });
-		cleanupPaths.push(tempDir);
-		const settingsManager = SettingsManager.inMemory();
-		settingsManager.setOnboardingShown(true);
-
-		const services = await createAgentSessionServices({
-			cwd: tempDir,
-			agentDir: tempDir,
-			settingsManager,
-			noBuiltinHerdrReporter: true,
-			resourceLoaderOptions: { noPromptTemplates: true, noThemes: true },
-		});
-
-		expect(services.diagnostics).toContainEqual(
-			expect.objectContaining({ type: "info", message: expect.stringContaining("pseudonymous usage") }),
-		);
-		expect(settingsManager.getTelemetryNoticeShown()).toBe(true);
-	});
-
-	it("defers the telemetry disclosure on a first interactive launch", async () => {
-		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("AMICUS_TELEMETRY", "1");
-		const tempDir = join(tmpdir(), `pi-session-telemetry-first-run-${Date.now()}`);
-		mkdirSync(tempDir, { recursive: true });
-		cleanupPaths.push(tempDir);
-		// A settings profile that has never seen onboarding: the notice would land
-		// on the welcome screen, so it waits for the next launch.
-		const settingsManager = SettingsManager.inMemory();
-
-		const services = await createAgentSessionServices({
-			cwd: tempDir,
-			agentDir: tempDir,
-			settingsManager,
-			noBuiltinHerdrReporter: true,
-			deferTelemetryNoticeForOnboarding: true,
-			resourceLoaderOptions: { noPromptTemplates: true, noThemes: true },
-		});
-
-		expect(services.diagnostics).not.toContainEqual(
-			expect.objectContaining({ message: expect.stringContaining("pseudonymous usage") }),
-		);
-		expect(settingsManager.getTelemetryNoticeShown()).toBe(false);
-	});
-
-	it("discloses telemetry immediately for sessions that never onboard", async () => {
-		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("AMICUS_TELEMETRY", "1");
-		const tempDir = join(tmpdir(), `pi-session-telemetry-headless-${Date.now()}`);
-		mkdirSync(tempDir, { recursive: true });
-		cleanupPaths.push(tempDir);
-		// No onboarding will run here, so holding the notice back would hide it forever.
-		const settingsManager = SettingsManager.inMemory();
-
-		const services = await createAgentSessionServices({
-			cwd: tempDir,
-			agentDir: tempDir,
-			settingsManager,
-			noBuiltinHerdrReporter: true,
-			resourceLoaderOptions: { noPromptTemplates: true, noThemes: true },
-		});
-
-		expect(services.diagnostics).toContainEqual(
-			expect.objectContaining({ message: expect.stringContaining("pseudonymous usage") }),
-		);
-		expect(settingsManager.getTelemetryNoticeShown()).toBe(true);
-	});
-
-	it("honors an explicit daemon-carried telemetry opt-out", async () => {
-		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("AMICUS_TELEMETRY", "1");
-		const tempDir = join(tmpdir(), `pi-session-daemon-telemetry-opt-out-${Date.now()}`);
-		mkdirSync(tempDir, { recursive: true });
-		cleanupPaths.push(tempDir);
-		const settingsManager = SettingsManager.inMemory();
-		const services = await createAgentSessionServices({
-			cwd: tempDir,
-			agentDir: tempDir,
-			settingsManager,
-			telemetryDisabled: true,
-			resourceLoaderOptions: { noPromptTemplates: true, noThemes: true },
-		});
-
-		expect(services.diagnostics).not.toContainEqual(
-			expect.objectContaining({ message: expect.stringContaining("pseudonymous usage") }),
-		);
-		expect(settingsManager.getTelemetryNoticeShown()).toBe(false);
-
-		const { session } = await createAgentSessionFromServices({
-			services,
-			sessionManager: SessionManager.create(tempDir, join(tempDir, "sessions")),
-			telemetryDisabled: true,
-		});
-		try {
-			expect(existsSync(join(tempDir, "telemetry.json"))).toBe(false);
-		} finally {
-			session.dispose();
-		}
-	});
-
-	it("does not install top-level telemetry for a resumed child session", async () => {
-		vi.stubEnv("DO_NOT_TRACK", "0");
-		vi.stubEnv("AMICUS_TELEMETRY", "1");
-		const tempDir = join(tmpdir(), `pi-session-child-telemetry-${Date.now()}`);
-		mkdirSync(tempDir, { recursive: true });
-		cleanupPaths.push(tempDir);
-		const services = await createAgentSessionServices({
-			cwd: tempDir,
-			agentDir: tempDir,
-			settingsManager: SettingsManager.inMemory({ telemetry: { noticeShown: true } }),
-			resourceLoaderOptions: { noPromptTemplates: true, noThemes: true },
-		});
-		const sessionManager = SessionManager.create(tempDir, join(tempDir, "sessions"));
-		sessionManager.newSession({ rlmDepth: 1 });
-
-		const { session } = await createAgentSessionFromServices({ services, sessionManager });
-		try {
-			expect(session.rlmDepth).toBe(1);
-			expect(existsSync(join(tempDir, "telemetry.json"))).toBe(false);
-		} finally {
-			session.dispose();
 		}
 	});
 
@@ -416,7 +286,6 @@ describe("createAgentSessionFromServices", () => {
 			settingsManager: SettingsManager.inMemory(),
 			modelRegistry,
 			mcpManager,
-			telemetryDisabled: true,
 			noBuiltinHerdrReporter: true,
 			resourceLoaderOptions: { noExtensions: true },
 		});

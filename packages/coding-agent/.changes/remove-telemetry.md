@@ -1,0 +1,1 @@
+- Removed usage telemetry: Amicus no longer sends analytics events, shows the telemetry notice, or reads `telemetry` settings and `AMICUS_TELEMETRY`/`DO_NOT_TRACK`; restart any running daemon after updating.

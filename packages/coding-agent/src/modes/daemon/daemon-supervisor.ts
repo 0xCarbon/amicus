@@ -3477,7 +3477,6 @@ export class DaemonSupervisor {
 				rootActiveSessionId,
 				ownerClientId: existing?.descriptor.ownerClientId ?? ownerClientId,
 				sessionDir: createCommand.config?.sessionDir,
-				telemetryDisabled: createCommand.config?.telemetryDisabled,
 				createdAt: existing?.descriptor.createdAt ?? now,
 				updatedAt: now,
 				lifecycle: "starting",
@@ -5361,16 +5360,12 @@ export class DaemonSupervisor {
 				if (descriptorWorker.descriptor.ownerClientId !== this.protocolClientId(client)) {
 					throw new Error(`Unknown active session: ${command.activeSessionId}`);
 				}
-				this.assertTelemetryAttachAllowed(descriptorWorker, command.telemetryDisabled);
 				descriptorWorker.launchEnv = command.launchEnv ?? descriptorWorker.launchEnv;
 				if (!descriptorWorker.client || descriptorWorker.descriptor.lifecycle !== "ready") {
 					if (command.recoveryConfig) {
 						descriptorWorker.transientCreateCommand = {
 							...descriptorWorker.descriptor.createCommand,
-							config: {
-								...command.recoveryConfig,
-								...(descriptorWorker.descriptor.telemetryDisabled === true ? { telemetryDisabled: true } : {}),
-							},
+							config: command.recoveryConfig,
 							env: command.env,
 							launchEnv: command.launchEnv,
 							lifecycle: "client_owned",
@@ -5386,7 +5381,6 @@ export class DaemonSupervisor {
 			}
 		}
 		const match = await this.findWorkerForClient(client, command.activeSessionId);
-		this.assertTelemetryAttachAllowed(match.worker, command.telemetryDisabled);
 		if (match.worker !== descriptorWorker && this.canRetryFailedWorker(match.worker)) {
 			// Child-session attaches land here without a descriptor match; one touch runs at most one ladder.
 			await this.retryWorkerRecovery(match.worker);
@@ -5537,14 +5531,6 @@ export class DaemonSupervisor {
 				client.attachedActiveSessionIds.delete(activeSessionId);
 			}
 			throw error;
-		}
-	}
-
-	private assertTelemetryAttachAllowed(worker: ResidentWorker, telemetryDisabled: true | undefined): void {
-		if (telemetryDisabled && worker.descriptor.telemetryDisabled !== true) {
-			throw new Error(
-				"Cannot attach to this active agent while telemetry is disabled for the current invocation. Stop the agent and retry so it can restart without telemetry.",
-			);
 		}
 	}
 

@@ -87,7 +87,7 @@ type ResetHarness = PromptStashLiveMarkerHarness & {
 
 type SubmitHarness = PromptStashHarness & {
 	defaultEditor: { onSubmit?: (text: string) => void | Promise<void> };
-	uiServices: { settingsManager: { getTelemetryEnabled: Mock<() => boolean> } };
+	uiServices: { settingsManager: object };
 	sideQuestionContainer: { clear: Mock };
 	isAgentCompacting: () => boolean;
 	isAgentStreaming: () => boolean;
@@ -195,7 +195,7 @@ function createSubmitHarness(
 	const mode: SubmitHarness = {
 		...createPromptStashHarness(options),
 		defaultEditor: {},
-		uiServices: { settingsManager: { getTelemetryEnabled: vi.fn(() => false) } },
+		uiServices: { settingsManager: {} },
 		sideQuestionContainer: { clear: vi.fn() },
 		isAgentCompacting: () => false,
 		isAgentStreaming: () => false,

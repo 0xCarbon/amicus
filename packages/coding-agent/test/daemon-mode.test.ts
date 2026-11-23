@@ -3452,7 +3452,6 @@ describe("daemon mode helpers", () => {
 					const services = await createAgentSessionServices({
 						cwd: options.cwd,
 						agentDir: options.agentDir,
-						telemetryDisabled: true,
 						resourceLoaderOptions: {
 							noExtensions: true,
 							noSkills: true,
@@ -3467,7 +3466,6 @@ describe("daemon mode helpers", () => {
 						sessionManager: options.sessionManager,
 						noTools: "all",
 						prewarmIpythonKernel: false,
-						telemetryDisabled: true,
 					});
 					return { ...result, services, diagnostics: services.diagnostics };
 				},

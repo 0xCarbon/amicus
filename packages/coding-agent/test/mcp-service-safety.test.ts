@@ -370,7 +370,6 @@ describe("MCP service safety: OAuth provider lifecycle", () => {
 			settingsManager: SettingsManager.inMemory(),
 			modelRegistry,
 			mcpManager,
-			telemetryDisabled: true,
 			noBuiltinHerdrReporter: true,
 			resourceLoaderOptions: { noExtensions: true },
 		});
